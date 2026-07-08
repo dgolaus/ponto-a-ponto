@@ -165,8 +165,17 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-repeat: no-repeat;
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  /* Desvanece a base (não vaza pra próxima seção) E as laterais — assim o
+     brilho nunca corta reto quando é maior que a viewport (celular/zoom)
+     ou quando a deriva o empurra até a borda cortada pelo overflow. */
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 70%, transparent 100%),
+    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, #000 70%, transparent 100%),
+    linear-gradient(to right, transparent, #000 13%, #000 87%, transparent);
+  mask-composite: intersect;
 }
 
 /* Tamanhos em vmax pra escalar com a viewport (estável em zoom e no
@@ -193,13 +202,13 @@ body::before {
 }
 
 @keyframes fundo-deriva-a {
-  from { transform: translate3d(-3rem, -2rem, 0) scale(1); }
-  to   { transform: translate3d(3rem, 2.5rem, 0) scale(1.06); }
+  from { transform: translate3d(-1.5rem, -1.2rem, 0) scale(1); }
+  to   { transform: translate3d(1.5rem, 1.6rem, 0) scale(1.04); }
 }
 
 @keyframes fundo-deriva-b {
-  from { transform: translate3d(3rem, 2rem, 0) scale(1.05); }
-  to   { transform: translate3d(-3rem, -2.5rem, 0) scale(1); }
+  from { transform: translate3d(1.5rem, 1.2rem, 0) scale(1.03); }
+  to   { transform: translate3d(-1.5rem, -1.6rem, 0) scale(1); }
 }
 
 /* Títulos de seção: grotesca compacta com tracking negativo forte —
@@ -1733,15 +1742,16 @@ html.pre-aviso .cabecalho {
   }
 
   /* Com o olho empilhado no topo, o brilho vai pro centro-superior (onde
-     o olho fica) e usa vmin pra ficar proporcional à tela estreita. */
+     o olho fica). Menor que a viewport e com parada 'transparent' cedo, pra
+     desvanecer com folga antes das bordas (margem escura de cada lado). */
   .hero::before {
     background:
-      radial-gradient(88vmin 74vmin at 50% 22%, rgba(245, 185, 66, 0.2), transparent 72%);
+      radial-gradient(66vmin 56vmin at 50% 21%, rgba(245, 185, 66, 0.22), transparent 62%);
   }
 
   .hero::after {
     background:
-      radial-gradient(70vmin 58vmin at 50% 13%, rgba(240, 191, 95, 0.12), transparent 68%);
+      radial-gradient(52vmin 46vmin at 50% 13%, rgba(240, 191, 95, 0.13), transparent 60%);
   }
 }
 
