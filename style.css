@@ -124,18 +124,25 @@ body {
   line-height: 1.6;
   color: var(--cor-texto);
   background-color: var(--cor-fundo);
-  /* Degradê navy sutil e fixo (mesmo tom do fundo, um degrau mais claro
-     no topo) — dá profundidade ao resto da página sem o âmbar, que agora
-     fica só no hero. Não anima, não emenda. */
-  background-image: radial-gradient(125% 85% at 50% 0%, #0e1322 0%, transparent 58%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   position: relative;
   isolation: isolate;
   /* Trava de segurança: nunca deixa a página deslizar na horizontal.
      "clip" (e não "hidden") não cria contêiner de scroll → não quebra
      o position:sticky do cabeçalho. */
   overflow-x: clip;
+}
+
+/* Degradê navy sutil no topo — profundidade para o resto da página, sem
+   o âmbar (que fica só no hero). Camada FIXA à viewport via position:fixed
+   em vez de background-attachment:fixed, que os navegadores de celular
+   ignoram/quebram. Fica atrás de tudo, inclusive do brilho do hero. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: radial-gradient(125% 85% at 50% 0%, #0e1322 0%, transparent 58%);
 }
 
 /* Fundo animado — "luz do farol" âmbar, agora SÓ atrás do hero.
@@ -146,21 +153,28 @@ body {
 .hero::after {
   content: "";
   position: absolute;
-  /* estende pra CIMA (enche o topo, atrás do cabeçalho transparente,
-     sem corte) e para no fim do hero; a máscara desvanece a base pra
-     o brilho não vazar para a seção de baixo. */
-  inset: -45% 0 0 0;
+  /* Região de brilho ancorada no topo (sobe atrás do cabeçalho, sem corte)
+     e LIMITADA a uma viewport de altura. O min() impede que um hero alto —
+     no celular (olho empilhado) ou em zoom grande — estique e dilua o
+     brilho pra fora da área visível. A máscara desvanece a base. */
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--altura-cabecalho));
+  height: min(calc(100% + var(--altura-cabecalho)), 100vh);
+  height: min(calc(100% + var(--altura-cabecalho)), 100svh);
   z-index: -1;
   pointer-events: none;
   background-repeat: no-repeat;
-  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
 }
 
+/* Tamanhos em vmax pra escalar com a viewport (estável em zoom e no
+   celular), não em rem. As posições miram o olho (à direita, no desktop). */
 .hero::before {
   background:
-    radial-gradient(34rem 30rem at 30% 42%, rgba(245, 185, 66, 0.16), transparent 70%),
-    radial-gradient(40rem 34rem at 72% 60%, rgba(245, 185, 66, 0.12), transparent 70%);
+    radial-gradient(46vmax 40vmax at 70% 50%, rgba(245, 185, 66, 0.2), transparent 68%),
+    radial-gradient(52vmax 44vmax at 30% 40%, rgba(245, 185, 66, 0.11), transparent 72%);
   animation:
     fundo-deriva-a 26s ease-in-out infinite alternate,
     brilho-respira 8s ease-in-out infinite alternate;
@@ -168,8 +182,8 @@ body {
 
 .hero::after {
   background:
-    radial-gradient(30rem 26rem at 68% 28%, rgba(240, 191, 95, 0.11), transparent 68%),
-    radial-gradient(34rem 28rem at 30% 74%, rgba(240, 191, 95, 0.08), transparent 68%);
+    radial-gradient(40vmax 34vmax at 66% 32%, rgba(240, 191, 95, 0.12), transparent 66%),
+    radial-gradient(44vmax 36vmax at 30% 70%, rgba(240, 191, 95, 0.08), transparent 66%);
   animation: fundo-deriva-b 34s ease-in-out infinite alternate;
 }
 
@@ -1717,6 +1731,18 @@ html.pre-aviso .cabecalho {
   .olho-canvas {
     width: min(100%, 27rem);
   }
+
+  /* Com o olho empilhado no topo, o brilho vai pro centro-superior (onde
+     o olho fica) e usa vmin pra ficar proporcional à tela estreita. */
+  .hero::before {
+    background:
+      radial-gradient(88vmin 74vmin at 50% 22%, rgba(245, 185, 66, 0.2), transparent 72%);
+  }
+
+  .hero::after {
+    background:
+      radial-gradient(70vmin 58vmin at 50% 13%, rgba(240, 191, 95, 0.12), transparent 68%);
+  }
 }
 
 @media (max-width: 40rem) {
@@ -1782,10 +1808,10 @@ body.alto-contraste *::after {
   transition: none !important;
 }
 
-/* Sem brilho de fundo: esconde o âmbar animado do hero e o degradê
-   navy do body — fundo preto sólido e estável. */
-body.alto-contraste {
-  background-image: none;
+/* Sem brilho de fundo: esconde o âmbar do hero e o degradê navy do body
+   (agora em body::before) — fundo preto sólido e estável. */
+body.alto-contraste::before {
+  display: none;
 }
 
 body.alto-contraste .hero::before,
