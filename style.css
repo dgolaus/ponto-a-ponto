@@ -1770,6 +1770,210 @@ html.pre-aviso .cabecalho {
 }
 
 /* ----------------------------------------------------------
+   18b. Adições: barra de progresso, dica de rolagem, nome do
+        projeto, nota do popup, rodapé e o brinquedo de Braille
+---------------------------------------------------------- */
+
+/* Barra de progresso de leitura (topo, fina). A largura vem do scaleX,
+   atualizado pelo script.js no mesmo handler do anel do logo. */
+.barra-progresso {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  z-index: 80;
+  pointer-events: none;
+}
+
+.barra-progresso-preenchida {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--cor-acento);
+  transition: transform 0.08s linear;
+  will-change: transform;
+}
+
+/* Dica "role para explorar": fixada no rodapé do hero e centralizada,
+   pra ficar SEMPRE visível (não depende da altura do conteúdo). */
+.hero-rolar {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--cor-texto-suave);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.hero-rolar:hover,
+.hero-rolar:focus-visible {
+  color: var(--cor-acento);
+}
+
+.hero-rolar .seta {
+  font-size: 1.1em;
+  animation: rolar-quica 1.8s ease-in-out infinite;
+}
+
+@keyframes rolar-quica {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(0.3rem); }
+}
+
+/* No empilhado do celular e em telas de altura menor, esconde a dica:
+   o hero é alto e a seta cairia abaixo da dobra (aí de nada adianta).
+   Só aparece onde sobra altura de verdade (telas grandes). */
+@media (max-width: 56rem), (max-height: 52rem) {
+  .hero-rolar { display: none; }
+}
+
+/* Nota que explica o nome, sob a legenda do olho */
+.hero-nome-nota {
+  max-width: 34ch;
+  margin: 0.85rem auto 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.hero-nome-nota strong {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
+/* Nota "sua escolha fica salva" dentro do popup */
+.dialogo-nota {
+  margin-top: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+/* Rodapé: data da última atualização */
+.rodape-atualizado {
+  margin-top: 0.75rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--cor-texto-suave);
+}
+
+/* Frase de fecho, depois do rodapé */
+.fecho-final {
+  margin: 0;
+  padding: 2.5rem 1.25rem 3.5rem;
+  text-align: center;
+  font-family: var(--fonte-display);
+  font-size: clamp(1.1rem, 1.4vw + 0.8rem, 1.5rem);
+  font-style: italic;
+  color: var(--cor-texto-suave);
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* --- Brinquedo de Braille: digite o nome, veja em pontos --- */
+.braille-brinquedo {
+  margin-top: 2.5rem;
+  max-width: 60rem;
+}
+
+.braille-rotulo {
+  display: block;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+  margin-bottom: 0.6rem;
+}
+
+.braille-entrada {
+  width: min(100%, 24rem);
+  font-family: var(--fonte-principal);
+  font-size: 1.15rem;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  padding: 0.7rem 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.braille-entrada::placeholder {
+  color: var(--cor-texto-suave);
+  opacity: 0.7;
+}
+
+.braille-entrada:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+.braille-saida {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: flex-start;
+  min-height: 4.25rem;
+  margin-top: 1.5rem;
+}
+
+.braille-saida:empty::before {
+  content: "Seu nome aparece aqui — ponto a ponto.";
+  align-self: center;
+  font-style: italic;
+  color: var(--cor-texto-suave);
+}
+
+.braille-cela {
+  display: grid;
+  grid-template-columns: repeat(2, 0.62rem);
+  grid-template-rows: repeat(3, 0.62rem);
+  gap: 0.34rem;
+  padding: 0.55rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.55rem;
+  background: var(--cor-superficie);
+}
+
+.braille-cela-espaco {
+  background: transparent;
+  border-style: dashed;
+}
+
+.braille-ponto {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--cor-borda);
+  background: transparent;
+}
+
+.braille-ponto.cheio {
+  background: var(--cor-acento);
+  border-color: var(--cor-acento);
+  box-shadow: 0 0 0.45rem rgba(245, 185, 66, 0.4);
+}
+
+.braille-legenda {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+/* No alto contraste, sem o brilho nos pontos (fundo estável) */
+body.alto-contraste .braille-ponto.cheio {
+  box-shadow: none;
+}
+
+/* ----------------------------------------------------------
    19. Modo de alto contraste (baixa visão) — página estável
 ---------------------------------------------------------- */
 body.alto-contraste {

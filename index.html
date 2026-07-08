@@ -53,6 +53,11 @@
   <!-- Região que anuncia mudanças para leitores de tela -->
   <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
 
+  <!-- Barra de progresso de leitura: enche conforme a pessoa rola (via script.js) -->
+  <div class="barra-progresso" aria-hidden="true">
+    <span class="barra-progresso-preenchida"></span>
+  </div>
+
   <!--
     Cabeçalho fixo. Ao rolar, ganha a classe .rolado (via script.js):
     o nome compacta e o anel de progresso preenche em volta do logo.
@@ -134,7 +139,7 @@
     <section class="hero" aria-labelledby="titulo-hero">
       <div class="container hero-grade">
         <div class="hero-texto">
-          <p class="hero-etiqueta" data-anima>Projeto escolar de acessibilidade</p>
+          <p class="hero-etiqueta" data-anima>Portal educativo sobre acessibilidade</p>
           <h1 id="titulo-hero" data-anima>
             Enxergar é só um dos jeitos de <span class="acento">ler o mundo</span>.
           </h1>
@@ -163,15 +168,22 @@
           <figcaption>
             Cada raio termina em um <strong>ponto</strong>. Ler o mundo ponto a ponto — no ritmo do Braille.
           </figcaption>
+          <p class="hero-nome-nota">
+            O nome <strong>Ponto a Ponto</strong> vem da cela Braille: <strong>seis pontos</strong> que, combinados, viram leitura.
+          </p>
         </figure>
       </div>
+
+      <a class="hero-rolar" href="#dados">
+        <span class="seta" aria-hidden="true">↓</span> Role para explorar
+      </a>
     </section>
 
     <!-- Dados do Censo 2010 (IBGE) — números com contagem animada -->
-    <section class="secao secao-dados" aria-labelledby="titulo-dados">
+    <section id="dados" class="secao secao-dados" aria-labelledby="titulo-dados">
       <div class="container">
         <p class="rotulo-secao">Dados</p>
-        <h2 id="titulo-dados">A deficiência visual está mais presente do que você imagina</h2>
+        <h2 id="titulo-dados">A deficiência visual faz parte da realidade de milhões de brasileiros</h2>
         <p class="secao-intro">
           Segundo o Censo 2010 do IBGE, milhões de brasileiros percebem o mundo de um jeito
           diferente — e a maior parte dos espaços, sites e materiais ainda não foi pensada para eles.
@@ -196,7 +208,42 @@
         <p class="dados-humano">
           Por trás desses números existem milhões de pessoas que enfrentam barreiras todos os dias.
         </p>
-        <p class="fonte-dados">Fonte: Censo Demográfico 2010, IBGE — Instituto Brasileiro de Geografia e Estatística.</p>
+        <p class="fonte-dados">Fonte: <a href="https://www.ibge.gov.br/" target="_blank" rel="noopener">Censo Demográfico 2010, IBGE <span aria-hidden="true">↗</span></a> — Instituto Brasileiro de Geografia e Estatística.</p>
+      </div>
+    </section>
+
+    <!-- "Gostinho" interativo: digite o nome e veja em Braille, ao vivo -->
+    <section class="secao secao-experimente" aria-labelledby="titulo-experimente">
+      <div class="container">
+        <p class="rotulo-secao">Experimente</p>
+        <h2 id="titulo-experimente">Escreva seu nome em Braille</h2>
+        <p class="secao-intro">
+          Cada caractere cabe numa “cela” de seis pontos em relevo. Digite abaixo e veja seu
+          nome ganhar forma ponto a ponto — do jeito que se lê com a ponta dos dedos.
+        </p>
+        <div class="braille-brinquedo" data-anima>
+          <label class="braille-rotulo" for="entrada-braille">Digite uma palavra ou o seu nome</label>
+          <input
+            type="text"
+            id="entrada-braille"
+            class="braille-entrada"
+            maxlength="22"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="ex.: Ana"
+            aria-describedby="braille-ajuda"
+          />
+          <p id="braille-ajuda" class="visualmente-oculto">
+            Conforme você digita, cada letra aparece representada em uma cela Braille de seis pontos,
+            logo abaixo. É uma representação visual — o texto que você digitou continua sendo lido normalmente.
+          </p>
+          <div class="braille-saida" id="saida-braille" aria-hidden="true"></div>
+          <p class="braille-legenda">
+            Alfabeto básico (a–z). Passe o mouse numa cela para ver a letra.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -388,9 +435,13 @@
           <a href="https://github.com/joaomarino767" target="_blank" rel="noopener">João Lucas (@joaomarino767)</a>.
           Conteúdo e design pela turma · Orientação: profª <strong>Célia Regina</strong>.
         </p>
+        <p class="rodape-atualizado">Última atualização: julho de 2026.</p>
       </div>
     </div>
   </footer>
+
+  <!-- Frase de fecho: amarra o conceito do nome -->
+  <p class="fecho-final">Todo ponto conecta uma história.</p>
 
   <!--
     Popup de identificação: abre assim que a pessoa entra na página
@@ -412,6 +463,8 @@
     <button type="button" id="btn-ouvir-mensagem" class="dialogo-ouvir">
       <span class="icone" aria-hidden="true">🔊</span> Ouvir esta mensagem
     </button>
+
+    <p class="dialogo-nota">Sua escolha fica salva neste navegador — não perguntamos de novo.</p>
 
     <!-- Segunda etapa: oferecida depois do "Sim" -->
     <div id="banner-seguinte" class="banner-seguinte" hidden>

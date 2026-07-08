@@ -686,6 +686,7 @@
   --------------------------------------------------------- */
   const cabecalho = document.querySelector(".cabecalho");
   const anelProgresso = document.querySelector(".anel-progresso");
+  const barraProgresso = document.querySelector(".barra-progresso-preenchida");
   const CIRCUNFERENCIA = 2 * Math.PI * 20; // r = 20 no viewBox 0 0 44 44
 
   if (anelProgresso) {
@@ -700,14 +701,82 @@
     if (anelProgresso) {
       anelProgresso.style.strokeDashoffset = (CIRCUNFERENCIA * (1 - progresso)).toFixed(2);
     }
+    if (barraProgresso) {
+      // Preenche a barra fina do topo (mesmo progresso do anel do logo)
+      barraProgresso.style.transform = "scaleX(" + progresso.toFixed(4) + ")";
+    }
     if (cabecalho) cabecalho.classList.toggle("rolado", st > 20);
   }
 
-  if (cabecalho) {
+  if (cabecalho || barraProgresso) {
     window.addEventListener("scroll", aoRolarCabecalho, { passive: true });
     window.addEventListener("resize", aoRolarCabecalho);
     aoRolarCabecalho();
   }
+
+  /* ---------------------------------------------------------
+     7a. Brinquedo de Braille: digite o nome, veja em pontos.
+     Alfabeto Grade 1 (a–z) + espaço. Acentos são normalizados
+     para a letra base; caracteres sem letra viram cela vazia.
+     As celas são só visuais (o container é aria-hidden) — o
+     texto digitado continua sendo lido normalmente pelo campo.
+  --------------------------------------------------------- */
+  (function brailleBrinquedo() {
+    const entrada = document.getElementById("entrada-braille");
+    const saida = document.getElementById("saida-braille");
+    if (!entrada || !saida) return;
+
+    // Pontos ativos por letra (numeração da cela: 1 4 / 2 5 / 3 6)
+    const MAPA = {
+      a: [1], b: [1, 2], c: [1, 4], d: [1, 4, 5], e: [1, 5],
+      f: [1, 2, 4], g: [1, 2, 4, 5], h: [1, 2, 5], i: [2, 4], j: [2, 4, 5],
+      k: [1, 3], l: [1, 2, 3], m: [1, 3, 4], n: [1, 3, 4, 5], o: [1, 3, 5],
+      p: [1, 2, 3, 4], q: [1, 2, 3, 4, 5], r: [1, 2, 3, 5], s: [2, 3, 4], t: [2, 3, 4, 5],
+      u: [1, 3, 6], v: [1, 2, 3, 6], w: [2, 4, 5, 6], x: [1, 3, 4, 6],
+      y: [1, 3, 4, 5, 6], z: [1, 3, 5, 6],
+    };
+    // Ordem de leitura num grid de 2 colunas: 1,4 / 2,5 / 3,6
+    const ORDEM = [1, 4, 2, 5, 3, 6];
+
+    function normalizar(texto) {
+      return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, ""); // tira acentos (ç -> c, á -> a...)
+    }
+
+    function montarCela(ch) {
+      const cela = document.createElement("span");
+      cela.className = "braille-cela";
+      const pontos = MAPA[ch];
+      if (ch === " ") {
+        cela.classList.add("braille-cela-espaco");
+        cela.title = "espaço";
+      } else {
+        cela.title = pontos ? ch.toUpperCase() : ch;
+      }
+      for (let i = 0; i < ORDEM.length; i++) {
+        const ponto = document.createElement("span");
+        ponto.className = "braille-ponto";
+        if (pontos && pontos.indexOf(ORDEM[i]) !== -1) {
+          ponto.className += " cheio";
+        }
+        cela.appendChild(ponto);
+      }
+      return cela;
+    }
+
+    function render() {
+      const texto = normalizar(entrada.value);
+      saida.textContent = "";
+      for (let i = 0; i < texto.length; i++) {
+        saida.appendChild(montarCela(texto[i]));
+      }
+    }
+
+    entrada.addEventListener("input", render);
+    render();
+  })();
 
   /* ---------------------------------------------------------
      7b. Scroll suave "manteiga" (lerp a cada frame)
