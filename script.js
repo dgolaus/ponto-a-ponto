@@ -719,6 +719,7 @@
   (function brailleBrinquedo() {
     const entrada = document.getElementById("entrada-braille");
     const saida = document.getElementById("saida-braille");
+    const descricao = document.getElementById("braille-descricao");
     if (!entrada || !saida) return;
 
     // Pontos ativos por letra (numeração da cela: 1 4 / 2 5 / 3 6)
@@ -761,11 +762,34 @@
       return cela;
     }
 
+    // Descrição textual pro leitor de tela: "A: ponto 1. N: pontos 1, 3, 4, 5."
+    function descrever(texto) {
+      const partes = [];
+      for (let i = 0; i < texto.length; i++) {
+        const ch = texto[i];
+        if (ch === " ") { partes.push("espaço"); continue; }
+        const pontos = MAPA[ch];
+        if (!pontos) continue; // ignora não-letras na descrição
+        const rotulo = pontos.length === 1 ? "ponto " : "pontos ";
+        partes.push(ch.toUpperCase() + ": " + rotulo + pontos.join(", "));
+      }
+      return partes.join(". ");
+    }
+
+    let anuncioTimer = null;
     function render() {
       const texto = normalizar(entrada.value);
       saida.textContent = "";
       for (let i = 0; i < texto.length; i++) {
         saida.appendChild(montarCela(texto[i]));
+      }
+      // Anuncia a descrição em Braille com um respiro, pra o leitor de tela
+      // ler a palavra inteira quando a pessoa pausa (e não a cada tecla).
+      if (descricao) {
+        clearTimeout(anuncioTimer);
+        anuncioTimer = setTimeout(function () {
+          descricao.textContent = texto ? descrever(texto) : "";
+        }, 600);
       }
     }
 

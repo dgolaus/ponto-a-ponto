@@ -213,8 +213,8 @@
         <p class="rotulo-secao">Experimente</p>
         <h2 id="titulo-experimente">Escreva seu nome em Braille</h2>
         <p class="secao-intro">
-          Cada caractere cabe numa “cela” de seis pontos em relevo. Digite abaixo e veja seu
-          nome ganhar forma ponto a ponto — do jeito que se lê com a ponta dos dedos.
+          Digite uma palavra e veja como ela seria representada no sistema Braille.
+          Cada letra ocupa uma célula de seis pontos.
         </p>
         <div class="braille-brinquedo" data-anima>
           <label class="braille-rotulo" for="entrada-braille">Digite uma palavra ou o seu nome</label>
@@ -231,12 +231,16 @@
             aria-describedby="braille-ajuda"
           />
           <p id="braille-ajuda" class="visualmente-oculto">
-            Conforme você digita, cada letra aparece representada em uma cela Braille de seis pontos,
-            logo abaixo. É uma representação visual — o texto que você digitou continua sendo lido normalmente.
+            Conforme você digita, cada letra é anunciada com os pontos da célula Braille
+            correspondente. Esta é uma representação visual do Braille — no Braille físico,
+            os pontos ficam em relevo e são lidos pelo tato.
           </p>
           <div class="braille-saida" id="saida-braille" aria-hidden="true"></div>
+          <!-- Saída textual pro leitor de tela: "A: ponto 1. N: pontos 1, 3, 4, 5." -->
+          <p id="braille-descricao" class="visualmente-oculto" aria-live="polite" aria-atomic="true"></p>
           <p class="braille-legenda">
-            Alfabeto básico (a–z). Passe o mouse numa cela para ver a letra.
+            Esta é uma <strong>representação visual</strong>. No Braille físico, os pontos
+            ficam em relevo e são lidos pelo tato. Alfabeto básico (a–z).
           </p>
         </div>
       </div>
