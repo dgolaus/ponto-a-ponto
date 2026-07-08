@@ -1,0 +1,1913 @@
+/* =========================================================
+   Ponto a Ponto — style.css (modelo 2: "farol sobre o mar")
+   Guia de estilo do site. As sub-páginas (braille.html,
+   tecnologia.html, jogos.html, historias.html) devem
+   reutilizar este mesmo arquivo.
+
+   COMO REUTILIZAR NAS SUB-PÁGINAS:
+   - Cores e espaçamentos: use sempre as variáveis de :root
+     (ex.: color: var(--cor-acento)).
+   - Estrutura: envolva o conteúdo em <section class="secao">
+     com um <div class="container"> dentro.
+   - Copie o <header class="cabecalho"> inteiro: ele já traz a
+     navegação e o menu de acessibilidade prontos (mude só o
+     aria-current="page" para o link da página atual).
+   - Componentes prontos:
+       .botao .botao-primario / .botao-secundario  → botões e links de ação
+       .linha (dentro de .lista-linhas)            → navegação em linhas numeradas
+       .cartao (dentro de .grade-cartoes)          → cartões clicáveis
+       .compromisso (dentro de .grade-compromissos)→ painéis de checklist
+       .rotulo-secao                               → etiqueta pequena acima do título
+       .celula-braille-grande                      → célula Braille gigante (ex.: braille.html)
+       .olho-raios                                 → ilustração do olho (preenchida por script.js)
+       .contador (com data-alvo="123")             → número com contagem animada (via script.js)
+       .visualmente-oculto                         → texto só para leitores de tela
+       [data-anima]                                → animação de entrada (via script.js)
+
+   FONTES (sistema de 4 papéis, ref. Resend/DESIGN.md):
+   - --fonte-principal (Atkinson Hyperlegible): TODO o texto de leitura
+     e a interface. É a fonte de legibilidade do site — NÃO trocar.
+   - --fonte-display (Newsreader, serifada): SÓ o h1 do hero (tom editorial).
+   - --fonte-titulo (Inter Tight, grotesca compacta): títulos de seção,
+     com tracking negativo forte (-0.035em) — a assinatura visual.
+   - --fonte-mono (JetBrains Mono): etiquetas, rótulos de seção e números
+     de destaque — a "voz de terminal" da referência.
+   - No modo de alto contraste, TODAS voltam a ser a Atkinson.
+
+   QUADROS (cartões/painéis, ref. Resend): fundo transparente (o próprio
+   canvas), borda hairline de 1px em --cor-borda, raio 16px (--raio),
+   padding 32px, SEM sombra. Botões e crachás usam raio 6px (--raio-botao);
+   painéis grandes (popup) usam 24px (--raio-painel).
+   - Tudo está em "rem": o ajuste de tamanho de texto (A− / A+)
+     funciona automaticamente em qualquer página que use este CSS.
+
+   ACESSIBILIDADE:
+   - Contraste do texto principal sobre o fundo: ~16:1 (WCAG AAA).
+   - O modo de alto contraste é a classe .alto-contraste no <body>:
+     além de trocar as cores e a fonte dos títulos, DESLIGA todas as
+     animações (fundo, olho, contagem, hover) — página 100% estável.
+   - O foco de teclado é sempre visível (outline âmbar de 3px).
+   - prefers-reduced-motion também desliga todas as animações.
+   ========================================================= */
+
+/* ----------------------------------------------------------
+   1. Variáveis (tokens de design)
+---------------------------------------------------------- */
+:root {
+  /* Cores — azul-marinho profundo com um único acento âmbar,
+     como a luz de um farol sobre o mar à noite.
+     Tons calibrados pelo DESIGN.md (Resend): fundo mais fundo,
+     superfícies rentes ao fundo, borda hairline grafite —
+     mas a família continua navy + âmbar (nunca preto puro). */
+  --cor-fundo: #080a11;          /* fundo da página (navy profundo) */
+  --cor-superficie: #0b0e15;     /* painéis — leve "lift" sobre o fundo */
+  --cor-superficie-2: #10141d;   /* detalhes elevados */
+  --cor-borda: #252a37;          /* borda hairline: separa TODAS as camadas */
+  --cor-texto: #f0f2f7;          /* texto principal (quase branco, frio) */
+  --cor-texto-suave: #a3a9b7;    /* texto secundário */
+  --cor-acento: #f5b942;         /* âmbar: a "luz" do site (único acento) */
+  --cor-brilho-titulo: #f0bf5f;  /* âmbar da varredura de luz nos títulos */
+  --cor-acento-medio: #b98a2f;   /* âmbar apagado (variação da mesma cor) */
+  --cor-ponto-escuro: #313a4f;   /* ponto "apagado" do olho (profundidade) */
+  --cor-acento-texto: #191001;   /* texto escuro sobre o âmbar */
+  --cor-foco: #f5b942;           /* contorno do foco de teclado */
+
+  /* Tipografia — sistema de 4 papéis (ref. Resend):
+     display (serif editorial, só o h1) / título (grotesca compacta,
+     seções) / principal (leitura, SEMPRE Atkinson) / mono (rótulos,
+     números e etiquetas — a "voz de terminal") */
+  --fonte-principal: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --fonte-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --fonte-titulo: "Inter Tight", "Inter", "Segoe UI", system-ui, sans-serif;
+  --fonte-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+
+  /* Medidas (escala do DESIGN.md) */
+  --largura-maxima: 75rem;       /* 1200px */
+  --raio: 1rem;                  /* 16px — cartões e painéis */
+  --raio-painel: 1.5rem;         /* 24px — painéis grandes (popup) */
+  --raio-botao: 0.375rem;        /* 6px — botões e crachás */
+  --altura-cabecalho: 5rem;
+
+  color-scheme: dark;
+}
+
+/* ----------------------------------------------------------
+   2. Reset básico e estilos de base
+---------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Escala base do site inteiro. 110% = tudo ~10% maior (como o zoom
+     que o Dg preferiu). Como o site é todo em rem, isto amplia fontes,
+     espaços e componentes juntos. O A+/A− parte daqui (ver script.js). */
+  font-size: 110%;
+  scroll-behavior: smooth;
+  /* garante que âncoras não fiquem escondidas atrás do cabeçalho fixo */
+  scroll-padding-top: var(--altura-cabecalho);
+}
+
+/* Com o scroll suave por JS ativo, desliga o smooth do CSS (senão as
+   duas suavizações brigam). Classe adicionada pelo script.js. */
+html.tem-scroll-suave {
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: var(--fonte-principal);
+  font-size: 1.125rem; /* 18px: base confortável para leitura */
+  line-height: 1.6;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  /* Degradê navy sutil e fixo (mesmo tom do fundo, um degrau mais claro
+     no topo) — dá profundidade ao resto da página sem o âmbar, que agora
+     fica só no hero. Não anima, não emenda. */
+  background-image: radial-gradient(125% 85% at 50% 0%, #0e1322 0%, transparent 58%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  position: relative;
+  isolation: isolate;
+  /* Trava de segurança: nunca deixa a página deslizar na horizontal.
+     "clip" (e não "hidden") não cria contêiner de scroll → não quebra
+     o position:sticky do cabeçalho. */
+  overflow-x: clip;
+}
+
+/* Fundo animado — "luz do farol" âmbar, agora SÓ atrás do hero.
+   Duas camadas maiores que o hero (inset: -20%) que derivam por
+   TRANSFORM (translate/scale). O .hero tem overflow:clip, então o
+   brilho fica contido no hero e não vaza para as seções de baixo. */
+.hero::before,
+.hero::after {
+  content: "";
+  position: absolute;
+  /* estende pra CIMA (enche o topo, atrás do cabeçalho transparente,
+     sem corte) e para no fim do hero; a máscara desvanece a base pra
+     o brilho não vazar para a seção de baixo. */
+  inset: -45% 0 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+}
+
+.hero::before {
+  background:
+    radial-gradient(34rem 30rem at 30% 42%, rgba(245, 185, 66, 0.16), transparent 70%),
+    radial-gradient(40rem 34rem at 72% 60%, rgba(245, 185, 66, 0.12), transparent 70%);
+  animation:
+    fundo-deriva-a 26s ease-in-out infinite alternate,
+    brilho-respira 8s ease-in-out infinite alternate;
+}
+
+.hero::after {
+  background:
+    radial-gradient(30rem 26rem at 68% 28%, rgba(240, 191, 95, 0.11), transparent 68%),
+    radial-gradient(34rem 28rem at 30% 74%, rgba(240, 191, 95, 0.08), transparent 68%);
+  animation: fundo-deriva-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes brilho-respira {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+@keyframes fundo-deriva-a {
+  from { transform: translate3d(-3rem, -2rem, 0) scale(1); }
+  to   { transform: translate3d(3rem, 2.5rem, 0) scale(1.06); }
+}
+
+@keyframes fundo-deriva-b {
+  from { transform: translate3d(3rem, 2rem, 0) scale(1.05); }
+  to   { transform: translate3d(-3rem, -2.5rem, 0) scale(1); }
+}
+
+/* Títulos de seção: grotesca compacta com tracking negativo forte —
+   a assinatura tipográfica da referência ("compressed, confident") */
+h1,
+h2,
+h3 {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  /* Lembrete para as sub-páginas: toda <img> precisa de alt descritivo */
+}
+
+a {
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+::selection {
+  background-color: var(--cor-acento);
+  color: var(--cor-acento-texto);
+}
+
+/* ----------------------------------------------------------
+   3. Utilitários
+---------------------------------------------------------- */
+.container {
+  width: min(100% - 2.5rem, var(--largura-maxima));
+  margin-inline: auto;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.acento {
+  color: var(--cor-acento);
+  font-style: italic;
+}
+
+/* ----------------------------------------------------------
+   4. Foco de teclado sempre visível
+---------------------------------------------------------- */
+:focus {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+}
+
+/* ----------------------------------------------------------
+   5. Skip link (visível apenas ao receber foco pelo teclado)
+---------------------------------------------------------- */
+.pular-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.85rem 1.5rem;
+  background-color: var(--cor-acento);
+  color: var(--cor-acento-texto);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--raio-botao);
+  transform: translateY(-250%);
+}
+
+.pular-link:focus {
+  transform: none;
+}
+
+/* ----------------------------------------------------------
+   6. Cabeçalho fixo (compacta ao rolar)
+---------------------------------------------------------- */
+/* O cabeçalho é transparente: quem tem fundo são as três "pílulas"
+   flutuantes (layout inspirado no Antimetal). Sticky no topo. */
+.cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  padding-top: 0.85rem;
+  transition: padding-top 0.25s ease, opacity 0.9s ease, filter 0.9s ease, transform 0.9s ease;
+}
+
+.cabecalho.rolado {
+  padding-top: 0.5rem;
+}
+
+.cabecalho-conteudo {
+  width: min(100% - 2rem, var(--largura-maxima));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Base das três pílulas — "liquid glass" (fundo translúcido + blur +
+   saturação + brilho especular no topo), inspirado no gfxs0da.
+   Todas com a MESMA altura e presas na MESMA linha do grid (grid-row: 1)
+   para ficarem perfeitamente alinhadas com a marca. */
+.pilula {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  background-color: rgba(18, 23, 36, 0.45);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),   /* brilho especular no topo */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    0 0.4rem 1rem -0.35rem rgba(0, 0, 0, 0.45);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+/* Ao rolar, o vidro fica um pouco mais sólido */
+.cabecalho.rolado .pilula {
+  background-color: rgba(18, 23, 36, 0.62);
+}
+
+.pilula-nav {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: start;
+  padding: 0.3rem 0.55rem;
+}
+
+.acesso-menu {
+  grid-row: 1;
+  grid-column: 3;
+  justify-self: end;
+  position: relative;
+}
+
+/* --- Marca no centro (logo + anel de progresso do scroll) --- */
+.marca {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: center;
+  gap: 0.6rem;
+  padding: 0.3rem 1.15rem 0.3rem 0.4rem;
+  text-decoration: none;
+}
+
+.marca-simbolo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+}
+
+.marca-anel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.anel-fundo {
+  fill: none;
+  stroke: var(--cor-borda);
+  stroke-width: 2;
+}
+
+/* O arco que preenche conforme a página é rolada (o "loading") */
+.anel-progresso {
+  fill: none;
+  stroke: var(--cor-acento);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 125.66;
+  stroke-dashoffset: 125.66; /* começa vazio; o script.js atualiza */
+  transform: rotate(-90deg);   /* começa no topo */
+  transform-box: view-box;
+  transform-origin: 22px 22px;
+}
+
+.marca-celula {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 0.22rem;
+}
+
+.marca-celula .ponto-mini {
+  width: 0.34rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.ponto-mini.cheio {
+  background-color: var(--cor-acento);
+}
+
+.ponto-mini.vazio {
+  border: 1px solid var(--cor-borda);
+}
+
+.marca-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 1.3rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 16ch;
+  transition: max-width 0.3s ease, opacity 0.2s ease;
+}
+
+/* Ao rolar, o nome compacta e some — sobra só o logo com o anel */
+.cabecalho.rolado .marca-nome {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* --- Navegação (dentro da pílula da esquerda) --- */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+/* Na pílula do topo, os links ficam em uma linha só e bem compactos,
+   para caber ao lado da marca centralizada. */
+.pilula-nav .menu {
+  flex-wrap: nowrap;
+}
+
+.pilula-nav .menu a {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.65rem;
+}
+
+/* Nav da referência: caixa normal, peso regular, discreta —
+   a página atual continua marcada por âmbar + negrito + sublinhado */
+.menu a {
+  display: inline-block;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 400;
+  white-space: nowrap;
+  color: var(--cor-texto-suave);
+}
+
+.menu a:hover {
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie-2);
+}
+
+.menu a[aria-current="page"] {
+  color: var(--cor-acento);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.4em;
+  text-decoration-thickness: 2px;
+}
+
+/* --- Menu de acessibilidade (botão + painel) --- */
+/* (o posicionamento da pílula .acesso-menu está definido acima) */
+
+/* O botão de acessibilidade é, ele mesmo, uma das pílulas de vidro
+   (recebe a classe .pilula no HTML). Aqui só o conteúdo. */
+.botao-acesso {
+  gap: 0.5rem;
+  padding: 0.4rem 1.15rem;
+  color: var(--cor-texto);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.botao-acesso:hover {
+  border-color: var(--cor-acento);
+  color: var(--cor-acento);
+}
+
+.botao-acesso[aria-expanded="true"] {
+  border-color: var(--cor-acento);
+  color: var(--cor-acento);
+}
+
+.painel-acesso {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  z-index: 70;
+  width: min(19rem, 90vw);
+  gap: 0.75rem;
+  padding: 1.1rem;
+  /* Overlay da referência: fundo quase opaco + blur, borda hairline */
+  background-color: rgba(10, 13, 20, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: 0 0.75rem 1.5rem -0.6rem rgba(0, 0, 0, 0.6);
+}
+
+/* Só aplica display quando NÃO está com o atributo hidden — assim o
+   painel realmente sai da tela quando fechado (o hidden do HTML). */
+.painel-acesso:not([hidden]) {
+  display: grid;
+}
+
+.painel-titulo {
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cor-texto-suave);
+}
+
+.acesso-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.acesso-rotulo {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.acesso-controle {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.botao-barra {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.9rem;
+  background-color: transparent;
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  font-weight: 700;
+}
+
+.botao-barra:hover {
+  border-color: var(--cor-acento);
+  color: var(--cor-acento);
+}
+
+.botao-largo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Estado "ligado" (contraste, leitura): muda o fundo E ganha ✓ */
+.botao-barra[aria-pressed="true"] {
+  background-color: var(--cor-acento);
+  color: var(--cor-acento-texto);
+  border-color: var(--cor-acento);
+}
+
+.botao-barra[aria-pressed="true"]::after {
+  content: " ✓";
+  margin-left: auto;
+}
+
+.botao-barra[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ----------------------------------------------------------
+   7. Hero — ÚNICA seção alinhada à esquerda (texto + olho)
+---------------------------------------------------------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  /* Cobre a tela inteira MENOS o cabeçalho (senão o hero fica mais alto
+     que a viewport e empurra o conteúdo pra baixo). O conteúdo fica
+     centralizado no espaço abaixo do cabeçalho; o resto da página só
+     aparece ao rolar. svh evita o "pulo" da barra do navegador no
+     celular; min-height (não height) deixa crescer se o conteúdo for
+     mais alto que a tela. Padding pequeno e simétrico — a centralização
+     é que distribui o espaço. */
+  min-height: calc(100vh - var(--altura-cabecalho));
+  min-height: calc(100svh - var(--altura-cabecalho));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: clamp(1.5rem, 4vh, 3rem);
+}
+
+.hero-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.hero-texto {
+  text-align: left;
+}
+
+/* "Announcement pill" da referência: crachá com borda hairline e
+   raio total, com um ponto âmbar como único acento cromático */
+.hero-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cor-texto-suave);
+  margin-bottom: 1.5rem;
+}
+
+.hero-etiqueta::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background-color: var(--cor-acento);
+  flex-shrink: 0;
+}
+
+/* O h1 é o único lugar da serif editorial (papel da "Domaine" na
+   referência: 77-96px, peso 400, tracking -0.01em, quase impresso) */
+.hero h1 {
+  font-family: var(--fonte-display);
+  font-size: clamp(2.6rem, 3.5vw + 1.5rem, 4.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  max-width: 15ch;
+  margin-bottom: 1.75rem;
+}
+
+.hero-missao {
+  font-size: clamp(1.15rem, 1vw + 1rem, 1.35rem);
+  color: var(--cor-texto-suave);
+  max-width: 48ch;
+  margin-bottom: 1.5rem;
+}
+
+/* Frase de destaque do hero (o diferencial do projeto) */
+.hero-destaque {
+  font-size: clamp(1.05rem, 0.8vw + 0.9rem, 1.25rem);
+  color: var(--cor-texto);
+  max-width: 46ch;
+  margin-bottom: 2.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--cor-acento);
+}
+
+.hero-destaque em {
+  color: var(--cor-acento);
+  font-style: italic;
+}
+
+.hero-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ----------------------------------------------------------
+   8. Ilustração do "olho que lê em pontos" (reativa ao mouse)
+       O deslocamento vem das variáveis --olho-x / --olho-y,
+       atualizadas pelo script.js conforme a posição do cursor.
+---------------------------------------------------------- */
+.hero-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Olho de partículas (canvas) — quadrado responsivo; o script.js
+   cuida da resolução (devicePixelRatio) e do desenho. */
+.olho-canvas {
+  position: relative;
+  width: min(100%, 34rem);
+  aspect-ratio: 1.5;
+  margin-inline: auto;
+}
+
+.olho-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* (Estilos abaixo, do olho SVG antigo, ficaram inertes — não há mais
+   .olho-raios no HTML. Mantidos por ora; podem ser removidos depois.) */
+.olho-raios {
+  width: min(86vw, 30rem);
+  margin-inline: auto;
+}
+
+.olho-raios svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Parallax: a cena toda desliza de leve em direção ao cursor */
+.cena {
+  transform:
+    translate(calc(var(--olho-x, 0) * 14px), calc(var(--olho-y, 0) * 14px))
+    rotate(calc(var(--olho-x, 0) * 2deg));
+  transition: transform 0.35s ease-out;
+}
+
+.brilho-olho-circ {
+  fill: var(--cor-acento);
+  opacity: 0.16;
+  filter: blur(26px);
+}
+
+.olho-fundo {
+  fill: var(--cor-superficie);
+  stroke: var(--cor-acento);
+  stroke-width: 2.5;
+}
+
+.iris {
+  fill: var(--cor-acento);
+}
+
+/* A pupila "olha" para o cursor (desloca-se um pouco mais que a cena) */
+.pupila-grupo {
+  transform: translate(calc(var(--olho-x, 0) * 15px), calc(var(--olho-y, 0) * 11px));
+  transition: transform 0.28s ease-out;
+}
+
+.pupila {
+  fill: var(--cor-fundo);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.olho-highlight {
+  fill: #ffffff;
+  opacity: 0.85;
+}
+
+/* Raios e pontos (gerados pelo script.js) */
+.raios {
+  transform-box: view-box;
+  transform-origin: 300px 300px;
+}
+
+.raio-linha {
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.linha-neutra { stroke: var(--cor-texto-suave); }
+.linha-acento { stroke: var(--cor-acento); }
+
+/* A cor de cada ponto muda devagar (via script.js), com transição
+   suave — como as variações laranja/preto da referência */
+.raio-ponto {
+  transition: fill 1.2s ease;
+}
+
+.raio-ponto.cor-acento { fill: var(--cor-acento); }
+.raio-ponto.cor-acento-dim { fill: var(--cor-acento-medio); }
+.raio-ponto.cor-texto { fill: var(--cor-texto); }
+.raio-ponto.cor-suave { fill: var(--cor-texto-suave); }
+.raio-ponto.cor-escura { fill: var(--cor-ponto-escuro); }
+
+.hero-visual figcaption {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--cor-texto-suave);
+  max-width: 40ch;
+  margin-inline: auto;
+}
+
+.hero-visual figcaption strong {
+  color: var(--cor-texto);
+}
+
+/* Movimento de ambiente — só para quem aceita animações.
+   Os raios giram devagar, os pontos cintilam e a pupila "respira". */
+@media (prefers-reduced-motion: no-preference) {
+  .raios-anima {
+    animation: girar-raios 120s linear infinite;
+  }
+
+  .raios-anima .raio-ponto {
+    animation-name: cintila;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+  }
+
+  .pupila {
+    animation: pupila-respira 6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes girar-raios {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cintila {
+  from { opacity: 0.3; }
+  to   { opacity: 1; }
+}
+
+@keyframes pupila-respira {
+  from { transform: scale(0.82); }
+  to   { transform: scale(1.12); }
+}
+
+/* Célula Braille (para as sub-páginas) — mantida no guia de estilo */
+.celula-braille-grande {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  width: fit-content;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.celula-braille-grande .ponto {
+  width: clamp(2.75rem, 5vw, 4rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.celula-braille-grande .ponto.cheio {
+  background: radial-gradient(circle at 32% 30%, #ffe1a1, var(--cor-acento) 55%, #7c5514 130%);
+  box-shadow:
+    0 0.6rem 1.4rem rgba(245, 185, 66, 0.28),
+    inset 0 -0.35rem 0.6rem rgba(0, 0, 0, 0.35);
+}
+
+.celula-braille-grande .ponto.vazio {
+  border: 2px dashed var(--cor-borda);
+}
+
+/* ----------------------------------------------------------
+   9. Botões e links de ação (reutilize nas sub-páginas)
+---------------------------------------------------------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--raio-botao); /* 6px: escala de raios da referência */
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.botao:hover {
+  transform: translateY(-2px);
+}
+
+.botao-primario {
+  background-color: var(--cor-acento);
+  color: var(--cor-acento-texto);
+}
+
+.botao-primario:hover {
+  box-shadow: 0 0.35rem 1rem -0.25rem rgba(245, 185, 66, 0.35);
+}
+
+.botao-secundario {
+  background-color: transparent;
+  color: var(--cor-texto);
+  border-color: var(--cor-borda);
+}
+
+.botao-secundario:hover {
+  border-color: var(--cor-acento);
+}
+
+/* ----------------------------------------------------------
+   10. Popup "Você é uma pessoa cega ou tem baixa visão?"
+---------------------------------------------------------- */
+.dialogo-pergunta {
+  position: relative;
+  margin: auto;
+  width: min(92vw, 36rem);
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+  /* "Surface lift" da referência: gradiente sutil painel→fundo */
+  background: linear-gradient(180deg, #141928, #0a0d15);
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-borda);
+  border-top: 4px solid var(--cor-acento);
+  border-radius: var(--raio-painel); /* 24px: raio de painéis grandes */
+}
+
+/* Botão "Ouvir esta mensagem" dentro do popup (caso o autoplay falhe) */
+.dialogo-ouvir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 0.9rem;
+  background-color: transparent;
+  color: var(--cor-texto-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.dialogo-ouvir:hover {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+/* Botão de fechar (X) no canto superior direito — área clicável ampla */
+.dialogo-fechar {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  background-color: transparent;
+  color: var(--cor-texto-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.dialogo-fechar:hover {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+/* Espaço para o título não passar por baixo do X */
+.dialogo-pergunta h2 {
+  padding-right: 2.5rem;
+}
+
+/* Overlay da referência: quase opaco com blur pesado */
+.dialogo-pergunta::backdrop {
+  background-color: rgba(3, 5, 10, 0.85);
+  backdrop-filter: blur(18px);
+}
+
+/* Entrada suave (fade + leve deslize) */
+@media (prefers-reduced-motion: no-preference) {
+  .dialogo-pergunta[open] {
+    animation: dialogo-entra 0.4s ease both;
+  }
+  .dialogo-pergunta[open]::backdrop {
+    animation: dialogo-backdrop 0.4s ease both;
+  }
+}
+
+@keyframes dialogo-entra {
+  from { opacity: 0; transform: translateY(1.25rem) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes dialogo-backdrop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dialogo-pergunta h2 {
+  font-size: clamp(1.4rem, 2vw + 0.6rem, 1.8rem);
+  margin-bottom: 0.75rem;
+}
+
+.dialogo-pergunta p {
+  color: var(--cor-texto-suave);
+}
+
+.banner-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.banner-seguinte {
+  margin-top: 1.75rem;
+  border-top: 1px dashed var(--cor-borda);
+  padding-top: 1.75rem;
+}
+
+.banner-seguinte p {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   11. Seções e rótulos (centralizados)
+---------------------------------------------------------- */
+.secao {
+  position: relative;
+  /* topo menor: o título fica perto da linha de separação; base mantém o respiro */
+  padding-block: clamp(2rem, 4.5vw, 3.5rem) clamp(3.5rem, 8vw, 6rem);
+}
+
+/* Divisória entre seções: uma linha fininha que nasce e morre em
+   transparente nas pontas, separando sem virar um corte seco. */
+.secao::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100% - 2.5rem, var(--largura-maxima));
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--cor-borda) 18%,
+    var(--cor-borda) 82%,
+    transparent
+  );
+}
+
+.rotulo-secao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cor-acento);
+  margin-bottom: 1.25rem;
+}
+
+.rotulo-secao::before,
+.rotulo-secao::after {
+  content: "";
+  width: 2.25rem;
+  height: 2px;
+  background-color: var(--cor-acento);
+}
+
+.secao h2 {
+  font-size: clamp(2rem, 2.5vw + 1.2rem, 3.5rem); /* até 56px, como o "heading" da referência */
+  max-width: 24ch;
+  margin-inline: auto;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+/* -------- Varredura de luz nos títulos de seção (GUARDADA / DORMENTE) --------
+   FEATURE DESLIGADA: o interruptor VARREDURA_TITULOS_ATIVA no script.js está
+   em false, então o JS nunca marca os títulos com .titulo-brilho e estas
+   regras ficam inertes. Todo o código segue aqui de propósito — religar é
+   trocar aquele false por true. (Não apagar sem combinar com o Dg.)
+
+   O efeito: uma "esfera" de luz âmbar cruza o título da esquerda para a
+   direita quando ele entra na tela, com um glow difuso acompanhando a bola.
+   O texto real do h2 (branco) fica por baixo, sempre legível. */
+@property --varredura {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -10%;
+}
+
+.titulo-brilho {
+  position: relative;
+  isolation: isolate;
+}
+
+.titulo-brilho::before,
+.titulo-brilho::after {
+  content: attr(data-texto);
+  position: absolute;
+  /* caixa MUITO maior em volta (folga pro glow não cortar), mas o
+     padding igual devolve a área de conteúdo ao tamanho exato do h2,
+     então o texto continua alinhado e quebra igual. A folga (8rem)
+     precisa ser MAIOR que a bola de glow (6rem) + o blur. */
+  inset: -8rem;
+  padding: 8rem;
+  pointer-events: none;
+  color: var(--cor-brilho-titulo);
+  text-align: inherit;
+  opacity: 0;
+}
+
+/* Camada de cor: uma ESFERA âmbar (gradiente radial) que só colore o
+   ponto onde está — branco atrás, branco na frente. Fica por cima. */
+.titulo-brilho::before {
+  z-index: 2;
+  -webkit-mask-image: radial-gradient(circle 4rem at var(--varredura) 50%, #000 0%, rgba(0, 0, 0, 0.9) 45%, transparent 100%);
+          mask-image: radial-gradient(circle 4rem at var(--varredura) 50%, #000 0%, rgba(0, 0, 0, 0.9) 45%, transparent 100%);
+}
+
+/* Camada de glow: bola difusa maior, atrás do núcleo, acompanhando a esfera */
+.titulo-brilho::after {
+  z-index: 1;
+  filter: blur(10px);
+  -webkit-mask-image: radial-gradient(circle 6rem at var(--varredura) 50%, #000 0%, #000 35%, transparent 100%);
+          mask-image: radial-gradient(circle 6rem at var(--varredura) 50%, #000 0%, #000 35%, transparent 100%);
+}
+
+.titulo-brilho.brilho-ativo::before,
+.titulo-brilho.brilho-ativo::after {
+  /* curva ease-out (rápida no começo, desacelera no fim), mais lenta */
+  animation: titulo-varre 3s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
+/* A esfera entra pela esquerda, atravessa e sai pela direita; ao final,
+   o âmbar some (opacidade) e o texto todo volta a ser branco. */
+@keyframes titulo-varre {
+  0%   { --varredura: -18%; opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { --varredura: 118%; opacity: 0; }
+}
+
+.secao-intro {
+  color: var(--cor-texto-suave);
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* ----------------------------------------------------------
+   12. Seção de dados (estatísticas do IBGE, centralizadas)
+---------------------------------------------------------- */
+/* Faixa única de estatísticas: um só quadro hairline com divisórias
+   internas de 1px entre as colunas (elevação por borda, nunca sombra) */
+.grade-dados {
+  display: grid;
+  /* minmax(0,1fr) deixa as colunas encolherem abaixo do número (senão
+     o mono largo empurra a página e cria scroll horizontal) */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+}
+
+.dado {
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.dado + .dado {
+  border-left: 1px solid var(--cor-borda);
+}
+
+/* Em telas estreitas a faixa empilha e a divisória vira horizontal */
+@media (max-width: 48rem) {
+  .grade-dados {
+    grid-template-columns: 1fr;
+  }
+
+  .dado + .dado {
+    border-left: 0;
+    border-top: 1px solid var(--cor-borda);
+  }
+}
+
+.dado::before {
+  content: "";
+  display: block;
+  width: 2.75rem;
+  height: 3px;
+  border-radius: 2px;
+  margin: 0 auto 1.25rem;
+  background-color: var(--cor-acento);
+}
+
+.dado-prefixo {
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cor-acento);
+  margin-bottom: 0.5rem;
+}
+
+/* Números grandes em mono: dados lidos como num terminal (ref. Resend) */
+.dado-numero {
+  font-family: var(--fonte-mono);
+  font-size: clamp(2.1rem, 1.8rem + 2.2vw, 3.25rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--cor-texto);
+  margin-bottom: 0.5rem;
+}
+
+.contador {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+.dado-descricao {
+  color: var(--cor-texto-suave);
+}
+
+/* Frase mais humana depois dos números */
+.dados-humano {
+  margin-top: 2.5rem;
+  max-width: 48ch;
+  margin-inline: auto;
+  text-align: center;
+  font-size: clamp(1.1rem, 0.8vw + 0.95rem, 1.35rem);
+  color: var(--cor-texto);
+}
+
+/* "Status indicator row" da referência: pontinho + rótulo mono */
+.fonte-dados {
+  margin-top: 1.75rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+  text-align: center;
+}
+
+.fonte-dados::before {
+  content: "";
+  display: inline-block;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background-color: var(--cor-acento);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ----------------------------------------------------------
+   13. Navegação em linhas numeradas (sub-páginas)
+---------------------------------------------------------- */
+.lista-linhas {
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  padding: clamp(1.5rem, 3.5vw, 2.25rem) clamp(0.75rem, 2vw, 1.5rem);
+  border-top: 1px solid var(--cor-borda);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover mais evidente: fundo, borda âmbar à esquerda, numeral e seta acesos */
+.linha:hover {
+  background-color: var(--cor-superficie);
+  box-shadow: inset 0.25rem 0 0 var(--cor-acento);
+}
+
+.linha:hover .linha-numero {
+  color: var(--cor-acento);
+  -webkit-text-stroke-color: var(--cor-acento);
+}
+
+.linha-numero {
+  font-family: var(--fonte-mono);
+  font-size: clamp(2.5rem, 6.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1;
+  min-width: 2.2ch;
+  color: var(--cor-texto-suave);
+}
+
+@supports (-webkit-text-stroke: 1px black) {
+  .linha-numero {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--cor-texto-suave);
+  }
+}
+
+.linha-titulo {
+  font-size: clamp(1.5rem, 2vw + 0.8rem, 2.2rem);
+  margin-bottom: 0.35rem;
+}
+
+.linha:hover .linha-titulo {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.linha-texto {
+  color: var(--cor-texto-suave);
+  max-width: 52ch;
+}
+
+.linha-seta {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  color: var(--cor-acento);
+}
+
+/* Movimento do hover (só para quem aceita animações): a linha sobe,
+   o numeral sobe um pouco MAIS e a seta desliza. Sem escurecer nada. */
+@media (prefers-reduced-motion: no-preference) {
+  .linha {
+    transition: background-color 0.2s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .linha-numero,
+  .linha-seta {
+    transition: transform 0.25s ease;
+  }
+
+  .linha:hover {
+    /* Sobe sem sombra: a elevação vem da borda e do fundo (ref. Resend) */
+    transform: translateY(-0.35rem);
+  }
+
+  .linha:hover .linha-numero {
+    transform: translateY(-0.5rem);
+  }
+
+  .linha:hover .linha-seta {
+    transform: translateX(0.5rem);
+  }
+}
+
+/* ----------------------------------------------------------
+   14. Cartões (prontos para as sub-páginas — ex.: lista de jogos)
+---------------------------------------------------------- */
+.grade-cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1.25rem;
+}
+
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  height: 100%;
+  padding: 2rem;
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.cartao:hover {
+  transform: translateY(-4px);
+  border-color: var(--cor-acento);
+}
+
+/* ----------------------------------------------------------
+   15. Seção "Sobre este site" (grade de 6 painéis)
+---------------------------------------------------------- */
+.grade-compromissos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.25rem;
+}
+
+/* O "quadro" da referência: fundo do próprio canvas, borda hairline
+   de 1px, raio 16px, padding 32px — NENHUMA sombra. A elevação é
+   só a borda contra o fundo. */
+.compromisso {
+  display: flex;
+  gap: 1rem;
+  padding: 2rem;
+  background-color: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  color: var(--cor-texto-suave);
+}
+
+.compromisso strong {
+  color: var(--cor-texto);
+}
+
+/* "Icon container" da referência: quadrado arredondado com gradiente —
+   a única superfície cromática da página (aqui, em âmbar) */
+.compromisso-marca {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  background: linear-gradient(to right bottom, #f8c95e, #d99a26);
+  color: var(--cor-acento-texto);
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ----------------------------------------------------------
+   16. Rodapé (centralizado)
+---------------------------------------------------------- */
+.rodape {
+  border-top: 1px solid var(--cor-borda);
+  background-color: var(--cor-superficie);
+  padding-block: 3rem;
+}
+
+.rodape-conteudo {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.rodape .marca-nome {
+  font-size: 1.6rem;
+  max-width: none;
+}
+
+.rodape-frase {
+  color: var(--cor-texto-suave);
+  max-width: 44ch;
+}
+
+.menu-rodape {
+  justify-content: center;
+  gap: 0.25rem 0.75rem;
+}
+
+.rodape-creditos {
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--cor-texto-suave);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.rodape-creditos a {
+  color: var(--cor-texto);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.rodape-creditos a:hover {
+  color: var(--cor-acento);
+}
+
+/* --- Referências no rodapé --- */
+.rodape-referencias {
+  width: 100%;
+  max-width: 46rem;
+  text-align: left;
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.rodape-ref-titulo {
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cor-acento);
+  margin-bottom: 0.85rem;
+}
+
+.lista-referencias {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.lista-referencias a {
+  color: var(--cor-texto);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  font-weight: 700;
+}
+
+.lista-referencias a:hover {
+  color: var(--cor-acento);
+}
+
+.ref-desc {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+.ref-desc::before {
+  content: " — ";
+}
+
+/* ----------------------------------------------------------
+   16b. Seção "A turma inteira" (portal) e encerramento
+---------------------------------------------------------- */
+.grade-turma {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.25rem;
+}
+
+.turma-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  color: var(--cor-texto-suave);
+}
+
+.turma-num {
+  font-family: var(--fonte-mono);
+  font-size: 1.1rem;
+  color: var(--cor-acento);
+  flex-shrink: 0;
+}
+
+.turma-nota {
+  margin-top: 2.5rem;
+  text-align: center;
+  max-width: 60ch;
+  margin-inline: auto;
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+}
+
+.turma-nota strong {
+  color: var(--cor-texto);
+}
+
+/* Encerramento: painel central com a frase final e os botões */
+.encerramento-caixa {
+  text-align: center;
+  max-width: 46rem;
+}
+
+.secao-encerramento h2 {
+  margin-inline: auto;
+}
+
+.encerramento-caixa p {
+  color: var(--cor-texto-suave);
+  max-width: 54ch;
+  margin: 0 auto 2rem;
+}
+
+.encerramento-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ----------------------------------------------------------
+   16c. Toast (aviso visual ao ativar acessibilidade)
+---------------------------------------------------------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%) translateY(1.5rem);
+  z-index: 90;
+  display: none;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--cor-superficie-2);
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-acento);
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.toast-visivel {
+  display: flex;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast::before {
+  content: "✓";
+  color: var(--cor-acento);
+  font-weight: 700;
+}
+
+/* ----------------------------------------------------------
+   17. Animações de entrada — "focus pull" (blur → nítido + fade)
+   Inspirado no reveal do gfxs0da: cada elemento surge desfocado e
+   translúcido e assenta nítido. As classes são aplicadas pelo script.js.
+---------------------------------------------------------- */
+.anima-entrada {
+  opacity: 0;
+  transform: translateY(1.1rem);
+  filter: blur(6px);
+  transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+  will-change: opacity, transform, filter;
+}
+
+.anima-entrada.visivel {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+
+/* ----------------------------------------------------------
+   17b. "Aviso primeiro": o site só aparece após a resposta
+   O <html class="pre-aviso"> vem do script inline no <head>
+   (antes da pintura): cabeçalho, conteúdo e rodapé esperam
+   desfocados e invisíveis atrás do aviso. Quando a pessoa
+   responde, o script.js remove a classe e o site inteiro
+   assenta em foco (fade + blur → nítido), com as animações
+   de entrada disparando na sequência.
+---------------------------------------------------------- */
+/* A revelação desce a página: cabeçalho (0s) → conteúdo (0,12s) →
+   rodapé (0,28s). Dentro do conteúdo, o script.js escalona cada
+   elemento pela posição vertical (quem está mais alto entra antes). */
+main {
+  transition: opacity 0.9s ease 0.12s, filter 0.9s ease 0.12s;
+}
+
+.rodape {
+  transition: opacity 0.9s ease 0.28s, filter 0.9s ease 0.28s;
+}
+
+html.pre-aviso,
+html.pre-aviso body {
+  overflow: hidden;
+}
+
+html.pre-aviso .cabecalho,
+html.pre-aviso main,
+html.pre-aviso .rodape {
+  opacity: 0;
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+/* O cabeçalho espera um pouco acima e desce ao entrar (como a nav
+   do gfxs0da entrando de cima) */
+html.pre-aviso .cabecalho {
+  transform: translateY(-14px);
+}
+
+/* ----------------------------------------------------------
+   18. Telas médias e estreitas
+---------------------------------------------------------- */
+/* Quando a pílula de navegação não cabe mais junto da marca centralizada,
+   ela é recolhida (a lista de páginas continua acessível pelo rodapé).
+   A marca vai para a esquerda e a acessibilidade fica à direita. */
+@media (max-width: 68rem) {
+  .pilula-nav {
+    display: none;
+  }
+
+  .cabecalho-conteudo {
+    grid-template-columns: 1fr auto;
+  }
+
+  .marca {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .acesso-menu {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 56rem) {
+  .hero-grade {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-visual {
+    order: -1; /* o olho aparece acima do texto no celular */
+  }
+
+  .olho-canvas {
+    width: min(100%, 27rem);
+  }
+}
+
+@media (max-width: 40rem) {
+  .linha {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .linha-seta {
+    display: none;
+  }
+
+  .botao-acesso-texto {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------
+   19. Modo de alto contraste (baixa visão) — página estável
+---------------------------------------------------------- */
+body.alto-contraste {
+  --cor-fundo: #000000;
+  --cor-superficie: #000000;
+  --cor-superficie-2: #000000;
+  --cor-borda: #ffffff;
+  --cor-texto: #ffffff;
+  --cor-texto-suave: #ffffff;
+  --cor-acento: #ffd600;
+  --cor-acento-medio: #ffd600;
+  --cor-ponto-escuro: #ffffff;
+  --cor-acento-texto: #000000;
+  --cor-foco: #ffd600;
+  /* Todas as fontes decorativas voltam para a de máxima legibilidade */
+  --fonte-titulo: var(--fonte-principal);
+  --fonte-display: var(--fonte-principal);
+  --fonte-mono: var(--fonte-principal);
+}
+
+/* Popup sólido no alto contraste (sem gradiente) */
+body.alto-contraste .dialogo-pergunta {
+  background: #000000;
+}
+
+/* Contêiner de ícone sólido no alto contraste (sem gradiente) */
+body.alto-contraste .compromisso-marca {
+  background: var(--cor-acento);
+}
+
+body.alto-contraste h1,
+body.alto-contraste h2,
+body.alto-contraste h3,
+body.alto-contraste .marca-nome,
+body.alto-contraste .dado-numero,
+body.alto-contraste .linha-numero {
+  font-weight: 700;
+}
+
+/* Desliga TODAS as animações e transições */
+body.alto-contraste,
+body.alto-contraste *,
+body.alto-contraste *::before,
+body.alto-contraste *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Sem brilho de fundo: esconde o âmbar animado do hero e o degradê
+   navy do body — fundo preto sólido e estável. */
+body.alto-contraste {
+  background-image: none;
+}
+
+body.alto-contraste .hero::before,
+body.alto-contraste .hero::after {
+  display: none;
+}
+
+/* A divisória entre seções fica branca sólida no alto contraste */
+body.alto-contraste .secao::before {
+  background: var(--cor-borda);
+}
+
+/* Títulos sem a varredura de luz: brancos e estáveis */
+body.alto-contraste .titulo-brilho::before,
+body.alto-contraste .titulo-brilho::after {
+  display: none;
+}
+
+/* Cabeçalho e menu totalmente opacos */
+body.alto-contraste .cabecalho {
+  background-color: transparent;
+  backdrop-filter: none;
+}
+
+/* As pílulas ficam pretas e sólidas, com borda branca */
+body.alto-contraste .pilula {
+  background-color: #000000;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* O olho fica parado: sem parallax, sem giro, sem brilho */
+body.alto-contraste .cena,
+body.alto-contraste .pupila-grupo,
+body.alto-contraste .pupila {
+  transform: none !important;
+}
+
+body.alto-contraste .brilho-olho-circ {
+  display: none;
+}
+
+/* Pontos do olho sempre visíveis (âmbar ou branco) sobre o preto */
+body.alto-contraste .raio-ponto.cor-acento,
+body.alto-contraste .raio-ponto.cor-acento-dim {
+  fill: var(--cor-acento);
+}
+
+body.alto-contraste .raio-ponto.cor-texto,
+body.alto-contraste .raio-ponto.cor-suave,
+body.alto-contraste .raio-ponto.cor-escura {
+  fill: var(--cor-texto);
+}
+
+/* Nada se move no hover */
+body.alto-contraste .linha:hover,
+body.alto-contraste .linha:hover .linha-numero,
+body.alto-contraste .linha:hover .linha-seta,
+body.alto-contraste .botao:hover,
+body.alto-contraste .cartao:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+body.alto-contraste .anima-entrada {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+body.alto-contraste a {
+  text-decoration: underline;
+}
+
+body.alto-contraste .ponto.cheio {
+  background: var(--cor-acento);
+  box-shadow: none;
+}
+
+body.alto-contraste .ponto.vazio {
+  border-style: solid;
+}
+
+body.alto-contraste .botao-primario {
+  box-shadow: none;
+}
+
+body.alto-contraste .linha-numero {
+  color: var(--cor-texto);
+  -webkit-text-stroke: 0;
+}
+
+body.alto-contraste .dialogo-pergunta::backdrop {
+  background-color: rgba(0, 0, 0, 0.92);
+  backdrop-filter: none;
+}
+
+/* ----------------------------------------------------------
+   20. Respeito a quem prefere menos movimento
+---------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [data-anima] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Olho sem parallax quando se prefere menos movimento */
+  .cena,
+  .pupila-grupo {
+    transform: none !important;
+  }
+}

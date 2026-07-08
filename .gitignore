@@ -1,0 +1,5 @@
+# Config interna de ferramentas
+.claude/
+
+# Backups de versões antigas do site (ficam só localmente)
+versao-*/
