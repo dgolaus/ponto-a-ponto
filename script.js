@@ -686,7 +686,6 @@
   --------------------------------------------------------- */
   const cabecalho = document.querySelector(".cabecalho");
   const anelProgresso = document.querySelector(".anel-progresso");
-  const barraProgresso = document.querySelector(".barra-progresso-preenchida");
   const CIRCUNFERENCIA = 2 * Math.PI * 20; // r = 20 no viewBox 0 0 44 44
 
   if (anelProgresso) {
@@ -701,14 +700,10 @@
     if (anelProgresso) {
       anelProgresso.style.strokeDashoffset = (CIRCUNFERENCIA * (1 - progresso)).toFixed(2);
     }
-    if (barraProgresso) {
-      // Preenche a barra fina do topo (mesmo progresso do anel do logo)
-      barraProgresso.style.transform = "scaleX(" + progresso.toFixed(4) + ")";
-    }
     if (cabecalho) cabecalho.classList.toggle("rolado", st > 20);
   }
 
-  if (cabecalho || barraProgresso) {
+  if (cabecalho) {
     window.addEventListener("scroll", aoRolarCabecalho, { passive: true });
     window.addEventListener("resize", aoRolarCabecalho);
     aoRolarCabecalho();

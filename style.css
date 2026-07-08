@@ -1774,26 +1774,6 @@ html.pre-aviso .cabecalho {
         projeto, nota do popup, rodapé e o brinquedo de Braille
 ---------------------------------------------------------- */
 
-/* Barra de progresso de leitura (topo, fina). A largura vem do scaleX,
-   atualizado pelo script.js no mesmo handler do anel do logo. */
-.barra-progresso {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: 3px;
-  z-index: 80;
-  pointer-events: none;
-}
-
-.barra-progresso-preenchida {
-  display: block;
-  height: 100%;
-  transform: scaleX(0);
-  transform-origin: left center;
-  background: var(--cor-acento);
-  transition: transform 0.08s linear;
-  will-change: transform;
-}
-
 /* Dica "role para explorar": fixada no rodapé do hero e centralizada,
    pra ficar SEMPRE visível (não depende da altura do conteúdo). */
 .hero-rolar {
@@ -1880,9 +1860,11 @@ html.pre-aviso .cabecalho {
 }
 
 /* --- Brinquedo de Braille: digite o nome, veja em pontos --- */
+/* Tudo centralizado (rótulo, campo e celas), como o Dg mockou. */
 .braille-brinquedo {
-  margin-top: 2.5rem;
+  margin: 2.5rem auto 0;
   max-width: 60rem;
+  text-align: center;
 }
 
 .braille-rotulo {
@@ -1919,6 +1901,7 @@ html.pre-aviso .cabecalho {
 .braille-saida {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.7rem;
   align-items: flex-start;
   min-height: 4.25rem;
