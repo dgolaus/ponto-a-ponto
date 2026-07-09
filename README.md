@@ -29,10 +29,12 @@ npx live-server
 
 ## Turma
 
+<!-- Oculto temporariamente a pedido do Dg — é só descomentar pra voltar:
 Projeto da turma **2º EM** — **Colégio Cívico-Militar Castro Alves**, 2026.
+-->
 
 - Programação: Douglas ([@dgolaus](https://github.com/dgolaus)) e João Lucas ([@joaomarino767](https://github.com/joaomarino767))
-- Conteúdo e design: turma 2º EM
+- Conteúdo e design: turma
 - Orientação: profª Célia Regina
 
 ## Fontes dos dados
