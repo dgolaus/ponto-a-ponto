@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Ponto a Ponto">
+  <!-- Cela Braille da letra P (pontos 1, 2, 3 e 4) — a marca do site -->
+  <rect width="32" height="32" rx="7" fill="#0b0e15"/>
+  <g fill="#f5b942">
+    <circle cx="11.5" cy="9" r="3.1"/>
+    <circle cx="11.5" cy="16" r="3.1"/>
+    <circle cx="11.5" cy="23" r="3.1"/>
+    <circle cx="20.5" cy="9" r="3.1"/>
+  </g>
+  <g fill="#2b3346">
+    <circle cx="20.5" cy="16" r="3.1"/>
+    <circle cx="20.5" cy="23" r="3.1"/>
+  </g>
+</svg>
