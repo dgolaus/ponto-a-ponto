@@ -1816,21 +1816,6 @@ html.pre-aviso .cabecalho {
   .hero-rolar { display: none; }
 }
 
-/* Nota que explica o nome, sob a legenda do olho */
-.hero-nome-nota {
-  max-width: 34ch;
-  margin: 0.85rem auto 0;
-  font-size: 0.86rem;
-  line-height: 1.5;
-  text-align: center;
-  color: var(--cor-texto-suave);
-}
-
-.hero-nome-nota strong {
-  color: var(--cor-texto);
-  font-weight: 700;
-}
-
 /* Nota "sua escolha fica salva" dentro do popup */
 .dialogo-nota {
   margin-top: 0.9rem;
