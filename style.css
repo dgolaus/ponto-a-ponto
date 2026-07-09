@@ -1929,6 +1929,76 @@ body.alto-contraste .braille-ponto.cheio {
   box-shadow: none;
 }
 
+/* --- Página placeholder "em desenvolvimento" (em-breve.html) --- */
+.em-breve {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  text-align: center;
+}
+
+.em-breve-caixa {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.em-breve-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--fonte-display);
+  font-size: 1.35rem;
+  color: var(--cor-texto);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.em-breve-marca:hover,
+.em-breve-marca:focus-visible {
+  color: var(--cor-acento);
+}
+
+/* Célula Braille miniatura do logo (2 colunas × 3 linhas) */
+.em-breve-celula {
+  display: grid;
+  grid-template-columns: repeat(2, 0.34rem);
+  grid-auto-rows: 0.34rem;
+  gap: 0.16rem;
+}
+
+.em-breve-ponto {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  border: 1px solid var(--cor-borda);
+}
+
+.em-breve-ponto.cheio {
+  background: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+.em-breve h1 {
+  font-size: clamp(1.8rem, 3vw + 1rem, 2.8rem);
+  line-height: 1.12;
+}
+
+.em-breve-texto {
+  max-width: 34ch;
+  font-size: 1.1rem;
+  color: var(--cor-texto-suave);
+}
+
+.em-breve .botao {
+  margin-top: 0.5rem;
+}
+
 /* ----------------------------------------------------------
    19. Modo de alto contraste (baixa visão) — página estável
 ---------------------------------------------------------- */

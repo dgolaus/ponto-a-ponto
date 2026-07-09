@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Esta página do Ponto a Ponto ainda está em desenvolvimento. Em breve a turma publica o conteúdo aqui."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Em desenvolvimento — Ponto a Ponto</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!--
+    Herda as preferências que a pessoa escolheu no site (alto contraste e
+    tamanho de fonte, salvos no localStorage). Roda ANTES do conteúdo ser
+    lido, então já pinta no modo certo, sem "pisca". Mesmas chaves do script.js.
+  -->
+  <script>
+    (function () {
+      try {
+        var raiz = document.documentElement;
+        if (localStorage.getItem("pontoaponto-contraste") === "1") {
+          document.body.classList.add("alto-contraste");
+        }
+        var niveis = [100, 110, 122.5, 135, 147.5, 160];
+        var i = parseInt(localStorage.getItem("pontoaponto-fonte"), 10);
+        if (!isNaN(i) && i >= 0 && i < niveis.length) {
+          raiz.style.fontSize = niveis[i] + "%";
+        }
+      } catch (erro) {
+        /* sem localStorage: segue no padrão */
+      }
+    })();
+  </script>
+
+  <main id="conteudo-principal" class="em-breve" tabindex="-1">
+    <div class="em-breve-caixa">
+      <a class="em-breve-marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="em-breve-celula" aria-hidden="true">
+          <span class="em-breve-ponto cheio"></span><span class="em-breve-ponto cheio"></span>
+          <span class="em-breve-ponto cheio"></span><span class="em-breve-ponto"></span>
+          <span class="em-breve-ponto cheio"></span><span class="em-breve-ponto"></span>
+        </span>
+        Ponto a Ponto
+      </a>
+
+      <p class="rotulo-secao">Em breve</p>
+      <h1><span id="em-breve-secao">Esta página </span>ainda está em desenvolvimento</h1>
+      <p class="em-breve-texto">
+        A turma ainda está construindo este conteúdo. Volte outra hora — enquanto
+        isso, dá pra explorar o resto do site.
+      </p>
+
+      <a class="botao botao-primario" href="index.html">
+        <span aria-hidden="true">←</span> Voltar para o início
+      </a>
+    </div>
+  </main>
+
+  <!--
+    Personaliza a mensagem pela seção de origem (?de=Braille etc.). Se não
+    houver parâmetro, fica a mensagem genérica acima.
+  -->
+  <script>
+    (function () {
+      try {
+        var de = new URLSearchParams(location.search).get("de");
+        var nomes = {
+          Braille: "Braille",
+          Tecnologia: "Tecnologia Assistiva",
+          Jogos: "Jogos",
+          Historias: "Histórias",
+        };
+        var nome = de && nomes[de];
+        if (nome) {
+          document.getElementById("em-breve-secao").textContent = "A página de " + nome + " ";
+          document.title = nome + " — em desenvolvimento · Ponto a Ponto";
+        }
+      } catch (erro) {
+        /* sem parâmetro válido: mensagem genérica */
+      }
+    })();
+  </script>
+</body>
+</html>
