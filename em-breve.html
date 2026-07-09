@@ -17,6 +17,20 @@
     rel="stylesheet"
   />
   <link rel="stylesheet" href="style.css" />
+
+  <!--
+    Entrada suave (mesmo mecanismo do site principal): esconde o conteúdo
+    desfocado ANTES de pintar; o script no fim do <body> revela com fade +
+    desfoque → nítido. Reusa a classe .pre-aviso, cuja regra em style.css
+    já mira qualquer <main>. Failsafe de 3s caso algo trave.
+  -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () { raiz.classList.remove("pre-aviso"); }, 3000);
+    })();
+  </script>
 </head>
 <body>
   <!--
@@ -89,6 +103,18 @@
         /* sem parâmetro válido: mensagem genérica */
       }
     })();
+  </script>
+
+  <!--
+    Revela a página: espera pintar o estado escondido (dois requestAnimationFrame)
+    e então remove a classe, deixando o CSS animar o fade + desfoque → nítido.
+  -->
+  <script>
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        document.documentElement.classList.remove("pre-aviso");
+      });
+    });
   </script>
 </body>
 </html>
