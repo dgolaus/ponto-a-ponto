@@ -1720,7 +1720,10 @@ html.pre-aviso .cabecalho {
 /* Quando a pílula de navegação não cabe mais junto da marca centralizada,
    ela é recolhida (a lista de páginas continua acessível pelo rodapé).
    A marca vai para a esquerda e a acessibilidade fica à direita. */
-@media (max-width: 68rem) {
+/* 78rem (e não 68rem): com 6 itens no menu, a pílula da navegação começa a
+   encostar na marca centralizada por volta de 1180px. Recolhe antes disso —
+   a lista de páginas continua acessível pelo rodapé. */
+@media (max-width: 78rem) {
   .pilula-nav {
     display: none;
   }
@@ -2052,6 +2055,66 @@ body.alto-contraste .braille-ponto.cheio {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+}
+
+/* Lista de doenças (doencas.html): quadros com etiqueta de categoria */
+.lista-doencas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: 1.25rem;
+}
+
+.doenca {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  color: var(--cor-texto-suave);
+  transition: border-color 0.2s ease;
+}
+
+.doenca:hover {
+  border-color: var(--cor-acento);
+}
+
+/* Etiqueta que agrupa a condição (infecção, prematuridade, ao nascer...) */
+.doenca-tag {
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cor-acento);
+}
+
+.doenca h3 {
+  font-size: clamp(1.15rem, 0.8vw + 1rem, 1.45rem);
+  color: var(--cor-texto);
+}
+
+.doenca strong {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
+/* Aviso de que é conteúdo escolar, não orientação médica */
+.nota-saude {
+  max-width: 60ch;
+  margin: 2.5rem auto 0;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--cor-borda);
+  border-left: 3px solid var(--cor-acento);
+  border-radius: var(--raio-botao);
+  font-size: 0.92rem;
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.nota-saude strong {
+  color: var(--cor-texto);
 }
 
 /* --- Página placeholder "em desenvolvimento" (em-breve.html) --- */

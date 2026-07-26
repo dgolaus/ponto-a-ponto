@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Doenças na gravidez e no nascimento que podem causar baixa visão ou cegueira: toxoplasmose, citomegalovírus, retinopatia da prematuridade, catarata, glaucoma e rubéola — com sinais de alerta e prevenção."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Saúde e prevenção — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter — cartão de preview ao compartilhar -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/doencas.html" />
+  <meta property="og:title" content="Saúde e prevenção — Ponto a Ponto" />
+  <meta property="og:description" content="Doenças na gravidez e no nascimento que podem causar baixa visão ou cegueira — e o que ajuda a prevenir." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Entrada suave: esconde a página antes da pintura; o script.js revela. -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="doencas.html" aria-current="page" aria-label="Saúde e prevenção">Saúde</a></li>
+          <li><a href="em-breve.html?de=Jogos">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Abertura -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+      <div class="container">
+        <p class="rotulo-secao">Saúde e prevenção</p>
+        <h1 id="titulo-pagina" data-anima>
+          Doenças na gravidez que podem causar baixa visão ou cegueira
+        </h1>
+        <p class="secao-intro" data-anima>
+          Algumas doenças que ocorrem durante a gestação ou após o nascimento podem afetar o
+          desenvolvimento dos olhos do bebê, causando baixa visão ou até cegueira. O
+          <strong>pré-natal</strong> é fundamental para identificar essas condições e reduzir os riscos.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- As doenças -->
+    <section class="secao" aria-labelledby="titulo-doencas">
+      <div class="container">
+        <p class="rotulo-secao">As doenças</p>
+        <h2 id="titulo-doencas">Seis condições que afetam a visão do bebê</h2>
+        <p class="secao-intro">
+          Algumas vêm de infecções durante a gestação; outras aparecem já no nascimento ou
+          na prematuridade. Em quase todas, o <strong>diagnóstico precoce</strong> muda o desfecho.
+        </p>
+
+        <ul class="lista-doencas">
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Infecção na gravidez</p>
+            <h3>Toxoplasmose Congênita</h3>
+            <p>
+              É uma infecção causada pelo parasita <em>Toxoplasma gondii</em>. A gestante pode se
+              infectar ao consumir alimentos contaminados ou ter contato com fezes de gatos
+              infectados. No bebê, pode causar inflamação da retina (retinocoroidite), levando à
+              baixa visão ou cegueira, além de alterações neurológicas.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Infecção na gravidez</p>
+            <h3>Citomegalovírus (CMV)</h3>
+            <p>
+              É uma infecção viral que pode ser transmitida da mãe para o bebê durante a gravidez.
+              Em alguns casos, provoca inflamação da retina e do nervo óptico, comprometendo a
+              visão. Também pode causar perda auditiva e atraso no desenvolvimento.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Ligada à prematuridade</p>
+            <h3>Retinopatia da Prematuridade</h3>
+            <p>
+              Acontece em bebês prematuros, principalmente os que nascem com baixo peso. Os vasos
+              sanguíneos da retina se desenvolvem de forma anormal, podendo causar descolamento da
+              retina e cegueira se não houver tratamento precoce.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Presente ao nascer</p>
+            <h3>Catarata Congênita</h3>
+            <p>
+              É uma alteração em que o bebê nasce com o cristalino opaco. Pode ser causada por
+              infecções durante a gravidez ou por fatores genéticos. Se não for tratada nos
+              primeiros meses de vida, pode comprometer permanentemente a visão.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Presente ao nascer</p>
+            <h3>Glaucoma Congênito</h3>
+            <p>
+              É uma doença rara caracterizada pelo aumento da pressão dentro do olho desde o
+              nascimento ou nos primeiros meses de vida. Sem tratamento, pode danificar o nervo
+              óptico e causar cegueira.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Evitável com vacina</p>
+            <h3>Rubéola na gravidez</h3>
+            <p>
+              A rubéola é uma doença viral que pode ser muito perigosa quando a mulher é infectada
+              durante a gravidez, principalmente nos três primeiros meses de gestação. O vírus pode
+              ser transmitido para o bebê, causando a <strong>Síndrome da Rubéola Congênita</strong>.
+            </p>
+            <p>
+              Essa síndrome pode provocar catarata congênita, glaucoma, alterações na retina, baixa
+              visão, cegueira, surdez, problemas cardíacos e atraso no desenvolvimento. A melhor
+              forma de prevenção é a vacinação contra a rubéola antes da gravidez e a realização
+              do pré-natal.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Sinais de alerta -->
+    <section class="secao" aria-labelledby="titulo-sinais">
+      <div class="container">
+        <p class="rotulo-secao">Sinais de alerta</p>
+        <h2 id="titulo-sinais">Quando procurar um médico</h2>
+        <p class="secao-intro">
+          Alguns sinais podem indicar alterações na visão do bebê e exigem avaliação médica:
+        </p>
+        <ul class="grade-compromissos">
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p>Reflexo <strong>branco</strong> na pupila.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p><strong>Estrabismo</strong> persistente.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p>Dificuldade para <strong>acompanhar objetos</strong> ou pessoas.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p><strong>Lacrimejamento</strong> excessivo.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p><strong>Sensibilidade intensa</strong> à luz.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p>Olhos muito <strong>grandes</strong> ou com aparência diferente.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">!</span>
+            <p><strong>Movimentos involuntários</strong> dos olhos.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Prevenção -->
+    <section class="secao" aria-labelledby="titulo-prevencao">
+      <div class="container">
+        <p class="rotulo-secao">Como prevenir</p>
+        <h2 id="titulo-prevencao">A prevenção depende principalmente disto</h2>
+        <p class="secao-intro">
+          O <strong>diagnóstico precoce</strong> aumenta as chances de tratamento e ajuda a evitar
+          a baixa visão e a cegueira.
+        </p>
+        <ul class="grade-compromissos">
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">✔</span>
+            <p>Realização do <strong>pré-natal</strong>.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">✔</span>
+            <p><strong>Vacinação</strong> antes da gravidez.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">✔</span>
+            <p><strong>Alimentação</strong> adequada.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">✔</span>
+            <p><strong>Exames</strong> durante a gestação.</p>
+          </li>
+          <li class="compromisso" data-anima>
+            <span class="compromisso-marca" aria-hidden="true">✔</span>
+            <p><strong>Acompanhamento do bebê</strong> após o nascimento.</p>
+          </li>
+        </ul>
+
+        <p class="nota-saude">
+          Esta página é um <strong>trabalho escolar com fins educativos</strong> — não substitui
+          consulta médica. Em caso de dúvida sobre a visão de um bebê, procure um posto de saúde
+          ou um oftalmologista.
+        </p>
+      </div>
+    </section>
+
+    <!-- Fecho -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <h2 id="titulo-fecho">Informação também é prevenção.</h2>
+        <p>
+          Boa parte dessas condições tem tratamento quando é descoberta cedo — e quase todas
+          passam pelo mesmo caminho: pré-natal, vacina e acompanhamento. Saber que elas existem
+          já é o primeiro passo.
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="tecnologia.html">Ver a tecnologia assistiva</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html">Tecnologia Assistiva</a></li>
+          <li><a href="doencas.html" aria-current="page">Saúde e prevenção</a></li>
+          <li><a href="em-breve.html?de=Jogos">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <!--
+          A Gabriella é a autora. A irmã Daniella pode ter ajudado, mas ainda não
+          está confirmado — quando o Dg confirmar, é só trocar por:
+          de <strong>Gabriella Marques</strong> e <strong>Daniella Marques</strong>.
+        -->
+        <p>
+          Conteúdo desta página a partir do projeto de <strong>Gabriella Marques</strong>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>
