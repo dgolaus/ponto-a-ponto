@@ -2123,6 +2123,12 @@ body.alto-contraste .braille-ponto.cheio {
   color: var(--cor-texto-suave);
 }
 
+/* Lista com número ímpar de itens: o último ficaria sozinho e deixaria um
+   buraco ao lado. Aqui ele ocupa a linha inteira e fecha a lista. */
+.item-curto:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .item-curto-marca {
   flex-shrink: 0;
   display: grid;
