@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Tecnologia assistiva: aplicativos e programas gratuitos — Be My Eyes, Seeing AI e o leitor de tela NVDA — que ampliam a autonomia de pessoas cegas ou com baixa visão."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Tecnologia Assistiva — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter — cartão de preview ao compartilhar -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/tecnologia.html" />
+  <meta property="og:title" content="Tecnologia Assistiva — Ponto a Ponto" />
+  <meta property="og:description" content="Aplicativos e programas gratuitos que ampliam a autonomia de pessoas cegas ou com baixa visão: Be My Eyes, Seeing AI e o leitor de tela NVDA." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!--
+    Entrada suave: esconde a página (desfocada) ANTES da pintura. Como aqui
+    não existe o <dialog> do aviso, o script.js revela sozinho ao carregar.
+    Failsafe: se o script.js não rodar em 8s, libera a página.
+  -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-current="page" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="em-breve.html?de=Jogos">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Abertura da página -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+      <div class="container">
+        <p class="rotulo-secao">Tecnologia Assistiva</p>
+        <h1 id="titulo-pagina" data-anima>Ferramentas e recursos para a autonomia visual</h1>
+        <p class="secao-intro" data-anima>
+          Esta página reúne ferramentas tecnológicas, aplicativos e dicas práticas que ajudam
+          pessoas cegas ou com baixa visão a navegar na internet e a realizar tarefas do dia a
+          dia com mais independência.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- As três ferramentas -->
+    <section class="secao secao-ferramentas" aria-labelledby="titulo-ferramentas">
+      <div class="container">
+        <p class="rotulo-secao">Ferramentas</p>
+        <h2 id="titulo-ferramentas">Úteis para o dia a dia</h2>
+        <p class="secao-intro">
+          Conheça aplicativos e programas <strong>gratuitos</strong> que ampliam a independência
+          de pessoas cegas ou com baixa visão. Cada botão abre a página oficial da ferramenta.
+        </p>
+
+        <ul class="lista-ferramentas">
+          <li class="ferramenta" data-anima>
+            <p class="ferramenta-numero" aria-hidden="true">01</p>
+            <div class="ferramenta-corpo">
+              <h3 class="ferramenta-titulo">Be My Eyes <span class="ferramenta-traducao">(Seja Meus Olhos)</span></h3>
+              <p>
+                Este aplicativo gratuito conecta pessoas cegas ou com baixa visão a
+                <strong>voluntários</strong> e à <strong>inteligência artificial</strong> por
+                chamadas de vídeo ao vivo. O voluntário ou a IA ajudam a ler rótulos de produtos,
+                identificar cores de roupas, checar datas de validade e reconhecer ambientes.
+              </p>
+              <p class="ferramenta-onde">Celular · Android e iPhone · Gratuito</p>
+              <a class="botao botao-secundario" href="https://www.bemyeyes.com/" target="_blank" rel="noopener">
+                Baixar o Be My Eyes <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </li>
+
+          <li class="ferramenta" data-anima>
+            <p class="ferramenta-numero" aria-hidden="true">02</p>
+            <div class="ferramenta-corpo">
+              <h3 class="ferramenta-titulo">Seeing AI <span class="ferramenta-traducao">(criado pela Microsoft)</span></h3>
+              <p>
+                Um aplicativo que usa a <strong>câmera do celular para descrever o mundo ao seu
+                redor</strong>. Ele lê textos curtos assim que aparecem na tela, escaneia códigos
+                de barras de produtos e até reconhece as emoções no rosto das pessoas.
+              </p>
+              <p class="ferramenta-onde">Celular · Android e iPhone · Gratuito</p>
+              <a class="botao botao-secundario" href="https://www.seeingai.com/" target="_blank" rel="noopener">
+                Conhecer o Seeing AI <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </li>
+
+          <li class="ferramenta" data-anima>
+            <p class="ferramenta-numero" aria-hidden="true">03</p>
+            <div class="ferramenta-corpo">
+              <h3 class="ferramenta-titulo">NVDA <span class="ferramenta-traducao">(leitor de tela para computador)</span></h3>
+              <p>
+                Para navegar no computador, pessoas cegas usam <strong>leitores de tela</strong>:
+                programas que leem em voz alta tudo o que está na tela. O NVDA é gratuito, feito
+                para Windows e usado no mundo todo — essencial para garantir o acesso a estudos e
+                trabalho.
+              </p>
+              <p class="ferramenta-onde">Computador · Windows · Gratuito e livre</p>
+              <a class="botao botao-secundario" href="https://www.nvaccess.org/download/" target="_blank" rel="noopener">
+                Baixar o NVDA <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Fecho: liga a página com o próprio site -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <h2 id="titulo-fecho">A tecnologia só é assistiva quando chega até quem precisa.</h2>
+        <p>
+          Nenhum desses aplicativos funciona sozinho: eles dependem de sites, documentos e
+          aplicativos feitos com acessibilidade. É por isso que este portal existe — e por isso
+          ele próprio foi construído para ser lido por leitores de tela.
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="em-breve.html?de=Braille">Conhecer o Braille</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-current="page">Tecnologia Assistiva</a></li>
+          <li><a href="em-breve.html?de=Jogos">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <!-- TODO: trocar por "por <nome da aluna>" quando o Dg confirmar o nome. -->
+        <p>
+          Conteúdo desta página a partir do projeto <strong>Visão Amiga</strong>,
+          desenvolvido por uma aluna da turma.
+        </p>
+        <p>
+          Os aplicativos citados são de seus respectivos criadores. Este é um site escolar,
+          sem qualquer vínculo com eles.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <!--
+    O botão "Ouvir esta página" do topo aciona a MESMA leitura em voz alta do
+    menu de acessibilidade (nada duplicado). Se o navegador não tiver a API de
+    voz, o botão nem aparece.
+  -->
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>

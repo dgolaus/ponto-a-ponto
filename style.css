@@ -1929,6 +1929,108 @@ body.alto-contraste .braille-ponto.cheio {
   box-shadow: none;
 }
 
+/* ----------------------------------------------------------
+   18c. Sub-páginas de conteúdo (ex.: tecnologia.html)
+        Abertura da página + lista de ferramentas
+---------------------------------------------------------- */
+/* A primeira seção precisa de folga extra: o cabeçalho é fixo. */
+.pagina-topo {
+  padding-top: calc(var(--altura-cabecalho) + clamp(1.5rem, 5vw, 3.5rem));
+}
+
+/* Sem a divisória de topo — é a primeira seção da página */
+.pagina-topo::before {
+  display: none;
+}
+
+.pagina-topo h1 {
+  font-size: clamp(2rem, 2.5vw + 1.2rem, 3.5rem);
+  max-width: 24ch;
+  margin-inline: auto;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.pagina-acoes {
+  display: flex;
+  justify-content: center;
+}
+
+/* Lista de ferramentas: quadros com número, texto e botão */
+.lista-ferramentas {
+  list-style: none;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.ferramenta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.5rem, 3vw, 2rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  transition: border-color 0.2s ease;
+}
+
+.ferramenta:hover {
+  border-color: var(--cor-acento);
+}
+
+.ferramenta-numero {
+  font-family: var(--fonte-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--cor-acento);
+  padding-top: 0.35rem;
+}
+
+.ferramenta-corpo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+.ferramenta-titulo {
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.6rem);
+  color: var(--cor-texto);
+}
+
+/* A tradução/autoria do nome, em tom menor — não compete com o título */
+.ferramenta-traducao {
+  font-family: var(--fonte-principal);
+  font-size: 0.82em;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--cor-texto-suave);
+}
+
+.ferramenta-corpo strong {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
+/* Onde roda / preço — a "ficha técnica" da ferramenta */
+.ferramenta-onde {
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 40rem) {
+  .ferramenta {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .ferramenta-numero {
+    padding-top: 0;
+  }
+}
+
 /* --- Página placeholder "em desenvolvimento" (em-breve.html) --- */
 .em-breve {
   min-height: 100svh;
