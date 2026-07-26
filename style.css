@@ -2124,9 +2124,11 @@ body.alto-contraste .braille-ponto.cheio {
 }
 
 /* Lista com número ímpar de itens: o último ficaria sozinho e deixaria um
-   buraco ao lado. Aqui ele ocupa a linha inteira e fecha a lista. */
+   buraco ao lado. Aqui ele ocupa a linha inteira e vai para o centro,
+   fechando a lista sem parecer que faltou alguma coisa. */
 .item-curto:last-child:nth-child(odd) {
   grid-column: 1 / -1;
+  justify-content: center;
 }
 
 .item-curto-marca {
