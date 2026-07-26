@@ -1977,12 +1977,28 @@ body.alto-contraste .braille-ponto.cheio {
   border-color: var(--cor-acento);
 }
 
-.ferramenta-numero {
-  font-family: var(--fonte-mono);
-  font-size: 0.95rem;
-  font-weight: 500;
+/* Selo com o ícone da ferramenta: quadro hairline, traço âmbar.
+   Cada ícone tem silhueta própria (pessoas ligadas / câmera / alto-falante),
+   pra distinguir as ferramentas de relance. Herda a cor por currentColor,
+   então no alto contraste vira amarelo sozinho. */
+.ferramenta-icone {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
   color: var(--cor-acento);
-  padding-top: 0.35rem;
+  transition: border-color 0.2s ease;
+}
+
+.ferramenta-icone svg {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.ferramenta:hover .ferramenta-icone {
+  border-color: var(--cor-acento);
 }
 
 .ferramenta-corpo {
@@ -2023,11 +2039,7 @@ body.alto-contraste .braille-ponto.cheio {
 @media (max-width: 40rem) {
   .ferramenta {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-
-  .ferramenta-numero {
-    padding-top: 0;
+    gap: 1rem;
   }
 }
 
