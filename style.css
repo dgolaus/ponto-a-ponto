@@ -2100,6 +2100,49 @@ body.alto-contraste .braille-ponto.cheio {
   font-weight: 700;
 }
 
+/* Lista compacta para itens CURTOS (sinais de alerta, prevenção).
+   Os quadros de .compromisso são feitos para parágrafos; com três
+   palavras eles ficam ocos. Aqui, filete em vez de caixa: denso,
+   alinhado e sem cartão órfão sobrando na última linha. */
+.lista-curta {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+  max-width: 56rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.item-curto {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+}
+
+.item-curto-marca {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: 0.1rem;
+  border: 1px solid var(--cor-acento);
+  border-radius: 50%;
+  color: var(--cor-acento);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.item-curto strong {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
 /* Aviso de que é conteúdo escolar, não orientação médica */
 .nota-saude {
   max-width: 60ch;
