@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Jogos do Ponto a Ponto: escreva em Braille usando o teclado como uma máquina Perkins e teste seus conhecimentos de óptica e visão."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Jogos — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogos.html" />
+  <meta property="og:title" content="Jogos — Ponto a Ponto" />
+  <meta property="og:description" content="Escreva em Braille usando o teclado como uma máquina Perkins e teste seus conhecimentos de óptica e visão." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Entrada suave: esconde a página antes da pintura; o script.js revela. -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="doencas.html" aria-label="Saúde e prevenção">Saúde</a></li>
+          <li><a href="jogos.html" aria-current="page">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Abertura -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+      <div class="container">
+        <p class="rotulo-secao">Jogos</p>
+        <h1 id="titulo-pagina" data-anima>Aprender jogando</h1>
+        <p class="secao-intro" data-anima>
+          Jogos feitos para serem jogados <strong>com ou sem a visão</strong>: tudo funciona pelo
+          teclado, é anunciado em voz alta e nunca depende só da cor. Mais jogos entram aqui
+          conforme a turma for criando.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOGO 1: Simulador Braille -->
+    <section class="secao" aria-labelledby="titulo-simulador">
+      <div class="container">
+        <p class="rotulo-secao">Jogo 01</p>
+        <h2 id="titulo-simulador">Simulador Braille</h2>
+        <p class="secao-intro">
+          Seu teclado vira uma <strong>máquina Perkins</strong> — a máquina de escrever em Braille.
+          Cada dedo controla um ponto da cela: <strong>F, D, S</strong> são os pontos 1, 2 e 3
+          (coluna da esquerda) e <strong>J, K, L</strong> são os pontos 4, 5 e 6 (coluna da direita).
+          Monte uma letra e confirme.
+        </p>
+
+        <div class="jogo" id="simulador-braille" data-anima>
+          <p class="jogo-dica">
+            Clique nos pontos ou use as teclas. Navegando por <strong>Tab</strong>, use
+            <strong>Enter</strong> para acender o ponto e <strong>Espaço</strong> para confirmar a
+            letra — como numa máquina Perkins de verdade. Cada mudança é anunciada em voz alta,
+            então dá pra jogar sem olhar para a tela.
+          </p>
+
+          <div class="simulador-palco">
+            <div class="simulador-cela" id="cela-simulador" role="group" aria-label="Cela Braille de seis pontos">
+              <!-- ordem visual: 1 4 / 2 5 / 3 6 -->
+              <button type="button" class="sim-ponto" data-ponto="1" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 1 (tecla F)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="4" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 4 (tecla J)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="2" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 2 (tecla D)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="5" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 5 (tecla K)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="3" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 3 (tecla S)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="6" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 6 (tecla L)</span>
+              </button>
+            </div>
+
+            <div class="simulador-leitura">
+              <span class="simulador-glifo" id="sim-glifo" aria-hidden="true">⠀</span>
+              <span class="simulador-letra" id="sim-letra" aria-hidden="true">—</span>
+              <span class="simulador-legenda">letra formada</span>
+            </div>
+          </div>
+
+          <p class="simulador-teclas" aria-hidden="true">
+            F(1) D(2) S(3) &nbsp;·&nbsp; J(4) K(5) L(6) &nbsp;·&nbsp; Espaço confirma &nbsp;·&nbsp; Backspace apaga
+          </p>
+
+          <div class="simulador-acoes">
+            <button type="button" id="sim-confirmar" class="botao botao-primario">Confirmar letra</button>
+            <button type="button" id="sim-apagar" class="botao botao-secundario">Apagar última</button>
+            <button type="button" id="sim-limpar" class="botao botao-secundario">Limpar tudo</button>
+          </div>
+
+          <p class="simulador-rotulo">Você escreveu</p>
+          <p class="simulador-texto" id="sim-texto" role="status" aria-live="off"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOGO 2: Quiz -->
+    <section class="secao" aria-labelledby="titulo-quiz">
+      <div class="container">
+        <p class="rotulo-secao">Jogo 02</p>
+        <h2 id="titulo-quiz">Quiz: óptica e visão</h2>
+        <p class="secao-intro">
+          Cinco perguntas sobre como o olho funciona e sobre a física por trás dela. O conteúdo
+          está na página <a href="doencas.html#titulo-optica">Saúde e prevenção</a> — vale ler
+          antes (ou depois, pra conferir).
+        </p>
+
+        <ol class="quiz" id="quiz-revisao" data-anima>
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q1">Qual partícula J.J. Thomson descobriu nos raios catódicos?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q1">
+              <button type="button" class="quiz-opcao">Próton</button>
+              <button type="button" class="quiz-opcao">Elétron</button>
+              <button type="button" class="quiz-opcao">Nêutron</button>
+              <button type="button" class="quiz-opcao">Fóton</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+
+          <li class="quiz-item" data-correta="2">
+            <p class="quiz-pergunta" id="q2">Qual estrutura do olho funciona como uma lente convergente?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q2">
+              <button type="button" class="quiz-opcao">Retina</button>
+              <button type="button" class="quiz-opcao">Íris</button>
+              <button type="button" class="quiz-opcao">Cristalino</button>
+              <button type="button" class="quiz-opcao">Córnea</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q3">A miopia é corrigida com qual tipo de lente?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q3">
+              <button type="button" class="quiz-opcao">Convergente</button>
+              <button type="button" class="quiz-opcao">Divergente</button>
+              <button type="button" class="quiz-opcao">Cilíndrica</button>
+              <button type="button" class="quiz-opcao">Plana</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q4">O que acontece com o cristalino durante a acomodação visual?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q4">
+              <button type="button" class="quiz-opcao">Ele muda de cor</button>
+              <button type="button" class="quiz-opcao">Ele muda de forma</button>
+              <button type="button" class="quiz-opcao">Ele se desloca</button>
+              <button type="button" class="quiz-opcao">Ele endurece</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+
+          <li class="quiz-item" data-correta="2">
+            <p class="quiz-pergunta" id="q5">Em qual parte do olho a imagem é formada?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q5">
+              <button type="button" class="quiz-opcao">Cristalino</button>
+              <button type="button" class="quiz-opcao">Córnea</button>
+              <button type="button" class="quiz-opcao">Retina</button>
+              <button type="button" class="quiz-opcao">Nervo óptico</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+        </ol>
+
+        <p class="quiz-placar" id="quiz-placar" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- Fecho -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <h2 id="titulo-fecho">Um jogo que se joga de olhos fechados.</h2>
+        <p>
+          O simulador não é só uma brincadeira: ele usa a mesma lógica de dedos da máquina
+          Perkins, a que pessoas cegas usam de verdade para escrever. Tente formar seu nome
+          sem olhar para a tela.
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="doencas.html#titulo-optica">Ler sobre óptica</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html">Tecnologia Assistiva</a></li>
+          <li><a href="doencas.html">Saúde e prevenção</a></li>
+          <li><a href="jogos.html" aria-current="page">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <p>
+          Jogos a partir do projeto <strong>Raios Catódicos &amp; Óptica</strong>, de
+          <strong>Saulo Ricofica</strong>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -710,6 +710,43 @@
   }
 
   /* ---------------------------------------------------------
+     Alfabeto Braille — compartilhado pelo brinquedo da home
+     (7a) e pelo simulador da página de jogos (7d).
+     Numeração da cela:  1 4
+                         2 5
+                         3 6
+  --------------------------------------------------------- */
+  // Pontos ativos por letra (Braille Grau 1, a–z)
+  const MAPA_BRAILLE = {
+    a: [1], b: [1, 2], c: [1, 4], d: [1, 4, 5], e: [1, 5],
+    f: [1, 2, 4], g: [1, 2, 4, 5], h: [1, 2, 5], i: [2, 4], j: [2, 4, 5],
+    k: [1, 3], l: [1, 2, 3], m: [1, 3, 4], n: [1, 3, 4, 5], o: [1, 3, 5],
+    p: [1, 2, 3, 4], q: [1, 2, 3, 4, 5], r: [1, 2, 3, 5], s: [2, 3, 4], t: [2, 3, 4, 5],
+    u: [1, 3, 6], v: [1, 2, 3, 6], w: [2, 4, 5, 6], x: [1, 3, 4, 6],
+    y: [1, 3, 4, 5, 6], z: [1, 3, 5, 6],
+  };
+  // Ordem de leitura num grid de 2 colunas: 1,4 / 2,5 / 3,6
+  const ORDEM_CELA = [1, 4, 2, 5, 3, 6];
+
+  // Caminho inverso: dado um conjunto de pontos, qual letra é?
+  function letraDosPontos(pontos) {
+    const chave = pontos.slice().sort(function (a, b) { return a - b; }).join(",");
+    for (const letra in MAPA_BRAILLE) {
+      if (MAPA_BRAILLE[letra].join(",") === chave) return letra;
+    }
+    return null;
+  }
+
+  // O caractere Braille do Unicode (U+2800 + bitmask dos pontos) —
+  // permite mostrar ⠃ de verdade, e leitores de tela em braille o entendem.
+  function glifoBraille(pontos) {
+    const bits = { 1: 1, 2: 2, 3: 4, 4: 8, 5: 16, 6: 32 };
+    let cod = 0x2800;
+    for (let i = 0; i < pontos.length; i++) cod += bits[pontos[i]] || 0;
+    return String.fromCharCode(cod);
+  }
+
+  /* ---------------------------------------------------------
      7a. Brinquedo de Braille: digite o nome, veja em pontos.
      Alfabeto Grade 1 (a–z) + espaço. Acentos são normalizados
      para a letra base; caracteres sem letra viram cela vazia.
@@ -722,17 +759,8 @@
     const descricao = document.getElementById("braille-descricao");
     if (!entrada || !saida) return;
 
-    // Pontos ativos por letra (numeração da cela: 1 4 / 2 5 / 3 6)
-    const MAPA = {
-      a: [1], b: [1, 2], c: [1, 4], d: [1, 4, 5], e: [1, 5],
-      f: [1, 2, 4], g: [1, 2, 4, 5], h: [1, 2, 5], i: [2, 4], j: [2, 4, 5],
-      k: [1, 3], l: [1, 2, 3], m: [1, 3, 4], n: [1, 3, 4, 5], o: [1, 3, 5],
-      p: [1, 2, 3, 4], q: [1, 2, 3, 4, 5], r: [1, 2, 3, 5], s: [2, 3, 4], t: [2, 3, 4, 5],
-      u: [1, 3, 6], v: [1, 2, 3, 6], w: [2, 4, 5, 6], x: [1, 3, 4, 6],
-      y: [1, 3, 4, 5, 6], z: [1, 3, 5, 6],
-    };
-    // Ordem de leitura num grid de 2 colunas: 1,4 / 2,5 / 3,6
-    const ORDEM = [1, 4, 2, 5, 3, 6];
+    const MAPA = MAPA_BRAILLE;
+    const ORDEM = ORDEM_CELA;
 
     function normalizar(texto) {
       return texto
@@ -795,6 +823,221 @@
 
     entrada.addEventListener("input", render);
     render();
+  })();
+
+  /* ---------------------------------------------------------
+     7d. Simulador Braille (jogos.html) — teclado tipo Perkins.
+     F, D, S = pontos 1, 2, 3 · J, K, L = pontos 4, 5, 6 ·
+     Espaço confirma a letra · Backspace apaga.
+     Os pontos também são BOTÕES, então funciona com mouse,
+     toque e Tab — não só com o teclado de atalho. Tudo é
+     anunciado pelo aria-live, então dá pra jogar sem ver.
+  --------------------------------------------------------- */
+  (function simuladorBraille() {
+    const cela = document.getElementById("cela-simulador");
+    if (!cela) return;
+
+    const botoes = Array.prototype.slice.call(cela.querySelectorAll(".sim-ponto"));
+    const elGlifo = document.getElementById("sim-glifo");
+    const elLetra = document.getElementById("sim-letra");
+    const elTexto = document.getElementById("sim-texto");
+    const btnConfirmar = document.getElementById("sim-confirmar");
+    const btnApagar = document.getElementById("sim-apagar");
+    const btnLimpar = document.getElementById("sim-limpar");
+    const painel = document.getElementById("simulador-braille");
+
+    const TECLAS = { f: 1, d: 2, s: 3, j: 4, k: 5, l: 6 };
+    const ativos = {};
+    let escrito = "";
+
+    function pontosAtivos() {
+      const lista = [];
+      for (let n = 1; n <= 6; n++) if (ativos[n]) lista.push(n);
+      return lista;
+    }
+
+    function nomeDaLetra(pontos) {
+      if (!pontos.length) return null;
+      const l = letraDosPontos(pontos);
+      return l ? l.toUpperCase() : null;
+    }
+
+    function pintar() {
+      for (let i = 0; i < botoes.length; i++) {
+        const n = Number(botoes[i].getAttribute("data-ponto"));
+        const aceso = !!ativos[n];
+        botoes[i].classList.toggle("aceso", aceso);
+        botoes[i].setAttribute("aria-pressed", String(aceso));
+      }
+      const pontos = pontosAtivos();
+      const letra = nomeDaLetra(pontos);
+      if (elGlifo) elGlifo.textContent = glifoBraille(pontos);
+      if (elLetra) {
+        elLetra.textContent = !pontos.length ? "—" : letra ? letra : "?";
+        elLetra.classList.toggle("sim-letra-vaga", !!pontos.length && !letra);
+        elLetra.classList.toggle("sim-letra-vazia", !pontos.length);
+      }
+    }
+
+    function descreverEstado() {
+      const pontos = pontosAtivos();
+      if (!pontos.length) return "Cela vazia.";
+      const letra = nomeDaLetra(pontos);
+      const rotulo = pontos.length === 1 ? "Ponto " : "Pontos ";
+      return rotulo + pontos.join(", ") + ". " +
+        (letra ? "Forma a letra " + letra + "." : "Ainda não forma uma letra.");
+    }
+
+    function alternar(n) {
+      ativos[n] = !ativos[n];
+      pintar();
+      anunciar(descreverEstado());
+    }
+
+    function confirmar() {
+      const pontos = pontosAtivos();
+      if (!pontos.length) {
+        anunciar("A cela está vazia — não há letra para confirmar.");
+        return;
+      }
+      const letra = nomeDaLetra(pontos);
+      if (!letra) {
+        anunciar("Esta combinação de pontos não forma uma letra do alfabeto. Tente outra.");
+        return;
+      }
+      escrito += letra;
+      if (elTexto) elTexto.textContent = escrito;
+      for (let n = 1; n <= 6; n++) ativos[n] = false;
+      pintar();
+      anunciar("Letra " + letra + " confirmada. Você escreveu: " + escrito.split("").join(" ") + ".");
+    }
+
+    function apagar() {
+      if (!escrito) {
+        anunciar("Não há nada escrito para apagar.");
+        return;
+      }
+      escrito = escrito.slice(0, -1);
+      if (elTexto) elTexto.textContent = escrito;
+      anunciar(escrito ? "Apagado. Você escreveu: " + escrito.split("").join(" ") + "." : "Tudo apagado.");
+    }
+
+    function limpar() {
+      for (let n = 1; n <= 6; n++) ativos[n] = false;
+      escrito = "";
+      if (elTexto) elTexto.textContent = "";
+      pintar();
+      anunciar("Simulador limpo.");
+    }
+
+    // Os pontos são botões: clique, toque e Tab+Espaço funcionam.
+    for (let i = 0; i < botoes.length; i++) {
+      botoes[i].addEventListener("click", function () {
+        alternar(Number(this.getAttribute("data-ponto")));
+      });
+    }
+    if (btnConfirmar) btnConfirmar.addEventListener("click", confirmar);
+    if (btnApagar) btnApagar.addEventListener("click", apagar);
+    if (btnLimpar) btnLimpar.addEventListener("click", limpar);
+
+    // Atalhos de teclado: presos ao painel do jogo (não à página inteira),
+    // pra não sequestrar teclas de quem está lendo o resto do conteúdo.
+    if (painel) {
+      painel.addEventListener("keydown", function (evento) {
+        const alvo = evento.target;
+        const digitando = alvo && (alvo.tagName === "INPUT" || alvo.tagName === "TEXTAREA" || alvo.isContentEditable);
+        if (digitando) return;
+
+        const tecla = (evento.key || "").toLowerCase();
+        if (TECLAS[tecla]) {
+          evento.preventDefault();
+          alternar(TECLAS[tecla]);
+          return;
+        }
+        // Espaço = confirmar, como na máquina Perkins (no original ele
+        // ROLAVA A PÁGINA, faltava preventDefault).
+        // Nos PONTOS o Espaço é reservado para confirmar — quem navega por
+        // Tab alterna o ponto com Enter (ou clicando). Já nos botões de
+        // ação, o Espaço age normalmente sobre o botão focado.
+        if (evento.key === " " || evento.code === "Space") {
+          const botaoDeAcao = alvo && alvo.tagName === "BUTTON" &&
+            !alvo.classList.contains("sim-ponto");
+          if (botaoDeAcao) return;
+          evento.preventDefault();
+          confirmar();
+          return;
+        }
+        if (evento.key === "Backspace") {
+          evento.preventDefault();
+          apagar();
+        }
+      });
+    }
+
+    pintar();
+  })();
+
+  /* ---------------------------------------------------------
+     7e. Quiz de revisão (jogos.html). Cada pergunta tem
+     data-correta com o índice da alternativa certa. O acerto
+     é mostrado por símbolo + texto (nunca só por cor) e vai
+     para o aria-live, então funciona com leitor de tela.
+  --------------------------------------------------------- */
+  (function quizRevisao() {
+    const quiz = document.getElementById("quiz-revisao");
+    if (!quiz) return;
+
+    const itens = Array.prototype.slice.call(quiz.querySelectorAll(".quiz-item"));
+    const placar = document.getElementById("quiz-placar");
+    let acertos = 0;
+    let respondidas = 0;
+
+    function atualizarPlacar() {
+      if (!placar) return;
+      if (!respondidas) {
+        placar.textContent = "";
+        return;
+      }
+      const fim = respondidas === itens.length;
+      placar.textContent =
+        "Você acertou " + acertos + " de " + respondidas +
+        (fim ? " — quiz completo!" : " (" + itens.length + " no total).");
+    }
+
+    itens.forEach(function (item) {
+      const correta = Number(item.getAttribute("data-correta"));
+      const opcoes = Array.prototype.slice.call(item.querySelectorAll(".quiz-opcao"));
+      const retorno = item.querySelector(".quiz-feedback");
+
+      opcoes.forEach(function (botao, indice) {
+        botao.addEventListener("click", function () {
+          if (item.getAttribute("data-respondida") === "1") return;
+          item.setAttribute("data-respondida", "1");
+          respondidas++;
+
+          const acertou = indice === correta;
+          if (acertou) acertos++;
+
+          opcoes.forEach(function (b, j) {
+            b.disabled = true;
+            if (j === correta) b.classList.add("certa");
+          });
+          if (!acertou) botao.classList.add("errada");
+
+          const textoCerto = opcoes[correta].textContent.trim();
+          if (retorno) {
+            retorno.textContent = acertou
+              ? "✔ Correto! " + textoCerto + "."
+              : "✕ Não foi essa. A resposta certa é: " + textoCerto + ".";
+            retorno.classList.add("visivel");
+            retorno.classList.toggle("acertou", acertou);
+          }
+          atualizarPlacar();
+        });
+      });
+    });
+
+    atualizarPlacar();
   })();
 
   /* ---------------------------------------------------------

@@ -2151,6 +2151,51 @@ body.alto-contraste .braille-ponto.cheio {
   font-weight: 700;
 }
 
+/* Artigo de texto corrido (ex.: a parte de óptica na página de saúde).
+   Alinhado à esquerda e com medida de leitura curta — parágrafo largo
+   e centralizado cansa. */
+.artigo {
+  max-width: 68ch;
+  margin-inline: auto;
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.artigo h3 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.85rem;
+  font-size: clamp(1.2rem, 0.9vw + 1rem, 1.5rem);
+  color: var(--cor-texto);
+}
+
+.artigo h3:first-child {
+  margin-top: 0;
+}
+
+.artigo p + p {
+  margin-top: 0.85rem;
+}
+
+.artigo strong {
+  color: var(--cor-texto);
+  font-weight: 700;
+}
+
+/* Crédito ao autor de um trecho específico da página */
+.artigo-credito {
+  max-width: 68ch;
+  margin: 2.5rem auto 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cor-borda);
+  font-size: 0.88rem;
+  text-align: left;
+  color: var(--cor-texto-suave);
+}
+
+.artigo-credito strong {
+  color: var(--cor-texto);
+}
+
 /* Aviso de que é conteúdo escolar, não orientação médica */
 .nota-saude {
   max-width: 60ch;
@@ -2166,6 +2211,257 @@ body.alto-contraste .braille-ponto.cheio {
 
 .nota-saude strong {
   color: var(--cor-texto);
+}
+
+/* ----------------------------------------------------------
+   18d. Jogos (jogos.html): simulador Braille e quiz
+---------------------------------------------------------- */
+/* Quadro que envolve cada jogo */
+.jogo {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  text-align: center;
+}
+
+.jogo-dica {
+  max-width: 44ch;
+  margin: 0 auto 2rem;
+  font-size: 0.92rem;
+  color: var(--cor-texto-suave);
+}
+
+/* --- Simulador: a cela de 6 pontos e a leitura ao lado --- */
+.simulador-palco {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 6vw, 4rem);
+}
+
+.simulador-cela {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: clamp(0.75rem, 2vw, 1.1rem);
+}
+
+/* Cada ponto é um BOTÃO: funciona com clique, toque e Tab */
+.sim-ponto {
+  width: clamp(2.75rem, 7vw, 3.5rem);
+  height: clamp(2.75rem, 7vw, 3.5rem);
+  padding: 0;
+  border: 2px solid var(--cor-borda);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.sim-ponto:hover {
+  border-color: var(--cor-acento-medio);
+}
+
+.sim-ponto.aceso {
+  background: var(--cor-acento);
+  border-color: var(--cor-acento);
+  box-shadow: 0 0 1.1rem rgba(245, 185, 66, 0.45);
+}
+
+.sim-ponto:active {
+  transform: scale(0.94);
+}
+
+/* A letra que os pontos formam */
+.simulador-leitura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 6rem;
+}
+
+.simulador-glifo {
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols 2", var(--fonte-principal), sans-serif;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--cor-acento);
+}
+
+.simulador-letra {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(3rem, 9vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--cor-texto);
+}
+
+/* Combinação que não corresponde a letra nenhuma */
+.simulador-letra.sim-letra-vaga {
+  color: var(--cor-texto-suave);
+}
+
+/* Cela vazia: o "—" fica discreto, sem gritar na tela */
+.simulador-letra.sim-letra-vazia {
+  color: var(--cor-borda);
+}
+
+.simulador-legenda {
+  font-family: var(--fonte-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.simulador-teclas {
+  margin-top: 2rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--cor-texto-suave);
+}
+
+.simulador-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.simulador-rotulo {
+  margin-top: 2rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.simulador-texto {
+  min-height: 2.4rem;
+  margin-top: 0.5rem;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--cor-acento);
+  word-break: break-all;
+}
+
+.simulador-texto:empty::before {
+  content: "—";
+  color: var(--cor-borda);
+  letter-spacing: 0;
+}
+
+/* --- Quiz --- */
+.quiz {
+  list-style: none;
+  counter-reset: pergunta;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 46rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.quiz-item {
+  counter-increment: pergunta;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.quiz-pergunta {
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.quiz-pergunta::before {
+  content: counter(pergunta) ". ";
+  font-family: var(--fonte-mono);
+  font-weight: 500;
+  color: var(--cor-acento);
+}
+
+.quiz-opcoes {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.quiz-opcao {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: var(--fonte-principal);
+  font-size: 1rem;
+  text-align: left;
+  color: var(--cor-texto);
+  background: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.quiz-opcao:hover:not(:disabled) {
+  border-color: var(--cor-acento);
+}
+
+.quiz-opcao:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+/* Certa e errada trazem SÍMBOLO junto da cor (nunca só cor) */
+.quiz-opcao.certa {
+  border-color: var(--cor-acento);
+  color: var(--cor-acento);
+  opacity: 1;
+}
+
+.quiz-opcao.certa::after {
+  content: " ✔";
+  font-weight: 700;
+}
+
+.quiz-opcao.errada {
+  border-style: dashed;
+  color: var(--cor-texto-suave);
+}
+
+.quiz-opcao.errada::after {
+  content: " ✕";
+  font-weight: 700;
+}
+
+.quiz-feedback {
+  margin-top: 0.85rem;
+  font-size: 0.92rem;
+  color: var(--cor-texto-suave);
+}
+
+.quiz-feedback.visivel.acertou {
+  color: var(--cor-acento);
+}
+
+.quiz-placar {
+  margin-top: 2rem;
+  text-align: center;
+  font-family: var(--fonte-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--cor-texto);
+}
+
+/* No alto contraste, sem brilho nos pontos (página estável) */
+body.alto-contraste .sim-ponto.aceso {
+  box-shadow: none;
 }
 
 /* --- Página placeholder "em desenvolvimento" (em-breve.html) --- */
