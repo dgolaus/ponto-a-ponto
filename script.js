@@ -826,6 +826,54 @@
   })();
 
   /* ---------------------------------------------------------
+     7c. Narração dos jogos — OPT-IN, guardada no localStorage.
+     Jogos que falam sozinhos atrapalham quem usa leitor de tela
+     (duas vozes ao mesmo tempo) e contrariam a WCAG 1.4.2, que
+     exige controle sobre áudio automático. Então nasce desligada.
+     A mesma chave é lida pelo jogo "Teclas pelo Toque", que roda
+     numa subpasta própria.
+  --------------------------------------------------------- */
+  const CHAVE_SOM_JOGOS = "pontoaponto-som-jogos";
+
+  (function narracaoDosJogos() {
+    const botao = document.getElementById("btn-som-jogos");
+    if (!botao) return;
+
+    const rotulo = document.getElementById("rotulo-som-jogos");
+    const icone = document.getElementById("icone-som-jogos");
+
+    // Sem API de voz no navegador, o controle não faz sentido
+    if (!suportaLeitura) {
+      botao.hidden = true;
+      return;
+    }
+
+    function ligado() {
+      return lerPreferencia(CHAVE_SOM_JOGOS) === "1";
+    }
+
+    function pintar() {
+      const on = ligado();
+      botao.setAttribute("aria-pressed", String(on));
+      if (rotulo) rotulo.textContent = "Narração dos jogos: " + (on ? "ligada" : "desligada");
+      if (icone) icone.textContent = on ? "🔊" : "🔇";
+    }
+
+    botao.addEventListener("click", function () {
+      const novo = !ligado();
+      salvarPreferencia(CHAVE_SOM_JOGOS, novo ? "1" : "0");
+      if (!novo && window.speechSynthesis) window.speechSynthesis.cancel();
+      pintar();
+      anunciar(novo
+        ? "Narração dos jogos ligada. Os jogos podem falar em voz alta."
+        : "Narração dos jogos desligada.");
+      mostrarToast(novo ? "Narração dos jogos ligada" : "Narração dos jogos desligada");
+    });
+
+    pintar();
+  })();
+
+  /* ---------------------------------------------------------
      7d. Simulador Braille (jogos.html) — teclado tipo Perkins.
      F, D, S = pontos 1, 2, 3 · J, K, L = pontos 4, 5, 6 ·
      Espaço confirma a letra · Backspace apaga.

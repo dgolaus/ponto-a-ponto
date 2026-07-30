@@ -129,14 +129,23 @@
         <h1 id="titulo-pagina" data-anima>Aprender jogando</h1>
         <p class="secao-intro" data-anima>
           Jogos feitos para serem jogados <strong>com ou sem a visão</strong>: tudo funciona pelo
-          teclado, é anunciado em voz alta e nunca depende só da cor. Escolha abaixo qual você
-          quer jogar. Mais jogos entram aqui conforme a turma for criando.
+          teclado, é compatível com leitor de tela e nunca depende só da cor. Escolha abaixo qual
+          você quer jogar. Mais jogos entram aqui conforme a turma for criando.
         </p>
         <div class="pagina-acoes" data-anima>
           <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
             <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
           </button>
+          <button type="button" id="btn-som-jogos" class="botao botao-secundario" aria-pressed="false">
+            <span class="icone" id="icone-som-jogos" aria-hidden="true">🔇</span>
+            <span id="rotulo-som-jogos">Narração dos jogos: desligada</span>
+          </button>
         </div>
+        <p class="nota-som" data-anima>
+          Alguns jogos podem narrar o que acontece em voz alta. Isso vem <strong>desligado</strong>:
+          som que começa sozinho atrapalha quem usa leitor de tela. Ligue aqui se quiser — a sua
+          escolha fica salva e vale para todos os jogos.
+        </p>
       </div>
     </section>
 

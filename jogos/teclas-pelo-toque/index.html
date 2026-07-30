@@ -32,12 +32,98 @@
     <style>
       html, body { height: 100%; margin: 0; }
       #root { height: 100%; }
+
+      /* Botão de narração — fica fora do #root, então o React não o toca */
+      .pap-som {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 1rem;
+        font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #a3a9b7;
+        background-color: rgba(11, 14, 21, 0.9);
+        border: 1px solid #252a37;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease;
+      }
+      .pap-som:hover { border-color: #f5b942; color: #f0f2f7; }
+      .pap-som:focus-visible { outline: 3px solid #f5b942; outline-offset: 2px; }
+      .pap-som[aria-pressed="true"] { color: #f5b942; border-color: #f5b942; }
+      @media (max-width: 40rem) { .pap-som { font-size: 0.78rem; padding: 0.45rem 0.8rem; } }
     </style>
+
+    <!--
+      Narração é OPT-IN. Sem isto, o jogo começa a falar sozinho ao abrir:
+      (1) áudio automático contraria a WCAG 1.4.2 (controle de áudio) e
+      (2) a voz do jogo atropela o leitor de tela de quem é cego.
+      A preferência é a mesma do resto do site (localStorage), então quem
+      ligou na página de Jogos chega aqui já com som.
+      Roda ANTES do módulo do jogo, que é deferido.
+    -->
+    <script>
+      (function () {
+        var CHAVE = "pontoaponto-som-jogos";
+        window.papSomLigado = function () {
+          try { return localStorage.getItem(CHAVE) === "1"; } catch (e) { return false; }
+        };
+        window.papDefinirSom = function (ligado) {
+          try { localStorage.setItem(CHAVE, ligado ? "1" : "0"); } catch (e) { /* segue */ }
+        };
+        if (!("speechSynthesis" in window)) return;
+        // Deixa o jogo chamar speak() à vontade: só deixamos passar se a
+        // pessoa tiver ligado. A checagem é por chamada, então o botão
+        // liga/desliga na hora, sem recarregar.
+        var falar = window.speechSynthesis.speak.bind(window.speechSynthesis);
+        window.speechSynthesis.speak = function (fala) {
+          if (window.papSomLigado()) return falar(fala);
+        };
+      })();
+    </script>
+
     <script type="module" crossorigin src="./assets/index-EEOq1Lr1.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-Dy9_CepL.css">
   </head>
 
   <body>
+    <button type="button" id="pap-som" class="pap-som" aria-pressed="false">
+      <span aria-hidden="true">🔇</span>
+      <span id="pap-som-texto">Narração desligada</span>
+    </button>
+
     <div id="root"></div>
+
+    <script>
+      (function () {
+        var botao = document.getElementById("pap-som");
+        var texto = document.getElementById("pap-som-texto");
+        var icone = botao && botao.querySelector("[aria-hidden]");
+        if (!botao) return;
+        if (!("speechSynthesis" in window)) { botao.hidden = true; return; }
+
+        function pintar() {
+          var ligado = window.papSomLigado();
+          botao.setAttribute("aria-pressed", String(ligado));
+          texto.textContent = ligado ? "Narração ligada" : "Narração desligada";
+          icone.textContent = ligado ? "🔊" : "🔇";
+        }
+
+        botao.addEventListener("click", function () {
+          var novo = !window.papSomLigado();
+          window.papDefinirSom(novo);
+          // ao desligar, cala o que estiver falando agora
+          if (!novo) window.speechSynthesis.cancel();
+          pintar();
+        });
+
+        pintar();
+      })();
+    </script>
   </body>
 </html>

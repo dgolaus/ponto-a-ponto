@@ -54,6 +54,14 @@ integração:
    e os caminhos dos assets precisam ser relativos.
 4. **`src/app/App.tsx`** — só um link "← Ponto a Ponto" no cabeçalho e na tela de
    abertura, para dar saída de volta ao portal.
+5. **`index.html` desta pasta** (não é gerado) — a **narração virou opt-in**. Um
+   script embrulha `speechSynthesis.speak` e só deixa passar se a chave
+   `pontoaponto-som-jogos` do `localStorage` estiver em `"1"`. Motivo: som que
+   começa sozinho contraria a WCAG 1.4.2 (controle de áudio) e a voz do jogo
+   atropela o leitor de tela de quem é cego — duas vozes ao mesmo tempo. A mesma
+   chave é controlada pelo botão "Narração dos jogos" na `jogos.html`, e há um
+   botão no canto desta página para ligar/desligar sem sair do jogo.
+   **O bundle React não foi tocado** — a lógica do jogo continua a original.
 
 ## Limitação conhecida
 

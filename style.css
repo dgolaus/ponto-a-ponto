@@ -2299,6 +2299,18 @@ body.alto-contraste .braille-ponto.cheio {
 /* ----------------------------------------------------------
    18d. Jogos (jogos.html): simulador Braille e quiz
 ---------------------------------------------------------- */
+/* Explicação do porquê a narração vem desligada */
+.nota-som {
+  max-width: 52ch;
+  margin: 1.5rem auto 0;
+  font-size: 0.88rem;
+  color: var(--cor-texto-suave);
+}
+
+.nota-som strong {
+  color: var(--cor-texto);
+}
+
 /* Quadro que envolve cada jogo */
 .jogo {
   max-width: 46rem;
