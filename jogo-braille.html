@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta
     name="description"
-    content="Jogos do Ponto a Ponto: escreva em Braille como numa máquina Perkins, aprenda a digitar pelo toque das teclas e teste seus conhecimentos de óptica e visão."
+    content="Simulador Braille: escreva em Braille usando o teclado como uma máquina Perkins. Cada dedo controla um ponto da cela."
   />
   <meta name="theme-color" content="#0A0D16" />
-  <title>Jogos — Ponto a Ponto</title>
+  <title>Simulador Braille — Ponto a Ponto</title>
 
   <!-- Favicon: cela Braille da letra P (a marca do site) -->
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -19,9 +19,9 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Ponto a Ponto" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogos.html" />
-  <meta property="og:title" content="Jogos — Ponto a Ponto" />
-  <meta property="og:description" content="Escreva em Braille como numa máquina Perkins, aprenda a digitar pelo toque das teclas e teste seus conhecimentos de óptica e visão." />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogo-braille.html" />
+  <meta property="og:title" content="Simulador Braille — Ponto a Ponto" />
+  <meta property="og:description" content="Escreva em Braille usando o teclado como uma máquina Perkins." />
   <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -122,84 +122,89 @@
 
   <main id="conteudo-principal" tabindex="-1">
 
-    <!-- Abertura -->
-    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+    <!-- Jogo -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-simulador">
       <div class="container">
-        <p class="rotulo-secao">Jogos</p>
-        <h1 id="titulo-pagina" data-anima>Aprender jogando</h1>
+        <p class="rotulo-secao">Jogo 01</p>
+        <h1 id="titulo-simulador" data-anima>Simulador Braille</h1>
         <p class="secao-intro" data-anima>
-          Jogos feitos para serem jogados <strong>com ou sem a visão</strong>: tudo funciona pelo
-          teclado, é anunciado em voz alta e nunca depende só da cor. Escolha abaixo qual você
-          quer jogar. Mais jogos entram aqui conforme a turma for criando.
+          Seu teclado vira uma <strong>máquina Perkins</strong> — a máquina de escrever em Braille.
+          Cada dedo controla um ponto da cela: <strong>F, D, S</strong> são os pontos 1, 2 e 3
+          (coluna da esquerda) e <strong>J, K, L</strong> são os pontos 4, 5 e 6 (coluna da direita).
+          Monte uma letra e confirme.
         </p>
         <div class="pagina-acoes" data-anima>
           <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
             <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- Escolha do jogo -->
-    <section class="secao" aria-labelledby="titulo-escolha">
-      <div class="container">
-        <h2 id="titulo-escolha" class="visualmente-oculto">Escolha um jogo</h2>
+        <div class="jogo" id="simulador-braille" data-anima>
+          <p class="jogo-dica">
+            Clique nos pontos ou use as teclas. Navegando por <strong>Tab</strong>, use
+            <strong>Enter</strong> para acender o ponto e <strong>Espaço</strong> para confirmar a
+            letra — como numa máquina Perkins de verdade. Cada mudança é anunciada em voz alta,
+            então dá pra jogar sem olhar para a tela.
+          </p>
 
-        <ul class="grade-cartoes lista-limpa" data-anima>
-          <li>
-            <a class="cartao cartao-jogo" href="jogo-braille.html">
-              <span class="cartao-numero">Jogo 01</span>
-              <h3 class="cartao-titulo">Simulador Braille</h3>
-              <p class="cartao-descricao">
-                Seu teclado vira uma máquina Perkins. Cada dedo controla um ponto da cela —
-                monte as letras e escreva seu nome sem olhar para a tela.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Saulo Ricofica</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
-          </li>
+          <div class="simulador-palco">
+            <div class="simulador-cela" id="cela-simulador" role="group" aria-label="Cela Braille de seis pontos">
+              <!-- ordem visual: 1 4 / 2 5 / 3 6 -->
+              <button type="button" class="sim-ponto" data-ponto="1" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 1 (tecla F)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="4" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 4 (tecla J)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="2" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 2 (tecla D)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="5" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 5 (tecla K)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="3" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 3 (tecla S)</span>
+              </button>
+              <button type="button" class="sim-ponto" data-ponto="6" aria-pressed="false">
+                <span class="visualmente-oculto">Ponto 6 (tecla L)</span>
+              </button>
+            </div>
 
-          <li>
-            <a class="cartao cartao-jogo" href="jogos/teclas-pelo-toque/">
-              <span class="cartao-numero">Jogo 02</span>
-              <h3 class="cartao-titulo">Teclas pelo Toque</h3>
-              <p class="cartao-descricao">
-                Aprenda a digitar sem olhar, guiado pelo relevo das teclas F e J. Seis lições,
-                treino com estatísticas e um jogo de velocidade — tudo narrado em voz alta.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Victor Bellin (Chorão)</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
-          </li>
+            <div class="simulador-leitura">
+              <span class="simulador-glifo" id="sim-glifo" aria-hidden="true">⠀</span>
+              <span class="simulador-letra" id="sim-letra" aria-hidden="true">—</span>
+              <span class="simulador-legenda">letra formada</span>
+            </div>
+          </div>
 
-          <li>
-            <a class="cartao cartao-jogo" href="jogo-quiz.html">
-              <span class="cartao-numero">Jogo 03</span>
-              <h3 class="cartao-titulo">Quiz: óptica e visão</h3>
-              <p class="cartao-descricao">
-                Cinco perguntas sobre como o olho funciona e sobre a física por trás dele.
-                Vale ler a página de Saúde antes — ou depois, pra conferir.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Saulo Ricofica</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
-          </li>
-        </ul>
+          <p class="simulador-teclas" aria-hidden="true">
+            F(1) D(2) S(3) &nbsp;·&nbsp; J(4) K(5) L(6) &nbsp;·&nbsp; Espaço confirma &nbsp;·&nbsp; Backspace apaga
+          </p>
+
+          <div class="simulador-acoes">
+            <button type="button" id="sim-confirmar" class="botao botao-primario">Confirmar letra</button>
+            <button type="button" id="sim-apagar" class="botao botao-secundario">Apagar última</button>
+            <button type="button" id="sim-limpar" class="botao botao-secundario">Limpar tudo</button>
+          </div>
+
+          <p class="simulador-rotulo">Você escreveu</p>
+          <p class="simulador-texto" id="sim-texto" role="status" aria-live="off"></p>
+        </div>
       </div>
     </section>
 
     <!-- Fecho -->
     <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
       <div class="container encerramento-caixa">
-        <h2 id="titulo-fecho">Jogos que se jogam de olhos fechados.</h2>
+        <h2 id="titulo-fecho">Um jogo que se joga de olhos fechados.</h2>
         <p>
-          Nenhum deles precisa da visão para funcionar: o Braille usa a mesma lógica de dedos da
-          máquina Perkins de verdade, o Teclas pelo Toque ensina a digitar pelo relevo do teclado
-          e o quiz é todo navegável por teclado. Tente jogar sem olhar para a tela.
+          O simulador não é só uma brincadeira: ele usa a mesma lógica de dedos da máquina
+          Perkins, a que pessoas cegas usam de verdade para escrever. Tente formar seu nome
+          sem olhar para a tela.
         </p>
         <div class="encerramento-acoes">
-          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
-          <a class="botao botao-secundario" href="doencas.html#titulo-optica">Ler sobre óptica</a>
+          <a class="botao botao-primario" href="jogos.html">Ver todos os jogos <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="jogo-quiz.html">Jogar o quiz de óptica</a>
         </div>
       </div>
     </section>
@@ -221,8 +226,8 @@
 
       <div class="rodape-creditos">
         <p>
-          Simulador Braille e quiz a partir do projeto <strong>Raios Catódicos &amp; Óptica</strong>,
-          de <strong>Saulo Ricofica</strong>. Teclas pelo Toque, de <strong>Victor Bellin (Chorão)</strong>.
+          A partir do projeto <strong>Raios Catódicos &amp; Óptica</strong>, de
+          <strong>Saulo Ricofica</strong>.
         </p>
       </div>
     </div>

@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta
     name="description"
-    content="Jogos do Ponto a Ponto: escreva em Braille como numa máquina Perkins, aprenda a digitar pelo toque das teclas e teste seus conhecimentos de óptica e visão."
+    content="Quiz de óptica e visão: cinco perguntas sobre como o olho funciona e sobre a física por trás dele."
   />
   <meta name="theme-color" content="#0A0D16" />
-  <title>Jogos — Ponto a Ponto</title>
+  <title>Quiz: óptica e visão — Ponto a Ponto</title>
 
   <!-- Favicon: cela Braille da letra P (a marca do site) -->
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -19,9 +19,9 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Ponto a Ponto" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogos.html" />
-  <meta property="og:title" content="Jogos — Ponto a Ponto" />
-  <meta property="og:description" content="Escreva em Braille como numa máquina Perkins, aprenda a digitar pelo toque das teclas e teste seus conhecimentos de óptica e visão." />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogo-quiz.html" />
+  <meta property="og:title" content="Quiz: óptica e visão — Ponto a Ponto" />
+  <meta property="og:description" content="Cinco perguntas sobre como o olho funciona e sobre a física por trás dele." />
   <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -122,83 +122,94 @@
 
   <main id="conteudo-principal" tabindex="-1">
 
-    <!-- Abertura -->
-    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+    <!-- Jogo -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-quiz">
       <div class="container">
-        <p class="rotulo-secao">Jogos</p>
-        <h1 id="titulo-pagina" data-anima>Aprender jogando</h1>
+        <p class="rotulo-secao">Jogo 03</p>
+        <h1 id="titulo-quiz" data-anima>Quiz: óptica e visão</h1>
         <p class="secao-intro" data-anima>
-          Jogos feitos para serem jogados <strong>com ou sem a visão</strong>: tudo funciona pelo
-          teclado, é anunciado em voz alta e nunca depende só da cor. Escolha abaixo qual você
-          quer jogar. Mais jogos entram aqui conforme a turma for criando.
+          Cinco perguntas sobre como o olho funciona e sobre a física por trás dela. O conteúdo
+          está na página <a href="doencas.html#titulo-optica">Saúde e prevenção</a> — vale ler
+          antes (ou depois, pra conferir).
         </p>
         <div class="pagina-acoes" data-anima>
           <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
             <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
           </button>
         </div>
-      </div>
-    </section>
 
-    <!-- Escolha do jogo -->
-    <section class="secao" aria-labelledby="titulo-escolha">
-      <div class="container">
-        <h2 id="titulo-escolha" class="visualmente-oculto">Escolha um jogo</h2>
-
-        <ul class="grade-cartoes lista-limpa" data-anima>
-          <li>
-            <a class="cartao cartao-jogo" href="jogo-braille.html">
-              <span class="cartao-numero">Jogo 01</span>
-              <h3 class="cartao-titulo">Simulador Braille</h3>
-              <p class="cartao-descricao">
-                Seu teclado vira uma máquina Perkins. Cada dedo controla um ponto da cela —
-                monte as letras e escreva seu nome sem olhar para a tela.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Saulo Ricofica</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
+        <ol class="quiz" id="quiz-revisao" data-anima>
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q1">Qual partícula J.J. Thomson descobriu nos raios catódicos?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q1">
+              <button type="button" class="quiz-opcao">Próton</button>
+              <button type="button" class="quiz-opcao">Elétron</button>
+              <button type="button" class="quiz-opcao">Nêutron</button>
+              <button type="button" class="quiz-opcao">Fóton</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
           </li>
 
-          <li>
-            <a class="cartao cartao-jogo" href="jogos/teclas-pelo-toque/">
-              <span class="cartao-numero">Jogo 02</span>
-              <h3 class="cartao-titulo">Teclas pelo Toque</h3>
-              <p class="cartao-descricao">
-                Aprenda a digitar sem olhar, guiado pelo relevo das teclas F e J. Seis lições,
-                treino com estatísticas e um jogo de velocidade — tudo narrado em voz alta.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Victor Bellin (Chorão)</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
+          <li class="quiz-item" data-correta="2">
+            <p class="quiz-pergunta" id="q2">Qual estrutura do olho funciona como uma lente convergente?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q2">
+              <button type="button" class="quiz-opcao">Retina</button>
+              <button type="button" class="quiz-opcao">Íris</button>
+              <button type="button" class="quiz-opcao">Cristalino</button>
+              <button type="button" class="quiz-opcao">Córnea</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
           </li>
 
-          <li>
-            <a class="cartao cartao-jogo" href="jogo-quiz.html">
-              <span class="cartao-numero">Jogo 03</span>
-              <h3 class="cartao-titulo">Quiz: óptica e visão</h3>
-              <p class="cartao-descricao">
-                Cinco perguntas sobre como o olho funciona e sobre a física por trás dele.
-                Vale ler a página de Saúde antes — ou depois, pra conferir.
-              </p>
-              <p class="cartao-autor">Projeto de <strong>Saulo Ricofica</strong></p>
-              <p class="cartao-acao">Jogar <span class="seta" aria-hidden="true">→</span></p>
-            </a>
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q3">A miopia é corrigida com qual tipo de lente?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q3">
+              <button type="button" class="quiz-opcao">Convergente</button>
+              <button type="button" class="quiz-opcao">Divergente</button>
+              <button type="button" class="quiz-opcao">Cilíndrica</button>
+              <button type="button" class="quiz-opcao">Plana</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
           </li>
-        </ul>
+
+          <li class="quiz-item" data-correta="1">
+            <p class="quiz-pergunta" id="q4">O que acontece com o cristalino durante a acomodação visual?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q4">
+              <button type="button" class="quiz-opcao">Ele muda de cor</button>
+              <button type="button" class="quiz-opcao">Ele muda de forma</button>
+              <button type="button" class="quiz-opcao">Ele se desloca</button>
+              <button type="button" class="quiz-opcao">Ele endurece</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+
+          <li class="quiz-item" data-correta="2">
+            <p class="quiz-pergunta" id="q5">Em qual parte do olho a imagem é formada?</p>
+            <div class="quiz-opcoes" role="group" aria-labelledby="q5">
+              <button type="button" class="quiz-opcao">Cristalino</button>
+              <button type="button" class="quiz-opcao">Córnea</button>
+              <button type="button" class="quiz-opcao">Retina</button>
+              <button type="button" class="quiz-opcao">Nervo óptico</button>
+            </div>
+            <p class="quiz-feedback" aria-live="polite"></p>
+          </li>
+        </ol>
+
+        <p class="quiz-placar" id="quiz-placar" role="status" aria-live="polite"></p>
       </div>
     </section>
 
     <!-- Fecho -->
     <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
       <div class="container encerramento-caixa">
-        <h2 id="titulo-fecho">Jogos que se jogam de olhos fechados.</h2>
+        <h2 id="titulo-fecho">A física de enxergar.</h2>
         <p>
-          Nenhum deles precisa da visão para funcionar: o Braille usa a mesma lógica de dedos da
-          máquina Perkins de verdade, o Teclas pelo Toque ensina a digitar pelo relevo do teclado
-          e o quiz é todo navegável por teclado. Tente jogar sem olhar para a tela.
+          Cada pergunta aqui tem resposta na página de Saúde e prevenção: o cristalino que muda
+          de forma, a retina onde a imagem se forma, as lentes que corrigem miopia. Entender o
+          olho é o primeiro passo para cuidar dele.
         </p>
         <div class="encerramento-acoes">
-          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-primario" href="jogos.html">Ver todos os jogos <span aria-hidden="true">←</span></a>
           <a class="botao botao-secundario" href="doencas.html#titulo-optica">Ler sobre óptica</a>
         </div>
       </div>
@@ -221,8 +232,8 @@
 
       <div class="rodape-creditos">
         <p>
-          Simulador Braille e quiz a partir do projeto <strong>Raios Catódicos &amp; Óptica</strong>,
-          de <strong>Saulo Ricofica</strong>. Teclas pelo Toque, de <strong>Victor Bellin (Chorão)</strong>.
+          A partir do projeto <strong>Raios Catódicos &amp; Óptica</strong>, de
+          <strong>Saulo Ricofica</strong>.
         </p>
       </div>
     </div>

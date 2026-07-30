@@ -1,0 +1,193 @@
+diff --git a/index.html b/index.html
+index 7db81b0..6043908 100644
+--- a/index.html
++++ b/index.html
+@@ -1,22 +1,42 @@
++<!DOCTYPE html>
++<html lang="pt-BR">
++  <head>
++    <meta charset="UTF-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Teclas pelo Toque — Ponto a Ponto</title>
++    <meta
++      name="description"
++      content="Aprenda a digitar sem olhar para o teclado, pelo relevo das teclas F e J. Jogo acessível com voz em português, criado por Victor Bellin (Chorão)."
++    />
++    <meta name="theme-color" content="#080a11" />
+ 
+-  <!DOCTYPE html>
+-  <html lang="en">
+-    <head>
+-      
+-      <meta charset="UTF-8" />
+-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-      <title>nao CHORE ASSESE O POD VER</title>
+-      <meta name="description" content="This web application provides a user-friendly platform for visually impaired individuals to learn keyboard usage through tactile feedback on keys." />
+-      <meta name="robots" content="noindex, nofollow" />
+-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+-      
+-    </head>
++    <!-- Favicon do Ponto a Ponto (cela Braille da letra P) -->
++    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
++    <link rel="icon" href="../../favicon-32.png" sizes="32x32" type="image/png" />
++    <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+ 
+-    <body>
+-      
+-      <div id="root"></div>
+-      <script type="module" src="/src/main.tsx"></script>
+-      
+-    </body>
+-  </html>
+-  
+\ No newline at end of file
++    <!-- Open Graph / Twitter -->
++    <meta property="og:type" content="article" />
++    <meta property="og:site_name" content="Ponto a Ponto" />
++    <meta property="og:locale" content="pt_BR" />
++    <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogos/teclas-pelo-toque/" />
++    <meta property="og:title" content="Teclas pelo Toque — Ponto a Ponto" />
++    <meta property="og:description" content="Aprenda a digitar sem olhar para o teclado, pelo relevo das teclas F e J." />
++    <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
++    <meta property="og:image:width" content="1200" />
++    <meta property="og:image:height" content="630" />
++    <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
++    <meta name="twitter:card" content="summary_large_image" />
++    <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
++
++    <style>
++      html, body { height: 100%; margin: 0; }
++      #root { height: 100%; }
++    </style>
++  </head>
++
++  <body>
++    <div id="root"></div>
++    <script type="module" src="/src/main.tsx"></script>
++  </body>
++</html>
+diff --git a/src/app/App.tsx b/src/app/App.tsx
+index 552402d..e56eee6 100644
+--- a/src/app/App.tsx
++++ b/src/app/App.tsx
+@@ -1176,6 +1176,25 @@ function GameSection() {
+ 
+ // ─── App ─────────────────────────────────────────────────────────────────────
+ 
++// Link de volta para o portal. O jogo é publicado dentro do Ponto a Ponto,
++// então precisa de uma saída visível — inclusive na tela de abertura, que
++// não mostra o cabeçalho.
++function VoltarPontoAPonto({ fixo = false }: { fixo?: boolean }) {
++  return (
++    <a
++      href="../../jogos.html"
++      className={[
++        "inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-bold text-muted-foreground",
++        "hover:bg-muted hover:text-foreground transition-colors",
++        "focus:outline-none focus:ring-2 focus:ring-primary",
++        fixo ? "fixed top-4 left-4 z-50 bg-card" : "",
++      ].join(" ")}
++    >
++      <span aria-hidden="true">←</span> Ponto a Ponto
++    </a>
++  );
++}
++
+ export default function App() {
+   const [section, setSection] = useState<Section>("anime-select");
+   const [lessonIndex, setLessonIndex] = useState(0);
+@@ -1215,6 +1234,8 @@ export default function App() {
+         Ir para o conteúdo
+       </a>
+ 
++      {isOnboarding && <VoltarPontoAPonto fixo />}
++
+       {/* Header — only after onboarding */}
+       {!isOnboarding && (
+         <header className="border-b border-border bg-card sticky top-0 z-40" role="banner">
+@@ -1240,6 +1261,7 @@ export default function App() {
+               </div>
+             </div>
+             <div className="flex items-center gap-2">
++              <VoltarPontoAPonto />
+               <button
+                 onClick={() => setSection("anime-select")}
+                 className="border border-border rounded-lg px-3 py-2 text-xs font-bold hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary text-muted-foreground"
+diff --git a/src/styles/theme.css b/src/styles/theme.css
+index 3b019d4..41c52da 100644
+--- a/src/styles/theme.css
++++ b/src/styles/theme.css
+@@ -1,36 +1,39 @@
+ @custom-variant dark (&:is(.dark *));
+ 
++/* Paleta alinhada ao Ponto a Ponto (tokens de :root do style.css do site):
++   navy profundo #080a11 + um único acento âmbar #f5b942. A lógica e o
++   layout do jogo são os originais — aqui só trocam as cores. */
+ :root {
+   --font-size: 18px;
+-  --background: #0d0d0d;
+-  --foreground: #f5f0e8;
+-  --card: #1a1a1a;
+-  --card-foreground: #f5f0e8;
+-  --popover: #1a1a1a;
+-  --popover-foreground: #f5f0e8;
+-  --primary: #ffd700;
+-  --primary-foreground: #0d0d0d;
+-  --secondary: #222222;
+-  --secondary-foreground: #f5f0e8;
+-  --muted: #2a2a2a;
+-  --muted-foreground: #a8a090;
+-  --accent: #ffd700;
+-  --accent-foreground: #0d0d0d;
++  --background: #080a11;
++  --foreground: #f0f2f7;
++  --card: #0b0e15;
++  --card-foreground: #f0f2f7;
++  --popover: #0b0e15;
++  --popover-foreground: #f0f2f7;
++  --primary: #f5b942;
++  --primary-foreground: #191001;
++  --secondary: #10141d;
++  --secondary-foreground: #f0f2f7;
++  --muted: #10141d;
++  --muted-foreground: #a3a9b7;
++  --accent: #f5b942;
++  --accent-foreground: #191001;
+   --destructive: #ff4444;
+   --destructive-foreground: #ffffff;
+-  --border: rgba(245, 240, 232, 0.15);
++  --border: #252a37;
+   --input: transparent;
+-  --input-background: #1a1a1a;
+-  --switch-background: #3a3a3a;
++  --input-background: #0b0e15;
++  --switch-background: #252a37;
+   --font-weight-medium: 700;
+   --font-weight-normal: 400;
+-  --ring: #ffd700;
++  --ring: #f5b942;
+   --chart-1: oklch(0.646 0.222 41.116);
+   --chart-2: oklch(0.6 0.118 184.704);
+   --chart-3: oklch(0.398 0.07 227.392);
+   --chart-4: oklch(0.828 0.189 84.429);
+   --chart-5: oklch(0.769 0.188 70.08);
+-  --radius: 0.625rem;
++  --radius: 1rem;
+   --sidebar: oklch(0.985 0 0);
+   --sidebar-foreground: oklch(0.145 0 0);
+   --sidebar-primary: #030213;
+diff --git a/vite.config.ts b/vite.config.ts
+index 13dfa3a..000f3ae 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@ -17,6 +17,10 @@ function figmaAssetResolver() {
+ }
+ 
+ export default defineConfig({
++  // O jogo é publicado numa subpasta do Ponto a Ponto
++  // (/ponto-a-ponto/jogos/teclas-pelo-toque/), então os caminhos dos
++  // assets precisam ser relativos e não absolutos a partir da raiz.
++  base: './',
+   plugins: [
+     figmaAssetResolver(),
+     // The React and Tailwind plugins are both required for Make, even if

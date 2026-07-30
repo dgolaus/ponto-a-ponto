@@ -1403,6 +1403,14 @@ button {
   gap: 1.25rem;
 }
 
+/* Lista semântica (<ul>) sem a aparência de lista: o leitor de tela
+   continua anunciando "lista de 3 itens", a tela mostra só os cartões. */
+.lista-limpa {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .cartao {
   display: flex;
   flex-direction: column;
@@ -1419,6 +1427,81 @@ button {
 .cartao:hover {
   transform: translateY(-4px);
   border-color: var(--cor-acento);
+}
+
+/* Cartão de escolha de jogo (jogos.html) — a "tela antes do jogo".
+   O número é mono (etiqueta), o título é Inter Tight e o autor fica
+   sempre visível: o conteúdo é de quem fez. */
+.cartao-jogo {
+  gap: 0.6rem;
+  color: inherit;
+}
+
+.cartao-jogo:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+.cartao-numero {
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cor-acento);
+}
+
+.cartao-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  color: var(--cor-texto);
+  margin: 0;
+}
+
+.cartao-descricao {
+  color: var(--cor-texto-suave);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.cartao-autor {
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+  margin: 0;
+}
+
+.cartao-autor strong {
+  color: var(--cor-texto);
+}
+
+/* Chamada para a ação: some da leitura por voz do rodapé porque a
+   seta já é decorativa e o link inteiro é clicável. */
+.cartao-acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: var(--cor-acento);
+  margin: 0;
+}
+
+.cartao-acao .seta {
+  transition: transform 0.15s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cartao:hover .cartao-acao .seta {
+    transform: translateX(4px);
+  }
+}
+
+/* Alto contraste: nada se move. O cartão continua indicando o foco e o
+   hover pela borda âmbar, não por deslocamento. */
+body.alto-contraste .cartao:hover,
+body.alto-contraste .cartao:hover .cartao-acao .seta {
+  transform: none;
 }
 
 /* ----------------------------------------------------------
