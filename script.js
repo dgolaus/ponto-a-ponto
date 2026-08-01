@@ -84,6 +84,9 @@
   function lerPreferencia(chave) {
     try { return localStorage.getItem(chave); } catch (erro) { return null; }
   }
+  function esquecerPreferencia(chave) {
+    try { localStorage.removeItem(chave); } catch (erro) { /* segue funcionando */ }
+  }
 
   /* ---------------------------------------------------------
      1. Menu de acessibilidade (botão que abre/fecha o painel)
@@ -1437,10 +1440,32 @@
 
   /* ---------------------------------------------------------
      10. Restaura as preferências salvas na última visita
+
+     No contraste, a escolha do usuário vem primeiro. Se ele nunca
+     mexeu no botão, a gente olha o que o sistema dele já diz:
+     quem liga "aumentar contraste" no Windows/macOS ou usa o Modo
+     de Alto Contraste está justamente avisando que precisa disso,
+     e não deveria ter que achar o menu pra pedir de novo.
   --------------------------------------------------------- */
-  if (lerPreferencia(CHAVE_CONTRASTE) === "1") {
-    aplicarContraste(true, false);
+  const contrasteSalvo = lerPreferencia(CHAVE_CONTRASTE);
+
+  function sistemaPedeContraste() {
+    if (!window.matchMedia) return false;
+    return window.matchMedia("(prefers-contrast: more)").matches ||
+           window.matchMedia("(forced-colors: active)").matches;
   }
+
+  if (contrasteSalvo === "1") {
+    aplicarContraste(true, false);
+  } else if (contrasteSalvo === null && sistemaPedeContraste()) {
+    aplicarContraste(true, false);
+    // Ligou porque o SISTEMA pediu, não porque ele clicou. Se deixasse
+    // salvo, o site ficaria preso no alto contraste mesmo depois que ele
+    // desligasse a config do sistema. Apagando, a gente continua seguindo.
+    esquecerPreferencia(CHAVE_CONTRASTE);
+  }
+  // contrasteSalvo === "0" cai fora de propósito: ele desligou na mão,
+  // e isso vale mais que a preferência do sistema.
 
   const fonteSalva = parseInt(lerPreferencia(CHAVE_FONTE), 10);
   aplicarFonte(isNaN(fonteSalva) ? NIVEL_PADRAO : fonteSalva, false);
