@@ -687,6 +687,32 @@
      Feito direto no evento de scroll (sem rAF) para ser leve e
      previsível: uma escrita de estilo e um toggle de classe.
   --------------------------------------------------------- */
+  /* ---------------------------------------------------------
+     6b. Altura REAL do cabeçalho.
+     O token --altura-cabecalho (5rem) é uma estimativa e sobra
+     ~16px sobre a altura real — o bastante para a próxima seção
+     espiar por baixo da dobra nas telas de abertura. Aqui a
+     altura é medida e publicada em --cabecalho-real, que o CSS
+     usa para calcular "uma tela cheia".
+     Só medimos com o cabeçalho no estado NÃO rolado: ao rolar
+     ele encolhe, e usar essa altura menor faria a página pular.
+  --------------------------------------------------------- */
+  (function alturaRealDoCabecalho() {
+    const barra = document.querySelector(".cabecalho");
+    if (!barra) return;
+
+    function medir() {
+      if (barra.classList.contains("rolado")) return; // encolhido: não serve
+      const altura = barra.getBoundingClientRect().height;
+      if (altura > 0) raiz.style.setProperty("--cabecalho-real", altura.toFixed(1) + "px");
+    }
+
+    medir();
+    window.addEventListener("resize", medir);
+    window.addEventListener("load", medir);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+  })();
+
   const cabecalho = document.querySelector(".cabecalho");
   const anelProgresso = document.querySelector(".anel-progresso");
   const CIRCUNFERENCIA = 2 * Math.PI * 20; // r = 20 no viewBox 0 0 44 44
@@ -1089,6 +1115,83 @@
     });
 
     atualizarPlacar();
+  })();
+
+  /* ---------------------------------------------------------
+     7f. A rota do AcessiCar (tecnologia.html): o trilho se
+     preenche conforme a pessoa rola e cada parada acende ao
+     ser alcançada. É enfeite — o texto e a ordem já estão no
+     HTML (<ol>), então quem não vê a animação não perde nada.
+     No alto contraste e no "reduzir movimento", o trajeto já
+     nasce inteiro aceso e não há listener de scroll.
+  --------------------------------------------------------- */
+  (function rotaConceito() {
+    const palco = document.getElementById("rota-acessicar");
+    if (!palco) return;
+
+    const paradas = Array.prototype.slice.call(palco.querySelectorAll(".rota-parada"));
+    if (!paradas.length) return;
+
+    // Onde o trilho começa/termina e onde fica o centro de cada parada.
+    let trilhoTopo = 0;
+    let trilhoAltura = 1;
+    let centros = [];
+
+    function medir() {
+      const base = palco.getBoundingClientRect().top;
+      const marcas = paradas.map(function (p) {
+        const m = p.querySelector(".rota-marca").getBoundingClientRect();
+        return m.top - base + m.height / 2;
+      });
+      trilhoTopo = marcas[0];
+      trilhoAltura = Math.max(1, marcas[marcas.length - 1] - marcas[0]);
+      centros = marcas.map(function (c) { return c - trilhoTopo; });
+      palco.style.setProperty("--rota-topo", trilhoTopo.toFixed(1) + "px");
+      palco.style.setProperty("--rota-altura", trilhoAltura.toFixed(1) + "px");
+    }
+
+    function acenderTudo() {
+      palco.style.setProperty("--rota", "1");
+      paradas.forEach(function (p) { p.classList.add("alcancada"); });
+    }
+
+    function estatico() {
+      return prefereMenosMovimento || corpo.classList.contains("alto-contraste");
+    }
+
+    function aoRolar() {
+      if (estatico()) { acenderTudo(); return; }
+      const topoNaTela = palco.getBoundingClientRect().top + trilhoTopo;
+      // linha de referência um pouco abaixo do meio da tela
+      const referencia = window.innerHeight * 0.62;
+      let avanco = (referencia - topoNaTela) / trilhoAltura;
+      avanco = Math.max(0, Math.min(1, avanco));
+      palco.style.setProperty("--rota", avanco.toFixed(4));
+
+      const percorrido = avanco * trilhoAltura;
+      for (let i = 0; i < paradas.length; i++) {
+        paradas[i].classList.toggle("alcancada", percorrido >= centros[i] - 1);
+      }
+    }
+
+    function atualizar() {
+      medir();
+      aoRolar();
+    }
+
+    atualizar();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("resize", atualizar);
+    window.addEventListener("load", atualizar);
+    // a imagem da marca acima pode empurrar o layout ao carregar
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(atualizar);
+
+    // Ao ligar/desligar o alto contraste, o modo muda na hora
+    document.addEventListener("click", function (evento) {
+      if (evento.target && evento.target.closest && evento.target.closest("#btn-contraste")) {
+        window.setTimeout(atualizar, 60);
+      }
+    });
   })();
 
   /* ---------------------------------------------------------

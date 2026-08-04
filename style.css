@@ -638,8 +638,9 @@ button {
      celular; min-height (não height) deixa crescer se o conteúdo for
      mais alto que a tela. Padding pequeno e simétrico — a centralização
      é que distribui o espaço. */
-  min-height: calc(100vh - var(--altura-cabecalho));
-  min-height: calc(100svh - var(--altura-cabecalho));
+  /* --cabecalho-real é medido pelo script.js; o token é só o plano B */
+  min-height: calc(100vh - var(--cabecalho-real, var(--altura-cabecalho)));
+  min-height: calc(100svh - var(--cabecalho-real, var(--altura-cabecalho)));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1875,7 +1876,10 @@ html.pre-aviso .cabecalho {
    pra ficar SEMPRE visível (não depende da altura do conteúdo). */
 .hero-rolar {
   position: absolute;
-  bottom: 1.25rem;
+  /* 2,2rem e não 1,25rem: ao corrigir a altura do cabeçalho o hero ficou
+     16px mais alto e a dica desceu junto, encostando na borda da tela.
+     Isto devolve a distância que ela tinha antes. */
+  bottom: 2.2rem;
   left: 50%;
   transform: translateX(-50%);
   display: inline-flex;
@@ -2030,9 +2034,18 @@ body.alto-contraste .braille-ponto.cheio {
    18c. Sub-páginas de conteúdo (ex.: tecnologia.html)
         Abertura da página + lista de ferramentas
 ---------------------------------------------------------- */
-/* A primeira seção precisa de folga extra: o cabeçalho é fixo. */
+/* A abertura de cada sub-página ocupa a tela inteira, como o hero da home:
+   o cabeçalho é sticky (ocupa espaço), então uma tela = 100svh menos ele.
+   Assim nada da próxima seção "vaza" por baixo da dobra. Como é min-height,
+   páginas cujo topo já é comprido (as de jogo) simplesmente crescem. */
 .pagina-topo {
-  padding-top: calc(var(--altura-cabecalho) + clamp(1.5rem, 5vw, 3.5rem));
+  position: relative;
+  min-height: calc(100vh - var(--cabecalho-real, var(--altura-cabecalho)));
+  min-height: calc(100svh - var(--cabecalho-real, var(--altura-cabecalho)));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(1.5rem, 4vh, 3rem);
 }
 
 /* Sem a divisória de topo — é a primeira seção da página */
@@ -2040,12 +2053,50 @@ body.alto-contraste .braille-ponto.cheio {
   display: none;
 }
 
+/* Ocupando a tela inteira, o título precisa de peso — antes parava em
+   3,5rem e ficava perdido no meio da folga. */
 .pagina-topo h1 {
-  font-size: clamp(2rem, 2.5vw + 1.2rem, 3.5rem);
-  max-width: 24ch;
+  font-size: clamp(2.3rem, 3.2vw + 1.3rem, 4.5rem);
+  max-width: 22ch;
   margin-inline: auto;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.pagina-topo .secao-intro {
+  font-size: clamp(1.1rem, 0.6vw + 0.95rem, 1.3rem);
+  max-width: 56ch;
+  margin-bottom: 2.5rem;
+}
+
+/* Brilho âmbar de fundo, como no hero da home: dá presença à tela de
+   abertura em vez de deixá-la só vazia. Estático (o da home já anima)
+   e com máscara para não vazar na seção seguinte. */
+.pagina-topo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--cabecalho-real, var(--altura-cabecalho)));
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42vmax 34vmax at 50% 42%, rgba(245, 185, 66, 0.13), transparent 68%),
+    radial-gradient(30vmax 26vmax at 50% 30%, rgba(240, 191, 95, 0.07), transparent 66%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 68%, transparent 100%),
+    linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, #000 68%, transparent 100%),
+    linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+
+/* Alto contraste: fundo preto sólido, sem brilho */
+body.alto-contraste .pagina-topo::after {
+  display: none;
 }
 
 .pagina-acoes {
@@ -2299,6 +2350,245 @@ body.alto-contraste .braille-ponto.cheio {
 /* ----------------------------------------------------------
    18d. Jogos (jogos.html): simulador Braille e quiz
 ---------------------------------------------------------- */
+/* ----------------------------------------------------------
+   18e. Projeto conceito (AcessiCar, na página de Tecnologia)
+   Precisa ficar VISUALMENTE claro que não é um app real —
+   daí o selo, e não só uma frase perdida no meio do texto.
+---------------------------------------------------------- */
+.selo-conceito {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 46rem;
+  margin: 0 auto 2.5rem;
+  padding: 0.8rem 1.25rem;
+  border: 1px dashed var(--cor-acento);
+  border-radius: var(--raio-botao);
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--cor-texto);
+  text-align: left;
+}
+
+.selo-conceito-marca {
+  flex-shrink: 0;
+  color: var(--cor-acento);
+  font-size: 1rem;
+}
+
+/* A marca do AcessiCar entra SEM moldura: o fundo azul dela foi recortado,
+   então a arte flutua direto sobre o navy do site, como um símbolo — em vez
+   de um retângulo azul colado no meio da página. */
+.conceito-marca {
+  width: min(100%, 15rem);
+  margin: 0 auto 3rem;
+}
+
+.conceito-marca img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.conceito-subtitulo {
+  max-width: 56rem;
+  margin: 3rem auto 1.5rem;
+  font-size: clamp(1.2rem, 1vw + 1rem, 1.6rem);
+  text-align: center;
+  color: var(--cor-texto);
+}
+
+.conceito-nota {
+  max-width: 52ch;
+  margin: -0.75rem auto 1.5rem;
+  font-size: 0.92rem;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+/* --- O problema: texto editorial com filete âmbar, sem caixinha --- */
+.problemas {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: 1.75rem clamp(1.5rem, 4vw, 3rem);
+  max-width: 54rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.problema {
+  padding-left: 1.35rem;
+  border-left: 2px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+  transition: border-color 0.25s ease;
+}
+
+.problema:hover {
+  border-left-color: var(--cor-acento);
+}
+
+.problema-titulo {
+  margin-bottom: 0.4rem;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.1rem, 0.8vw + 0.9rem, 1.35rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--cor-texto);
+}
+
+/* --- A rota: o trajeto que se acende conforme a pessoa rola --- */
+.rota-palco {
+  --rota-marca: 2.75rem;
+  position: relative;
+  max-width: 44rem;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* Trilho cinza; o topo e a altura vêm do script.js, para começar e
+   terminar exatamente no centro da primeira e da última parada. */
+.rota-trilho {
+  position: absolute;
+  left: calc(var(--rota-marca) / 2 - 1px);
+  top: var(--rota-topo, calc(var(--rota-marca) / 2));
+  height: var(--rota-altura, calc(100% - var(--rota-marca)));
+  width: 2px;
+  border-radius: 2px;
+  background-color: var(--cor-borda);
+  overflow: hidden;
+}
+
+.rota-avanco {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--cor-acento);
+  transform: scaleY(var(--rota, 0));
+  transform-origin: top center;
+  transition: transform 0.12s linear;
+}
+
+.rota {
+  list-style: none;
+  display: grid;
+  gap: 2.25rem;
+}
+
+.rota-parada {
+  display: grid;
+  grid-template-columns: var(--rota-marca) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.rota-marca {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--rota-marca);
+  height: var(--rota-marca);
+  border: 2px solid var(--cor-borda);
+  border-radius: 50%;
+  background-color: var(--cor-fundo);
+  font-family: var(--fonte-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+  transition: border-color 0.35s ease, background-color 0.35s ease,
+    color 0.35s ease, transform 0.35s ease;
+}
+
+.rota-marca svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+/* Parada alcançada: acende em âmbar */
+.rota-parada.alcancada .rota-marca {
+  border-color: var(--cor-acento);
+  background-color: var(--cor-acento);
+  color: var(--cor-acento-texto);
+  transform: scale(1.07);
+}
+
+.rota-texto {
+  color: var(--cor-texto-suave);
+  padding-top: 0.35rem;
+}
+
+.rota-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.1rem, 0.8vw + 0.9rem, 1.35rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--cor-texto);
+  margin-bottom: 0.25rem;
+  transition: color 0.35s ease;
+}
+
+.rota-parada.alcancada .rota-titulo {
+  color: var(--cor-acento);
+}
+
+/* --- Segurança: painéis com ícone desenhado --- */
+.grade-protecao {
+  list-style: none;
+  display: grid;
+  /* 2×2 na mesma largura da rota — em 4 colunas o texto ficava espremido */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 1.25rem;
+  max-width: 44rem;
+  margin-inline: auto;
+  text-align: left;
+}
+
+.protecao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: clamp(1.25rem, 3vw, 1.6rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease;
+}
+
+.protecao:hover,
+.protecao:hover .ferramenta-icone {
+  border-color: var(--cor-acento);
+}
+
+.protecao-titulo {
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.protecao strong {
+  color: var(--cor-texto);
+}
+
+.conceito-fecho {
+  max-width: 60ch;
+  margin: 3rem auto 0;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.conceito-fecho strong {
+  color: var(--cor-texto);
+}
+
+.conceito-fecho em {
+  color: var(--cor-acento);
+  font-style: italic;
+}
+
 /* Explicação do porquê a narração vem desligada */
 .nota-som {
   max-width: 52ch;

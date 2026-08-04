@@ -142,6 +142,10 @@
           </button>
         </div>
       </div>
+
+      <a class="hero-rolar" href="#titulo-ferramentas">
+        <span class="seta" aria-hidden="true">↓</span> Role para explorar
+      </a>
     </section>
 
     <!-- As três ferramentas -->
@@ -227,6 +231,184 @@
             </div>
           </li>
         </ul>
+      </div>
+    </section>
+
+    <!--
+      AcessiCar — projeto CONCEITO, de Lucas Valim, Cecília Betin e Heverton
+      Viana. Diferente das ferramentas acima, este app NÃO existe: é uma
+      proposta. O selo e o texto deixam isso explícito, para ninguém sair
+      procurando na loja de aplicativos.
+    -->
+    <section class="secao secao-conceito" aria-labelledby="titulo-acessicar">
+      <div class="container">
+        <p class="rotulo-secao">Uma ideia da turma</p>
+        <h2 id="titulo-acessicar">AcessiCar</h2>
+        <p class="secao-intro">
+          As três ferramentas acima existem e você pode baixar hoje. Esta não — <em>ainda</em>.
+          O AcessiCar é um <strong>projeto conceito</strong> criado por alunos da escola: um
+          aplicativo de transporte pensado desde o começo para ser usado <strong>sem enxergar</strong>.
+        </p>
+
+        <p class="selo-conceito">
+          <span class="selo-conceito-marca" aria-hidden="true">✱</span>
+          Projeto conceito — não é um aplicativo real e não está disponível para baixar.
+        </p>
+
+        <figure class="conceito-marca" data-anima>
+          <img
+            src="assets/acessicar.webp"
+            width="716"
+            height="821"
+            loading="lazy"
+            decoding="async"
+            alt="Marca do AcessiCar: uma pessoa com bengala caminha em direção a um carro, dentro de uma moldura de celular, com prédios da cidade ao fundo. Abaixo, o nome AcessiCar e a frase “Mobilidade para todos. Liberdade para chegar.”"
+          />
+        </figure>
+
+        <h3 class="conceito-subtitulo">O problema que ele resolveria</h3>
+        <ul class="problemas">
+          <li class="problema" data-anima>
+            <p class="problema-titulo">Barreiras diárias</p>
+            <p>Pessoas cegas ou com baixa visão enfrentam obstáculos constantes para se locomover com autonomia.</p>
+          </li>
+          <li class="problema" data-anima>
+            <p class="problema-titulo">Apps inacessíveis</p>
+            <p>Os aplicativos comuns exigem leitura visual e interações complexas — excluindo justamente quem mais precisa.</p>
+          </li>
+          <li class="problema" data-anima>
+            <p class="problema-titulo">Dependência e exclusão</p>
+            <p>A falta de acessibilidade gera insegurança e dependência de terceiros.</p>
+          </li>
+          <li class="problema" data-anima>
+            <p class="problema-titulo">Transporte público que falha</p>
+            <p>Nem sempre é seguro, acessível ou previsível para quem tem deficiência visual.</p>
+          </li>
+        </ul>
+
+        <h3 class="conceito-subtitulo">Como funcionaria</h3>
+        <p class="conceito-nota">
+          Cinco paradas — todas acessíveis por voz, toque ou áudio. Role para percorrer o trajeto.
+        </p>
+
+        <!--
+          A rota: o trilho se preenche em âmbar conforme a pessoa rola, e cada
+          parada acende quando é alcançada (script.js, módulo 7f). No alto
+          contraste e no "reduzir movimento" o trajeto já nasce inteiro aceso.
+        -->
+        <div class="rota-palco" id="rota-acessicar">
+          <span class="rota-trilho" aria-hidden="true"><span class="rota-avanco"></span></span>
+          <ol class="rota">
+            <li class="rota-parada">
+              <span class="rota-marca" aria-hidden="true">1</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Abrir o app</p>
+                <p>Uma tela só, sem menus escondidos.</p>
+              </div>
+            </li>
+            <li class="rota-parada">
+              <span class="rota-marca" aria-hidden="true">2</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Informar o destino</p>
+                <p>Falando. O app entende e confirma por áudio, sem digitar nada.</p>
+              </div>
+            </li>
+            <li class="rota-parada">
+              <span class="rota-marca" aria-hidden="true">3</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Solicitar o carro</p>
+                <p>Um único toque, em qualquer lugar da tela — sem leitura visual.</p>
+              </div>
+            </li>
+            <li class="rota-parada">
+              <span class="rota-marca" aria-hidden="true">4</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Encontrar o motorista</p>
+                <p>Nome, avaliação, modelo do carro e tempo de chegada: tudo em áudio.</p>
+              </div>
+            </li>
+            <li class="rota-parada rota-parada-fim">
+              <span class="rota-marca" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z" />
+                  <circle cx="12" cy="10" r="2.4" />
+                </svg>
+              </span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Chegar</p>
+                <p>A rota é narrada durante todo o percurso, com aviso sonoro na chegada.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <h3 class="conceito-subtitulo">Segurança pensada para quem não vê a tela</h3>
+        <ul class="grade-protecao">
+          <li class="protecao" data-anima>
+            <span class="ferramenta-icone" aria-hidden="true">
+              <!-- crachá: identificação do motorista -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="4.5" width="19" height="15" rx="2.4" />
+                <circle cx="8.5" cy="11" r="2.3" />
+                <path d="M4.9 16.4a3.9 3.9 0 0 1 7.2 0" />
+                <path d="M15 10h4.2M15 13.5h4.2" />
+              </svg>
+            </span>
+            <p class="protecao-titulo">Identificação prévia</p>
+            <p>Foto e placa do motorista confirmadas por áudio <strong>antes</strong> de entrar no carro.</p>
+          </li>
+
+          <li class="protecao" data-anima>
+            <span class="ferramenta-icone" aria-hidden="true">
+              <!-- localização compartilhada -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 20s6-4.6 6-9.4A6 6 0 0 0 4 10.6C4 15.4 10 20 10 20z" />
+                <circle cx="10" cy="10.3" r="2" />
+                <path d="M16.5 5.5h4.2v4.2" />
+                <path d="M20.7 5.5l-4.6 4.6" />
+              </svg>
+            </span>
+            <p class="protecao-titulo">Compartilhamento em tempo real</p>
+            <p>A viagem vai automaticamente para <strong>contatos de confiança</strong>.</p>
+          </li>
+
+          <li class="protecao" data-anima>
+            <span class="ferramenta-icone" aria-hidden="true">
+              <!-- botão de emergência: acionado por voz -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M5.6 5.6a9 9 0 0 0 0 12.8" />
+                <path d="M18.4 18.4a9 9 0 0 0 0-12.8" />
+              </svg>
+            </span>
+            <p class="protecao-titulo">Botão de emergência</p>
+            <p>Acionado <strong>por voz</strong> — sem precisar ver a tela.</p>
+          </li>
+
+          <li class="protecao" data-anima>
+            <span class="ferramenta-icone" aria-hidden="true">
+              <!-- sino: aviso sonoro de chegada -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 10a6 6 0 0 1 12 0c0 4.2 1.4 5.6 1.4 5.6H4.6S6 14.2 6 10z" />
+                <path d="M10.2 19a2 2 0 0 0 3.6 0" />
+              </svg>
+            </span>
+            <p class="protecao-titulo">Confirmação por áudio</p>
+            <p>Aviso sonoro ao chegar com segurança ao destino.</p>
+          </li>
+        </ul>
+
+        <p class="conceito-fecho">
+          E tudo ajustável: <strong>velocidade da narração</strong>, <strong>alto contraste</strong>,
+          <strong>tamanho da fonte</strong> e <strong>comandos de voz</strong> — a mesma ideia que
+          guia este site. Como diz o projeto deles: <em>“outros levam você até o destino; o
+          AcessiCar leva você com autonomia”.</em>
+        </p>
+
+        <p class="artigo-credito">
+          Projeto conceito de <strong>Lucas Valim</strong>, <strong>Cecília Betin</strong> e
+          <strong>Heverton Viana</strong>.
+        </p>
       </div>
     </section>
 
