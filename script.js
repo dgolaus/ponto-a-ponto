@@ -1821,6 +1821,46 @@
   })();
 
   /* ---------------------------------------------------------
+     9i. Cartões que respondem à inclinação
+     Máximo de ~4°: sugere profundidade e direção sem virar
+     brinquedo. Só com ponteiro fino; some ao sair; desligado no
+     alto contraste e na redução de movimento.
+  --------------------------------------------------------- */
+  (function inclinarCartoes() {
+    if (prefereMenosMovimento) return;
+    if (window.matchMedia && !window.matchMedia("(hover: hover)").matches) return;
+
+    const cartoes = document.querySelectorAll(".cartao");
+    if (!cartoes.length) return;
+    const LIMITE = 4;
+
+    cartoes.forEach(function (cartao) {
+      let tick = false, rx = 0, ry = 0;
+
+      function pintar() {
+        tick = false;
+        if (corpo.classList.contains("alto-contraste")) { cartao.style.transform = ""; return; }
+        cartao.style.transform =
+          "perspective(900px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) +
+          "deg) translateY(-4px)";
+      }
+
+      cartao.addEventListener("pointermove", function (evento) {
+        const r = cartao.getBoundingClientRect();
+        ry = ((evento.clientX - r.left) / r.width - 0.5) * 2 * LIMITE;
+        rx = -((evento.clientY - r.top) / r.height - 0.5) * 2 * LIMITE;
+        if (tick) return;
+        tick = true;
+        window.requestAnimationFrame(pintar);
+      }, { passive: true });
+
+      function soltar() { cartao.style.transform = ""; }
+      cartao.addEventListener("pointerleave", soltar);
+      cartao.addEventListener("blur", soltar, true);
+    });
+  })();
+
+  /* ---------------------------------------------------------
      10. Restaura as preferências salvas na última visita
 
      No contraste, a escolha do usuário vem primeiro. Se ele nunca

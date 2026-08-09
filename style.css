@@ -4105,4 +4105,284 @@ body.alto-contraste .linha:focus-visible .linha-numero.linha-cela {
   }
 }
 
+
+/* ==========================================================
+   26. "Explorar" — grade de fichas (substitui o sumário da 25)
+   ----------------------------------------------------------
+   O sumário da camada 25 ficou seco demais e escondia as bios.
+   Aqui os destinos viram FICHAS: cela Braille + título + a
+   descrição sempre visível, lado a lado em duas colunas. Ocupa
+   pouco mais que o sumário e devolve o conteúdo à tela.
+   ========================================================== */
+
+.lista-linhas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: 1rem;
+  border: 0;
+}
+
+.lista-linhas > li {
+  display: flex;
+}
+
+.linha {
+  width: 100%;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  gap: 0.35rem 1.1rem;
+  padding: clamp(1.25rem, 2.5vw, 1.6rem);
+  border: 1px solid var(--cor-borda);
+  border-top: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.linha-numero.linha-cela {
+  grid-row: 1 / span 2;
+  align-self: start;
+}
+
+.linha-corpo {
+  grid-column: 2;
+}
+
+/* A seta vai para o canto do título, não para uma coluna própria */
+.linha-seta {
+  position: absolute;
+  top: clamp(1.25rem, 2.5vw, 1.6rem);
+  right: clamp(1.25rem, 2.5vw, 1.6rem);
+  font-size: 1.5rem;
+  display: block;
+}
+
+.linha-titulo {
+  padding-right: 2.25rem;
+  font-size: clamp(1.2rem, 0.9vw + 1rem, 1.5rem);
+  margin-bottom: 0.35rem;
+}
+
+/* As bios voltam: sempre visíveis, junto do título */
+.linha-texto {
+  max-height: none;
+  opacity: 1;
+  overflow: visible;
+  margin-top: 0;
+  font-size: 0.98rem;
+}
+
+/* Ficha ímpar sozinha na última linha ocupa a largura toda */
+.lista-linhas > li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+/* Estados: a ficha sobe, a borda acende, a cela e a seta acompanham.
+   A conta âmbar da camada 21 sai — aqui quem marca é a borda. */
+.linha::after {
+  display: none;
+}
+
+.linha:hover,
+.linha:focus-visible {
+  border-color: var(--cor-acento);
+  background-color: var(--cor-superficie);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .linha {
+    transition:
+      border-color var(--mov-medio) var(--curva-suave),
+      background-color var(--mov-medio) var(--curva-suave),
+      transform var(--mov-medio) var(--curva-saida);
+  }
+
+  .linha:hover,
+  .linha:focus-visible {
+    transform: translateY(-3px);
+  }
+}
+
+@media (max-width: 40rem) {
+  .linha {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .linha-seta {
+    display: block;
+    font-size: 1.25rem;
+  }
+}
+
+/* ----------------------------------------------------------
+   26.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste .linha:hover,
+body.alto-contraste .linha:focus-visible {
+  transform: none !important;
+  background-color: transparent;
+}
+
+
+/* ==========================================================
+   27. Ajustes das fichas do "Explorar"
+   ----------------------------------------------------------
+   1) Fora o filete/lavagem herdados da lista antiga: na ficha,
+      quem marca o estado é a borda âmbar e o fundo.
+   2) Duas colunas no desktop, e a última ficha (Saúde e prevenção)
+      vira uma FAIXA larga de propósito: título à esquerda, texto
+      à direita — fecha a grade em vez de sobrar.
+   ========================================================== */
+
+.linha::before,
+.linha::after {
+  display: none !important;
+}
+
+.linha:hover,
+.linha:focus-visible,
+.linha:active {
+  box-shadow: none !important;
+}
+
+.lista-linhas {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+}
+
+/* A ficha larga do fim da grade */
+@media (min-width: 48rem) {
+  .lista-linhas > li:last-child:nth-child(odd) .linha {
+    padding: clamp(1.6rem, 3vw, 2.2rem);
+    align-items: center;
+  }
+
+  .lista-linhas > li:last-child:nth-child(odd) .linha-numero.linha-cela {
+    grid-row: 1;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .lista-linhas > li:last-child:nth-child(odd) .linha-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: 0 clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .lista-linhas > li:last-child:nth-child(odd) .linha-titulo {
+    margin-bottom: 0;
+    font-size: clamp(1.35rem, 1.2vw + 1rem, 1.75rem);
+    padding-right: 0;
+  }
+
+  .lista-linhas > li:last-child:nth-child(odd) .linha-texto {
+    max-width: 60ch;
+  }
+}
+
+/* Na faixa larga a seta fica centralizada e o texto respeita a folga */
+@media (min-width: 48rem) {
+  .lista-linhas > li:last-child:nth-child(odd) .linha-seta {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lista-linhas > li:last-child:nth-child(odd) .linha-corpo {
+    padding-right: 2.75rem;
+  }
+}
+
+body.alto-contraste .lista-linhas > li:last-child:nth-child(odd) .linha-seta {
+  transform: translateY(-50%) !important;
+}
+
+
+/* ==========================================================
+   28. "Explorar" — todas as fichas viram FAIXAS
+   ----------------------------------------------------------
+   Com 5 destinos, qualquer grade sobra buraco em alguma largura.
+   Uma coluna de faixas nunca sobra: cela + título à esquerda, bio
+   à direita, seta no fim. E escala sozinho quando as sub-páginas
+   novas nascerem. Os dois destinos "em breve" ficam levemente
+   recuados — o olho vai primeiro no que já funciona.
+   ========================================================== */
+
+.lista-linhas {
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+@media (min-width: 48rem) {
+  .linha {
+    padding: clamp(1.4rem, 2.6vw, 1.9rem);
+    align-items: center;
+  }
+
+  .linha-numero.linha-cela {
+    grid-row: 1;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .linha-corpo {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: 0 clamp(1.5rem, 4vw, 3rem);
+    padding-right: 2.75rem;
+  }
+
+  .linha-titulo {
+    margin-bottom: 0;
+    padding-right: 0;
+    font-size: clamp(1.3rem, 1.1vw + 1rem, 1.7rem);
+  }
+
+  .linha-texto {
+    max-width: 62ch;
+  }
+
+  .linha-seta {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* Destinos ainda em construção: um passo atrás no contraste */
+.linha-em-breve {
+  border-color: color-mix(in oklab, var(--cor-borda) 65%, transparent);
+}
+
+.linha-em-breve .linha-titulo {
+  color: var(--cor-texto-suave);
+}
+
+.linha-em-breve .linha-seta {
+  color: var(--cor-texto-suave);
+}
+
+.linha-em-breve:hover,
+.linha-em-breve:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+.linha-em-breve:hover .linha-titulo,
+.linha-em-breve:focus-visible .linha-titulo,
+.linha-em-breve:hover .linha-seta,
+.linha-em-breve:focus-visible .linha-seta {
+  color: var(--cor-texto);
+}
+
+/* ----------------------------------------------------------
+   28.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste .linha-em-breve,
+body.alto-contraste .linha-em-breve .linha-titulo,
+body.alto-contraste .linha-em-breve .linha-seta {
+  border-color: var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+body.alto-contraste .linha-seta {
+  transform: translateY(-50%) !important;
+}
+
 
