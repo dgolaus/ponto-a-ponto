@@ -1719,6 +1719,40 @@
   })();
 
   /* ---------------------------------------------------------
+     9e. Transição entre páginas
+     Sair usa a mesma linguagem da entrada (desfoque + fade), pra
+     o portal parecer um lugar só. Vale apenas para links internos
+     e simples: com Ctrl/Cmd/Shift, target, âncora, e-mail ou link
+     externo, o navegador age normalmente. Desligada no alto
+     contraste e na redução de movimento.
+  --------------------------------------------------------- */
+  (function transicaoDePagina() {
+    if (prefereMenosMovimento) return;
+
+    document.addEventListener("click", function (evento) {
+      if (evento.defaultPrevented || evento.button !== 0) return;
+      if (evento.metaKey || evento.ctrlKey || evento.shiftKey || evento.altKey) return;
+      if (corpo.classList.contains("alto-contraste")) return;
+      const link = evento.target.closest && evento.target.closest("a[href]");
+      if (!link) return;
+      if (link.target && link.target !== "_self") return;
+      if (link.hasAttribute("download")) return;
+      const href = link.getAttribute("href") || "";
+      if (!href || href.charAt(0) === "#" || /^[a-z]+:/i.test(href)) return;
+      if (link.href.split("#")[0] === window.location.href.split("#")[0]) return;
+      evento.preventDefault();
+      raiz.classList.add("saindo");
+      const destino = link.href;
+      window.setTimeout(function () { window.location.href = destino; }, 240);
+    });
+
+    // Voltar pelo histórico não pode deixar a página apagada (bfcache)
+    window.addEventListener("pageshow", function () {
+      raiz.classList.remove("saindo");
+    });
+  })();
+
+  /* ---------------------------------------------------------
      9g. Índice das seções (01, 02, 03…)
      Numeração decorativa na etiqueta de cada seção: ritmo
      editorial. aria-hidden — o leitor de tela não lê número

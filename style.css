@@ -4385,4 +4385,134 @@ body.alto-contraste .linha-seta {
   transform: translateY(-50%) !important;
 }
 
-
+
+/* ==========================================================
+   29. Dois acertos finos
+   ----------------------------------------------------------
+   1) A faixa do "Explorar" não sublinha mais o título no hover —
+      a borda âmbar e o fundo já dizem tudo, e o sublinhado
+      cortava a cela e a bio.
+   2) O campo do brinquedo de Braille mostrava DUAS linhas ao
+      receber foco (a borda + o anel do foco global). Agora é uma
+      só: a borda vira âmbar e o anel some, com um halo suave no
+      lugar — continua inequivocamente focado.
+   ========================================================== */
+
+.linha:hover .linha-titulo,
+.linha:focus-visible .linha-titulo,
+.linha:focus-within .linha-titulo {
+  text-decoration: none;
+}
+
+/* --- Campo do brinquedo de Braille -------------------------- */
+.braille-entrada {
+  width: min(100%, 26rem);
+  padding: 0.85rem 1.15rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.01em;
+  text-align: center;
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 60%),
+    var(--cor-superficie);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition:
+    border-color var(--mov-medio) var(--curva-suave),
+    box-shadow var(--mov-medio) var(--curva-suave);
+}
+
+.braille-entrada:hover {
+  border-color: var(--cor-acento-medio);
+}
+
+.braille-entrada:focus,
+.braille-entrada:focus-visible {
+  outline: none;
+  border-color: var(--cor-acento);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 4px rgba(245, 185, 66, 0.18);
+}
+
+.braille-rotulo {
+  margin-bottom: 0.75rem;
+}
+
+/* ----------------------------------------------------------
+   29.z Guardas — no alto contraste o foco volta ao anel grosso
+   (lá a prioridade é enxergar, não a elegância).
+---------------------------------------------------------- */
+body.alto-contraste .braille-entrada {
+  background: #000000;
+  box-shadow: none;
+}
+
+body.alto-contraste .braille-entrada:focus,
+body.alto-contraste .braille-entrada:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+
+/* ==========================================================
+   30. Campo do Braille — sem caixa, só a linha de escrita
+   ----------------------------------------------------------
+   A caixa com brilho interno criava um traço atravessando o
+   campo. Aqui o campo perde a moldura: sobra a linha de baixo,
+   como a pauta onde se escreve. Ela engrossa e vira âmbar no
+   foco — um sinal só, nítido, sem anel duplicado.
+   ========================================================== */
+
+.braille-entrada {
+  width: min(100%, 24rem);
+  padding: 0.6rem 0.4rem 0.7rem;
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.5rem);
+  text-align: center;
+  color: var(--cor-texto);
+  background: transparent;
+  background-image: none;
+  border: 0;
+  border-bottom: 2px solid var(--cor-borda);
+  border-radius: 0;
+  box-shadow: none;
+  transition:
+    border-color var(--mov-medio) var(--curva-suave),
+    color var(--mov-medio) var(--curva-suave);
+}
+
+.braille-entrada::placeholder {
+  color: var(--cor-texto-suave);
+  opacity: 0.55;
+  font-size: 0.85em;
+}
+
+.braille-entrada:hover {
+  border-bottom-color: var(--cor-acento-medio);
+}
+
+.braille-entrada:focus,
+.braille-entrada:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-bottom-color: var(--cor-acento);
+  border-bottom-width: 3px;
+  padding-bottom: calc(0.7rem - 1px);
+  color: var(--cor-acento);
+}
+
+/* ----------------------------------------------------------
+   30.z Guardas — alto contraste devolve o anel de foco cheio
+---------------------------------------------------------- */
+body.alto-contraste .braille-entrada {
+  background: #000000;
+  border-bottom-color: var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+body.alto-contraste .braille-entrada:focus,
+body.alto-contraste .braille-entrada:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+  color: var(--cor-texto);
+}
