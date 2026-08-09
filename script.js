@@ -836,9 +836,26 @@
     let anuncioTimer = null;
     function render() {
       const texto = normalizar(entrada.value);
-      saida.textContent = "";
+      // Só as celas que MUDARAM são refeitas: assim a letra recém-digitada
+      // acende sozinha e o resto da palavra fica parado (sem repintar tudo).
+      const atuais = saida.children;
+      while (atuais.length > texto.length) saida.removeChild(saida.lastChild);
+      const podeAnimarCela =
+        !prefereMenosMovimento && !corpo.classList.contains("alto-contraste");
       for (let i = 0; i < texto.length; i++) {
-        saida.appendChild(montarCela(texto[i]));
+        const ch = texto[i];
+        const existente = atuais[i];
+        if (existente && existente.dataset.ch === ch) continue;
+        const nova = montarCela(ch);
+        nova.dataset.ch = ch;
+        if (podeAnimarCela) {
+          nova.classList.add("cela-nova");
+          nova.addEventListener("animationend", function () {
+            nova.classList.remove("cela-nova");
+          }, { once: true });
+        }
+        if (existente) saida.replaceChild(nova, existente);
+        else saida.appendChild(nova);
       }
       // Anuncia a descrição em Braille com um respiro, pra o leitor de tela
       // ler a palavra inteira quando a pessoa pausa (e não a cada tecla).
@@ -1443,6 +1460,14 @@
     elementosDoHero.sort(function (a, b) {
       return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
     });
+    // O olho entra por ÚLTIMO: no desktop ele fica no alto à direita e, pela
+    // ordem vertical, roubaria a entrada do título. Ele acompanha, não compete.
+    elementosDoHero
+      .filter(function (e) { return e.classList.contains("hero-visual"); })
+      .forEach(function (e) {
+        elementosDoHero.splice(elementosDoHero.indexOf(e), 1);
+        elementosDoHero.push(e);
+      });
     elementosDoHero.forEach(function (elemento, posicao) {
       elemento.style.transitionDelay = 150 + posicao * 120 + "ms";
     });
@@ -1540,6 +1565,158 @@
     window.addEventListener("resize", aoRolarTitulos);
     // A 1ª checagem acontece em revelarSite() (durante pre-aviso, espera).
   }
+
+  /* ---------------------------------------------------------
+     9c. Ritmo das seções (redesign de motion)
+     Marca cada <section class="secao"> com .secao-vista quando ela
+     entra na tela — UMA vez. O CSS usa isso para abrir a divisória
+     e crescer as barras do rótulo: a passagem de uma seção para a
+     outra vira progressão, não corte. Nenhum conteúdo depende disso
+     (é decoração de borda) e, no alto contraste / redução de
+     movimento, as regras da camada 21.z anulam tudo.
+  --------------------------------------------------------- */
+  // Espera a revelação do site ("aviso primeiro") antes de observar:
+  // durante o pre-aviso a página está invisível e a entrada se perderia.
+  function quandoRevelado(acao) {
+    if (!raiz.classList.contains("pre-aviso")) { acao(); return; }
+    if (!("MutationObserver" in window)) { window.setTimeout(acao, 900); return; }
+    const vigia = new MutationObserver(function () {
+      if (!raiz.classList.contains("pre-aviso")) { vigia.disconnect(); acao(); }
+    });
+    vigia.observe(raiz, { attributes: true, attributeFilter: ["class"] });
+  }
+
+  // Embrulha cada palavra de um título num <span class="palavra"> para a
+  // revelação escalonada. Os espaços continuam sendo nós de texto e os
+  // elementos filhos (ex.: <span class="acento">) entram inteiros, então
+  // o leitor de tela continua lendo a frase normalmente.
+  function fatiarTitulo(titulo) {
+    if (!titulo || titulo.dataset.fatiado === "1") return;
+    titulo.dataset.fatiado = "1";
+    const pedacos = document.createDocumentFragment();
+    let ordem = 0;
+    Array.prototype.slice.call(titulo.childNodes).forEach(function (no) {
+      if (no.nodeType === 3) {
+        no.textContent.split(/(\s+)/).forEach(function (parte) {
+          if (!parte) return;
+          if (/^\s+$/.test(parte)) { pedacos.appendChild(document.createTextNode(parte)); return; }
+          const palavra = document.createElement("span");
+          palavra.className = "palavra";
+          palavra.textContent = parte;
+          palavra.style.transitionDelay = (ordem++ * 45) + "ms";
+          pedacos.appendChild(palavra);
+        });
+      } else if (no.nodeType === 1) {
+        no.classList.add("palavra");
+        no.style.transitionDelay = (ordem++ * 45) + "ms";
+        pedacos.appendChild(no);
+      } else {
+        pedacos.appendChild(no);
+      }
+    });
+    titulo.textContent = "";
+    titulo.appendChild(pedacos);
+  }
+
+  (function ritmoDasSecoes() {
+    const secoes = document.querySelectorAll(".secao, .hero");
+    if (!secoes.length) return;
+
+    if (!prefereMenosMovimento && !corpo.classList.contains("alto-contraste")) {
+      document.querySelectorAll(".secao h2, .pagina-topo h1").forEach(fatiarTitulo);
+    }
+
+    function acenderTodas() {
+      secoes.forEach(function (s) { s.classList.add("secao-vista"); });
+    }
+
+    if (prefereMenosMovimento || corpo.classList.contains("alto-contraste")) {
+      acenderTodas();
+      return;
+    }
+
+    // Verificação por scroll (mesma técnica dos contadores e da rota):
+    // simples, à prova de falhas e sem depender de IntersectionObserver.
+    const pendentes = Array.prototype.slice.call(secoes);
+    let tickSecao = false;
+
+    function verificar() {
+      for (let i = pendentes.length - 1; i >= 0; i--) {
+        const r = pendentes[i].getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+          pendentes[i].classList.add("secao-vista");
+          pendentes.splice(i, 1);
+        }
+      }
+      if (!pendentes.length) {
+        window.removeEventListener("scroll", aoRolarSecao);
+        window.removeEventListener("resize", aoRolarSecao);
+      }
+    }
+
+    function aoRolarSecao() {
+      if (tickSecao) return;
+      tickSecao = true;
+      window.requestAnimationFrame(function () { tickSecao = false; verificar(); });
+    }
+
+    quandoRevelado(function () {
+      window.addEventListener("scroll", aoRolarSecao, { passive: true });
+      window.addEventListener("resize", aoRolarSecao);
+      verificar();
+    });
+
+    // Ligou o alto contraste no meio do caminho: tudo aceso e estável.
+    document.addEventListener("click", function (evento) {
+      if (evento.target && evento.target.closest && evento.target.closest("#btn-contraste")) {
+        window.setTimeout(function () {
+          if (corpo.classList.contains("alto-contraste")) acenderTodas();
+        }, 60);
+      }
+    });
+  })();
+
+  /* ---------------------------------------------------------
+     9d. Trilha de pontos do scroll
+     Uma coluna de pontos à direita, um por seção, que acende
+     conforme a página avança — a leitura "ponto a ponto" da
+     própria página. É DECORATIVA: aria-hidden, sem clique e sem
+     parada de teclado; a navegação real segue no cabeçalho e no
+     rodapé. Só aparece em telas largas (CSS).
+  --------------------------------------------------------- */
+  (function trilhaDePontos() {
+    const secoes = Array.prototype.slice.call(
+      document.querySelectorAll("main > .secao, main > .hero")
+    );
+    if (secoes.length < 2) return;
+
+    const trilha = document.createElement("div");
+    trilha.className = "trilha-pontos";
+    trilha.setAttribute("aria-hidden", "true");
+    const pontos = secoes.map(function () {
+      const ponto = document.createElement("span");
+      ponto.className = "trilha-ponto";
+      trilha.appendChild(ponto);
+      return ponto;
+    });
+    corpo.appendChild(trilha);
+
+    let tick = false;
+    function pintar() {
+      const linha = window.innerHeight * 0.45;
+      for (let i = 0; i < secoes.length; i++) {
+        pontos[i].classList.toggle("aceso", secoes[i].getBoundingClientRect().top <= linha);
+      }
+    }
+    function aoRolar() {
+      if (tick) return;
+      tick = true;
+      window.requestAnimationFrame(function () { tick = false; pintar(); });
+    }
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("resize", aoRolar);
+    pintar();
+  })();
 
   /* ---------------------------------------------------------
      10. Restaura as preferências salvas na última visita

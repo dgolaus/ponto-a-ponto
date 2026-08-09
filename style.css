@@ -3097,3 +3097,407 @@ body.alto-contraste .dialogo-pergunta::backdrop {
     transform: none !important;
   }
 }
+
+
+/* ==========================================================
+   21. Camada de refinamento "ponto a ponto" (motion redesign)
+   ----------------------------------------------------------
+   Adição sobre o guia de estilo existente — não substitui nada.
+   Princípio: o movimento explica hierarquia, continuidade e
+   progresso. Tudo aqui é transform/opacity, curto, disparado
+   uma vez, e desligado no alto contraste e no "reduzir movimento"
+   (guardas no fim desta seção, 21.z).
+   ========================================================== */
+
+:root {
+  --mov-curto: 180ms;
+  --mov-medio: 320ms;
+  --mov-longo: 620ms;
+  --curva-saida: cubic-bezier(0.22, 1, 0.36, 1);   /* entra rápido, assenta */
+  --curva-suave: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- 21a. Entrada: mesma linguagem, curva melhor ------------ */
+.anima-entrada {
+  transform: translateY(0.9rem);
+  filter: blur(5px);
+  transition:
+    opacity var(--mov-longo) var(--curva-saida),
+    transform var(--mov-longo) var(--curva-saida),
+    filter var(--mov-longo) var(--curva-saida);
+}
+
+/* O olho não compete com o título: entra um pouco maior e assenta */
+.hero-visual.anima-entrada {
+  transform: translateY(0.9rem) scale(0.985);
+}
+
+.hero-visual.anima-entrada.visivel {
+  transform: none;
+}
+
+/* --- 21b. Ritmo entre seções -------------------------------
+   A divisória nasce do centro e se abre quando a seção entra;
+   as barras do rótulo crescem em seguida. É a "passagem" de uma
+   seção para a outra, não um corte seco. A classe .secao-vista
+   é aplicada uma única vez pelo script.js (IntersectionObserver). */
+@media (prefers-reduced-motion: no-preference) {
+  .secao::before {
+    transform: translateX(-50%) scaleX(0.12);
+    transform-origin: center;
+    opacity: 0.35;
+    transition:
+      transform 900ms var(--curva-saida),
+      opacity 900ms var(--curva-saida);
+  }
+
+  .secao.secao-vista::before {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+  }
+
+  .rotulo-secao::before,
+  .rotulo-secao::after {
+    transform: scaleX(0);
+    transition: transform 700ms var(--curva-saida) 160ms;
+  }
+
+  .rotulo-secao::before { transform-origin: right center; }
+  .rotulo-secao::after  { transform-origin: left center; }
+
+  .secao.secao-vista .rotulo-secao::before,
+  .secao.secao-vista .rotulo-secao::after {
+    transform: scaleX(1);
+  }
+}
+
+/* --- 21c. Dados: o filete âmbar cresce junto da contagem ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .dado::before {
+    transform: scaleX(0.18);
+    transform-origin: center;
+    transition: transform 800ms var(--curva-saida) 120ms;
+  }
+
+  .secao-vista .dado::before {
+    transform: scaleX(1);
+  }
+}
+
+/* O número acompanha a contagem com uma respiração mínima de luz */
+.dado-numero {
+  transition: color var(--mov-medio) var(--curva-suave);
+}
+
+/* --- 21d. Linhas numeradas: um percurso "ponto a ponto" -----
+   Uma conta âmbar acende no trilho à esquerda da linha ativa, e
+   o foco de teclado recebe exatamente o mesmo tratamento do hover
+   (antes só o mouse via o estado). */
+.linha {
+  position: relative;
+}
+
+.linha::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--cor-acento);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform var(--mov-medio) var(--curva-saida);
+  pointer-events: none;
+}
+
+.linha:hover::after,
+.linha:focus-visible::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.linha:focus-visible {
+  background-color: var(--cor-superficie);
+  box-shadow: inset 0.25rem 0 0 var(--cor-acento);
+}
+
+.linha:focus-visible .linha-numero {
+  color: var(--cor-acento);
+  -webkit-text-stroke-color: var(--cor-acento);
+}
+
+.linha:focus-visible .linha-titulo {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .linha:focus-visible { transform: translateY(-0.35rem); }
+  .linha:focus-visible .linha-numero { transform: translateY(-0.5rem); }
+  .linha:focus-visible .linha-seta { transform: translateX(0.5rem); }
+  .linha:active { transform: translateY(-0.1rem); }
+}
+
+/* --- 21e. Brinquedo de Braille: a cela nasce, o ponto acende -
+   O script.js só troca as celas que mudaram, então cada letra
+   digitada anima sozinha (o resto da palavra fica parado). */
+@keyframes cela-entra {
+  from { opacity: 0; transform: translateY(0.45rem) scale(0.92); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ponto-acende {
+  0%   { transform: scale(0.6); }
+  62%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.braille-cela {
+  transition: border-color var(--mov-medio) var(--curva-suave);
+}
+
+.braille-cela.cela-nova {
+  animation: cela-entra var(--mov-medio) var(--curva-saida) both;
+}
+
+.braille-cela.cela-nova .braille-ponto.cheio {
+  animation: ponto-acende 380ms var(--curva-saida) both;
+}
+
+.braille-entrada:focus-visible + #braille-ajuda ~ .braille-saida .braille-cela,
+.braille-entrada:focus-visible ~ .braille-saida .braille-cela {
+  border-color: var(--cor-acento-medio);
+}
+
+/* --- 21f. Cartões e ferramentas: profundidade com direção ---
+   A elevação continua sendo a borda (sem sombra genérica); o que
+   muda é a direção — o cartão sobe, o selo do ícone acende. */
+.cartao:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cartao:focus-visible { transform: translateY(-4px); }
+  .cartao:active { transform: translateY(-1px); }
+
+  .cartao-jogo .cartao-numero {
+    transition: letter-spacing var(--mov-medio) var(--curva-suave);
+  }
+
+  .cartao-jogo:hover .cartao-numero,
+  .cartao-jogo:focus-visible .cartao-numero {
+    letter-spacing: 0.22em;
+  }
+
+  .ferramenta,
+  .doenca,
+  .protecao {
+    transition:
+      border-color var(--mov-medio) var(--curva-suave),
+      transform var(--mov-medio) var(--curva-saida);
+  }
+
+  .ferramenta:hover,
+  .ferramenta:focus-within,
+  .doenca:hover,
+  .protecao:hover {
+    transform: translateY(-2px);
+  }
+
+  .ferramenta-icone {
+    transition:
+      border-color var(--mov-medio) var(--curva-suave),
+      transform var(--mov-medio) var(--curva-saida);
+  }
+
+  .ferramenta:hover .ferramenta-icone,
+  .ferramenta:focus-within .ferramenta-icone {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+.ferramenta:focus-within,
+.doenca:focus-within {
+  border-color: var(--cor-acento);
+}
+
+/* --- 21g. Leitura longa (saúde): marcador de ponto no h3 ----
+   Um ponto âmbar antes de cada subtítulo do artigo: dá cadência
+   ao texto corrido sem transformar conteúdo médico em cartão. */
+.artigo h3 {
+  position: relative;
+  padding-left: 1.15rem;
+}
+
+.artigo h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.58em;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background-color: var(--cor-acento);
+}
+
+/* --- 21h. Simulador Braille: o ponto responde ao toque ------ */
+.sim-ponto.aceso {
+  animation: ponto-acende 260ms var(--curva-saida);
+}
+
+.sim-ponto:focus-visible {
+  border-color: var(--cor-acento);
+}
+
+.simulador-letra,
+.simulador-glifo {
+  transition: color var(--mov-medio) var(--curva-suave);
+}
+
+/* --- 21i. Quiz: a transição entre os quatro estados ---------
+   normal → selecionado → certo/errado. O símbolo (✔ / ✕) e o
+   texto continuam sendo a informação; a animação só acompanha. */
+@keyframes opcao-confirma {
+  0%   { transform: translateX(0); }
+  45%  { transform: translateX(0.35rem); }
+  100% { transform: translateX(0); }
+}
+
+.quiz-opcao {
+  transition:
+    border-color var(--mov-curto) var(--curva-suave),
+    color var(--mov-curto) var(--curva-suave),
+    background-color var(--mov-curto) var(--curva-suave),
+    transform var(--mov-curto) var(--curva-saida);
+}
+
+.quiz-opcao:hover:not(:disabled) {
+  background-color: var(--cor-superficie);
+}
+
+.quiz-opcao:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.quiz-opcao.certa {
+  animation: opcao-confirma 420ms var(--curva-saida);
+}
+
+.quiz-feedback {
+  opacity: 0;
+  transform: translateY(-0.25rem);
+  transition:
+    opacity var(--mov-medio) var(--curva-saida),
+    transform var(--mov-medio) var(--curva-saida);
+}
+
+.quiz-feedback.visivel {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- 21j. Botões: estado pressionado ------------------------ */
+.botao:focus-visible {
+  transform: translateY(-2px);
+}
+
+.botao:active {
+  transform: translateY(0);
+}
+
+.botao-barra {
+  transition:
+    border-color var(--mov-curto) var(--curva-suave),
+    color var(--mov-curto) var(--curva-suave),
+    background-color var(--mov-curto) var(--curva-suave),
+    transform var(--mov-curto) var(--curva-saida);
+}
+
+.botao-barra:active {
+  transform: scale(0.98);
+}
+
+/* --- 21k. "Em breve": continuidade com o portal ------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .em-breve-caixa > * {
+    animation: cela-entra 520ms var(--curva-saida) both;
+  }
+
+  .em-breve-caixa > *:nth-child(2) { animation-delay: 80ms; }
+  .em-breve-caixa > *:nth-child(3) { animation-delay: 160ms; }
+  .em-breve-caixa > *:nth-child(4) { animation-delay: 240ms; }
+}
+
+/* ----------------------------------------------------------
+   21.z Guardas — alto contraste e redução de movimento
+   Estas regras vêm por último de propósito: qualquer coisa
+   introduzida na camada 21 morre aqui.
+---------------------------------------------------------- */
+body.alto-contraste .secao::before,
+body.alto-contraste .rotulo-secao::before,
+body.alto-contraste .rotulo-secao::after,
+body.alto-contraste .dado::before {
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+body.alto-contraste .secao::before {
+  transform: translateX(-50%) !important;
+}
+
+body.alto-contraste .linha::after {
+  display: none;
+}
+
+body.alto-contraste .linha:focus-visible,
+body.alto-contraste .linha:focus-visible .linha-numero,
+body.alto-contraste .linha:focus-visible .linha-seta,
+body.alto-contraste .linha:active,
+body.alto-contraste .cartao:focus-visible,
+body.alto-contraste .cartao:active,
+body.alto-contraste .ferramenta:hover,
+body.alto-contraste .ferramenta:focus-within,
+body.alto-contraste .doenca:hover,
+body.alto-contraste .protecao:hover,
+body.alto-contraste .ferramenta:hover .ferramenta-icone,
+body.alto-contraste .botao:focus-visible,
+body.alto-contraste .botao-barra:active,
+body.alto-contraste .quiz-opcao:active:not(:disabled) {
+  transform: none !important;
+}
+
+body.alto-contraste .quiz-feedback {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.alto-contraste .braille-cela.cela-nova,
+body.alto-contraste .braille-cela.cela-nova .braille-ponto.cheio,
+body.alto-contraste .sim-ponto.aceso,
+body.alto-contraste .quiz-opcao.certa,
+body.alto-contraste .em-breve-caixa > * {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secao::before,
+  .rotulo-secao::before,
+  .rotulo-secao::after,
+  .dado::before,
+  .quiz-feedback,
+  .em-breve-caixa > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .secao::before {
+    transform: translateX(-50%) !important;
+  }
+
+  .linha::after {
+    display: none;
+  }
+}
+
+
