@@ -3500,4 +3500,312 @@ body.alto-contraste .em-breve-caixa > * {
   }
 }
 
+
+/* ==========================================================
+   22. Camada 2 do redesign — mais presença, mais identidade
+   ----------------------------------------------------------
+   Vai além do acabamento da camada 21: muda a etiqueta de seção
+   para uma CELA BRAILLE de pontos, revela os títulos palavra a
+   palavra, cria a trilha de pontos do scroll, dá direção aos
+   quadros e liga a transição entre páginas. Tudo continua em
+   transform/opacity, uma vez só, e morre no alto contraste e na
+   redução de movimento (guardas em 22.z).
+   ========================================================== */
+
+/* --- 22a. Etiqueta de seção --------------------------------
+   As barras âmbar do original, entrando escalonadas quando a
+   seção aparece. */
+@media (prefers-reduced-motion: no-preference) {
+  .rotulo-secao::before,
+  .rotulo-secao::after {
+    opacity: 0;
+    transform: scaleX(0);
+    transition:
+      opacity 520ms var(--curva-saida) 120ms,
+      transform 520ms var(--curva-saida) 120ms;
+  }
+
+  .rotulo-secao::before { transform-origin: right center; }
+  .rotulo-secao::after  { transform-origin: left center; }
+
+  .secao.secao-vista .rotulo-secao::before,
+  .secao.secao-vista .rotulo-secao::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .secao.secao-vista .rotulo-secao::after {
+    transition-delay: 220ms;
+  }
+}
+
+/* --- 22b. Títulos revelados palavra a palavra ---------------
+   O script.js embrulha cada palavra num <span class="palavra">
+   (os espaços continuam sendo texto, então o leitor de tela lê a
+   frase normalmente). Cada palavra assenta com 45ms de atraso. */
+.palavra {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .palavra {
+    opacity: 0;
+    transform: translateY(0.42em);
+    filter: blur(7px);
+    transition:
+      opacity 620ms var(--curva-saida),
+      transform 620ms var(--curva-saida),
+      filter 620ms var(--curva-saida);
+  }
+
+  .secao-vista .palavra {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* --- 22c. Trilha de pontos do scroll -----------------------
+   Coluna fixa à direita: um ponto por seção, que ACENDE quando a
+   seção é alcançada. É a leitura "ponto a ponto" da própria página.
+   Decorativa (aria-hidden) e sem clique — a navegação de verdade
+   continua no cabeçalho e no rodapé. */
+.trilha-pontos {
+  position: fixed;
+  right: clamp(0.75rem, 1.6vw, 1.6rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  gap: 0.7rem;
+  pointer-events: none;
+}
+
+@media (min-width: 64rem) and (min-height: 34rem) {
+  .trilha-pontos { display: flex; }
+}
+
+.trilha-ponto {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  border: 1px solid var(--cor-borda);
+  background-color: transparent;
+  transition:
+    background-color var(--mov-medio) var(--curva-suave),
+    border-color var(--mov-medio) var(--curva-suave),
+    transform var(--mov-medio) var(--curva-saida);
+}
+
+.trilha-ponto.aceso {
+  background-color: var(--cor-acento);
+  border-color: var(--cor-acento);
+  transform: scale(1.35);
+}
+
+/* --- 22d. Quadros com direção -------------------------------
+   Um filete âmbar nasce no topo do quadro quando ele é apontado:
+   a borda continua sendo a elevação, mas agora ela tem sentido. */
+.cartao,
+.ferramenta,
+.doenca,
+.protecao,
+.compromisso {
+  position: relative;
+  overflow: hidden;
+}
+
+.cartao::before,
+.ferramenta::before,
+.doenca::before,
+.protecao::before,
+.compromisso::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--cor-acento);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms var(--curva-saida);
+  pointer-events: none;
+}
+
+.cartao:hover::before,
+.cartao:focus-visible::before,
+.ferramenta:hover::before,
+.ferramenta:focus-within::before,
+.doenca:hover::before,
+.protecao:hover::before,
+.compromisso:hover::before {
+  transform: scaleX(1);
+}
+
+/* O selo ✔ dos compromissos acende junto */
+.compromisso {
+  transition: border-color var(--mov-medio) var(--curva-suave);
+}
+
+.compromisso:hover {
+  border-color: var(--cor-acento);
+}
+
+.compromisso-marca {
+  transition: transform var(--mov-medio) var(--curva-saida);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .compromisso:hover .compromisso-marca {
+    transform: rotate(-6deg) scale(1.08);
+  }
+}
+
+/* --- 22e. Dados: a faixa acorda coluna a coluna ------------- */
+.dado {
+  transition: background-color var(--mov-medio) var(--curva-suave);
+}
+
+.dado:hover {
+  background-color: var(--cor-superficie);
+}
+
+.dado:hover .dado-numero {
+  color: var(--cor-acento);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dado {
+    opacity: 0;
+    transform: translateY(0.6rem);
+    transition:
+      opacity 560ms var(--curva-saida),
+      transform 560ms var(--curva-saida),
+      background-color var(--mov-medio) var(--curva-suave);
+  }
+
+  .secao-vista .dado { opacity: 1; transform: none; }
+  .secao-vista .dado:nth-child(2) { transition-delay: 110ms; }
+  .secao-vista .dado:nth-child(3) { transition-delay: 220ms; }
+}
+
+/* --- 22f. Linhas numeradas: o percurso se acende ------------
+   Além da conta âmbar da camada 21, entra uma lavagem de luz que
+   percorre a linha da esquerda para a direita. */
+.linha::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(90deg, rgba(245, 185, 66, 0.09), transparent 62%);
+  opacity: 0;
+  transition: opacity var(--mov-medio) var(--curva-suave);
+  pointer-events: none;
+}
+
+.linha:hover::before,
+.linha:focus-visible::before {
+  opacity: 1;
+}
+
+/* --- 22g. Botões: a seta se move com a intenção ------------- */
+.botao span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform var(--mov-medio) var(--curva-saida);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .botao:hover span[aria-hidden="true"],
+  .botao:focus-visible span[aria-hidden="true"] {
+    transform: translateY(0.15rem);
+  }
+}
+
+.botao-primario:hover,
+.botao-primario:focus-visible {
+  box-shadow: 0 0.45rem 1.4rem -0.3rem rgba(245, 185, 66, 0.45);
+}
+
+/* --- 22h. Transição entre páginas ---------------------------
+   Sair de uma página usa a MESMA linguagem da entrada ("focus
+   pull"): o site desfoca e some antes de navegar, e a próxima
+   página assenta em foco. Fica a sensação de um portal só. */
+html.saindo .cabecalho,
+html.saindo main,
+html.saindo .rodape {
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 240ms ease, filter 240ms ease;
+}
+
+html.saindo .trilha-pontos {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+/* ----------------------------------------------------------
+   22.z Guardas — alto contraste e redução de movimento
+---------------------------------------------------------- */
+body.alto-contraste .rotulo-secao::before,
+body.alto-contraste .rotulo-secao::after {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.alto-contraste .palavra,
+body.alto-contraste .dado {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+body.alto-contraste .cartao::before,
+body.alto-contraste .ferramenta::before,
+body.alto-contraste .doenca::before,
+body.alto-contraste .protecao::before,
+body.alto-contraste .compromisso::before,
+body.alto-contraste .linha::before {
+  display: none;
+}
+
+body.alto-contraste .trilha-ponto.aceso {
+  transform: none !important;
+}
+
+body.alto-contraste .compromisso:hover .compromisso-marca,
+body.alto-contraste .botao:hover span[aria-hidden="true"] {
+  transform: none !important;
+}
+
+body.alto-contraste .botao-primario:hover,
+body.alto-contraste .botao-primario:focus-visible {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palavra,
+  .dado,
+  .rotulo-secao::before,
+  .rotulo-secao::after {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  html.saindo .cabecalho,
+  html.saindo main,
+  html.saindo .rodape {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+/* O conteúdo da linha fica acima da lavagem de luz */
+.linha > * {
+  position: relative;
+  z-index: 1;
+}
+
 
