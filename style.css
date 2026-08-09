@@ -3808,4 +3808,143 @@ body.alto-contraste .botao-primario:focus-visible {
   z-index: 1;
 }
 
+
+/* ==========================================================
+   23. "O farol" — camada 3 do redesign
+   ----------------------------------------------------------
+   A ideia que amarra tudo: o site é uma superfície de PONTOS em
+   relevo, escura, e a luz âmbar é o que revela o que está perto.
+   Ler o site é passar a luz sobre os pontos — ponto a ponto.
+   Guardas em 23.z (alto contraste / redução de movimento).
+   ========================================================== */
+
+/* --- 23b. Índice das seções ---------------------------------
+   Cada seção ganha um número mono à esquerda da etiqueta (01, 02…),
+   escrito pelo script.js e marcado aria-hidden: é ritmo editorial,
+   não conteúdo. */
+.rotulo-indice {
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--cor-texto-suave);
+  opacity: 0.75;
+}
+
+.rotulo-indice::after {
+  content: "/";
+  margin-left: 0.5rem;
+  color: var(--cor-borda);
+}
+
+/* --- 23c. A cabeça do anel de progresso ---------------------
+   Um ponto âmbar percorre o anel em volta do logo conforme a
+   página avança: o progresso vira um ponto em movimento. */
+.anel-cabeca {
+  fill: var(--cor-acento);
+  transition: opacity var(--mov-medio) var(--curva-suave);
+}
+
+/* --- 23d. Braille com relevo de verdade ---------------------
+   Os pontos do brinquedo e do simulador passam a ter volume — a
+   mesma matéria da célula grande do guia de estilo. É tátil no
+   olhar, que é o assunto do site. */
+.braille-cela {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 60%), var(--cor-superficie);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.braille-ponto {
+  box-shadow: inset 0 -0.1rem 0.2rem rgba(0, 0, 0, 0.45);
+}
+
+.braille-ponto.cheio,
+.sim-ponto.aceso {
+  background: radial-gradient(circle at 32% 28%, #ffe1a1, var(--cor-acento) 58%, #7c5514 135%);
+  box-shadow:
+    0 0.3rem 0.9rem rgba(245, 185, 66, 0.3),
+    inset 0 -0.18rem 0.35rem rgba(0, 0, 0, 0.35);
+}
+
+.sim-ponto {
+  box-shadow: inset 0 -0.15rem 0.3rem rgba(0, 0, 0, 0.35);
+}
+
+/* --- 23e. Quadros que respondem à inclinação ----------------
+   O script.js escreve a inclinação direto no style do cartão
+   (leve, no máximo ~4°), então some sozinha ao tirar o ponteiro. */
+.cartao,
+.cartao-jogo {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* --- 23f. Links de leitura: o traço se acende --------------- */
+.lista-referencias a,
+.rodape-creditos a,
+.fonte-dados a {
+  text-decoration: none;
+  background-image: linear-gradient(var(--cor-acento), var(--cor-acento));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  transition: background-size 320ms var(--curva-saida), color var(--mov-curto) var(--curva-suave);
+  padding-bottom: 0.1em;
+}
+
+.lista-referencias a:hover,
+.lista-referencias a:focus-visible,
+.rodape-creditos a:hover,
+.rodape-creditos a:focus-visible,
+.fonte-dados a:hover,
+.fonte-dados a:focus-visible {
+  background-size: 100% 2px;
+  color: var(--cor-acento);
+}
+
+/* --- 23g. O farol pisca devagar na etiqueta do hero ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-etiqueta::before {
+    animation: farol-respira 4.2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes farol-respira {
+  from { opacity: 0.45; box-shadow: 0 0 0 0 rgba(245, 185, 66, 0); }
+  to   { opacity: 1; box-shadow: 0 0 0.6rem 0.1rem rgba(245, 185, 66, 0.45); }
+}
+
+/* ----------------------------------------------------------
+   23.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste .braille-cela,
+body.alto-contraste .braille-ponto,
+body.alto-contraste .sim-ponto {
+  background: transparent;
+  box-shadow: none;
+}
+
+body.alto-contraste .braille-ponto.cheio,
+body.alto-contraste .sim-ponto.aceso {
+  background: var(--cor-acento);
+  box-shadow: none;
+}
+
+body.alto-contraste .cartao,
+body.alto-contraste .cartao-jogo {
+  transform: none !important;
+}
+
+body.alto-contraste .lista-referencias a,
+body.alto-contraste .rodape-creditos a,
+body.alto-contraste .fonte-dados a {
+  text-decoration: underline;
+  background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-etiqueta::before {
+    animation: none;
+  }
+}
+
 
