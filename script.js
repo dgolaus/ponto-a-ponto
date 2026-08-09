@@ -1719,6 +1719,108 @@
   })();
 
   /* ---------------------------------------------------------
+     9g. Índice das seções (01, 02, 03…)
+     Numeração decorativa na etiqueta de cada seção: ritmo
+     editorial. aria-hidden — o leitor de tela não lê número
+     nenhum a mais.
+  --------------------------------------------------------- */
+  /* ---------------------------------------------------------
+     9f. Índice em Braille da seção "Explorar"
+     Troca o numeral vazado pela CELA BRAILLE da inicial do item
+     (B de Braille, J de Jogos…) e marca com um selo os destinos
+     que ainda levam ao "em breve". A cela é decorativa — o span
+     já é aria-hidden no HTML —, o selo NÃO é: quem usa leitor de
+     tela também precisa saber que a página ainda está em obras.
+  --------------------------------------------------------- */
+  (function indiceEmBraille() {
+    const linhas = document.querySelectorAll(".lista-linhas .linha");
+    if (!linhas.length) return;
+
+    linhas.forEach(function (linha) {
+      const numero = linha.querySelector(".linha-numero");
+      const titulo = linha.querySelector(".linha-titulo");
+      if (!numero || !titulo) return;
+
+      const letra = titulo.textContent.trim().charAt(0).toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const pontos = MAPA_BRAILLE[letra];
+
+      if (pontos) {
+        numero.textContent = "";
+        numero.classList.add("linha-cela");
+        numero.title = letra.toUpperCase() + " em Braille";
+        ORDEM_CELA.forEach(function (n) {
+          const ponto = document.createElement("span");
+          ponto.className = "linha-ponto" + (pontos.indexOf(n) !== -1 ? " cheio" : "");
+          numero.appendChild(ponto);
+        });
+      }
+
+      const destino = linha.getAttribute("href") || "";
+      if (destino.indexOf("em-breve") === 0 && !titulo.querySelector(".linha-selo")) {
+        const selo = document.createElement("span");
+        selo.className = "linha-selo";
+        selo.textContent = "em breve";
+        titulo.appendChild(selo);
+        linha.classList.add("linha-em-breve");
+      }
+    });
+  })();
+
+  (function indiceDasSecoes() {
+    const rotulos = document.querySelectorAll(".secao .rotulo-secao");
+    if (!rotulos.length) return;
+    rotulos.forEach(function (rotulo, posicao) {
+      if (rotulo.querySelector(".rotulo-indice")) return;
+      const indice = document.createElement("span");
+      indice.className = "rotulo-indice";
+      indice.setAttribute("aria-hidden", "true");
+      indice.textContent = ("0" + (posicao + 1)).slice(-2);
+      rotulo.insertBefore(indice, rotulo.firstChild);
+    });
+  })();
+
+  /* ---------------------------------------------------------
+     9h. A cabeça do anel: um ponto percorre o progresso
+     O ponto é injetado no SVG da marca (funciona em qualquer
+     página que tenha o cabeçalho) e anda pelo anel conforme a
+     página é rolada.
+  --------------------------------------------------------- */
+  (function cabecaDoAnel() {
+    const svg = document.querySelector(".marca-anel");
+    if (!svg || !anelProgresso) return;
+
+    const NS = "http://www.w3.org/2000/svg";
+    const cabeca = document.createElementNS(NS, "circle");
+    cabeca.setAttribute("class", "anel-cabeca");
+    cabeca.setAttribute("r", "2.6");
+    cabeca.setAttribute("cx", "22");
+    cabeca.setAttribute("cy", "2");
+    cabeca.style.opacity = "0";
+    svg.appendChild(cabeca);
+
+    let tick = false;
+    function pintar() {
+      tick = false;
+      const st = window.scrollY || raiz.scrollTop || 0;
+      const alcance = (raiz.scrollHeight - window.innerHeight) || 1;
+      const progresso = Math.min(Math.max(st / alcance, 0), 1);
+      const angulo = -Math.PI / 2 + progresso * Math.PI * 2;
+      cabeca.setAttribute("cx", (22 + Math.cos(angulo) * 20).toFixed(2));
+      cabeca.setAttribute("cy", (22 + Math.sin(angulo) * 20).toFixed(2));
+      cabeca.style.opacity = progresso > 0.004 ? "1" : "0";
+    }
+    function aoRolar() {
+      if (tick) return;
+      tick = true;
+      window.requestAnimationFrame(pintar);
+    }
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("resize", aoRolar);
+    pintar();
+  })();
+
+  /* ---------------------------------------------------------
      10. Restaura as preferências salvas na última visita
 
      No contraste, a escolha do usuário vem primeiro. Se ele nunca
