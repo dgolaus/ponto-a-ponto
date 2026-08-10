@@ -1801,6 +1801,75 @@
     });
   })();
 
+  /* ---------------------------------------------------------
+     9k. O traço da nav segue o ponteiro
+     Um único traço âmbar mora na barra e desliza entre os itens:
+     descansa na página atual, vai até o item sob o ponteiro ou
+     sob o foco, e volta quando eles saem. Só liga se a nav do topo
+     existir E houver um link com aria-current — assim, sem JS, o
+     sublinhado nativo continua marcando a página.
+  --------------------------------------------------------- */
+  (function tracoDaNav() {
+    const lista = document.querySelector(".pilula-nav .menu");
+    if (!lista) return;
+
+    const links = Array.prototype.slice.call(lista.querySelectorAll("a"));
+    const atual = lista.querySelector('a[aria-current="page"]');
+    if (!links.length || !atual) return;
+
+    const marcador = document.createElement("span");
+    marcador.className = "menu-marcador";
+    marcador.setAttribute("aria-hidden", "true");
+    lista.appendChild(marcador);
+    lista.classList.add("nav-com-marcador");
+
+    let quadro = 0;
+
+    // O traço tem a largura do TEXTO, não a da área clicável:
+     // por isso o padding lateral do link é descontado.
+    function mover(link) {
+      if (quadro) window.cancelAnimationFrame(quadro);
+      quadro = window.requestAnimationFrame(function () {
+        quadro = 0;
+        const caixa = link.getBoundingClientRect();
+        const base = lista.getBoundingClientRect();
+        const estilo = window.getComputedStyle(link);
+        const recuo = parseFloat(estilo.paddingLeft) || 0;
+        const recuoD = parseFloat(estilo.paddingRight) || 0;
+        const largura = Math.max(0, caixa.width - recuo - recuoD);
+        marcador.style.width = largura + "px";
+        marcador.style.transform =
+          "translateX(" + (caixa.left - base.left + recuo) + "px)";
+      });
+    }
+
+    function voltar() { mover(atual); }
+
+    links.forEach(function (link) {
+      link.addEventListener("pointerenter", function () { mover(link); });
+      link.addEventListener("focus", function () { mover(link); });
+      link.addEventListener("blur", voltar);
+    });
+
+    lista.addEventListener("pointerleave", voltar);
+    window.addEventListener("resize", voltar, { passive: true });
+
+    // Posição inicial: sem transição, para não deslizar ao carregar.
+    const guardada = marcador.style.transition;
+    marcador.style.transition = "none";
+    mover(atual);
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        marcador.style.transition = guardada;
+      });
+    });
+
+    // As fontes chegam depois e mudam a largura do texto.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(voltar);
+    }
+  })();
+
   (function indiceDasSecoes() {
     const rotulos = document.querySelectorAll(".secao .rotulo-secao");
     if (!rotulos.length) return;

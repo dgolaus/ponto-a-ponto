@@ -4516,3 +4516,101 @@ body.alto-contraste .braille-entrada:focus-visible {
   outline-offset: 3px;
   color: var(--cor-texto);
 }
+
+
+
+/* ==========================================================
+   34. O traço da nav que acompanha o ponteiro
+   ----------------------------------------------------------
+   O sublinhado âmbar deixa de pertencer ao link da página atual
+   e vira um elemento só: ele DESLIZA até o item sob o ponteiro
+   (ou sob o foco do teclado) e volta sozinho para a página atual
+   quando o ponteiro sai. É a mesma leitura de "ponto a ponto":
+   um percurso contínuo, não um corte.
+
+   Sem JavaScript nada disso existe e o sublinhado nativo do
+   aria-current continua marcando a página — por isso ele só é
+   removido quando o script assume (classe .nav-com-marcador).
+   ========================================================== */
+
+.pilula-nav .menu {
+  position: relative;
+}
+
+.menu-marcador {
+  position: absolute;
+  bottom: 0.28rem;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 2px;
+  background-color: var(--cor-acento);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(0);
+  transition:
+    transform 420ms var(--curva-saida),
+    width 420ms var(--curva-saida),
+    opacity 220ms var(--curva-suave);
+}
+
+.nav-com-marcador .menu-marcador {
+  opacity: 1;
+}
+
+/* Com o marcador no ar, o link atual larga o sublinhado próprio
+   (senão ficam dois traços) mas mantém âmbar e negrito. */
+.nav-com-marcador a[aria-current="page"] {
+  text-decoration: none;
+}
+
+/* O item sob o ponteiro puxa o traço, então ele já se anuncia
+   em âmbar — sem a pílula de fundo, que competia com o traço. */
+.nav-com-marcador a:hover,
+.nav-com-marcador a:focus-visible {
+  color: var(--cor-acento);
+  background-color: transparent;
+}
+
+/* ----------------------------------------------------------
+   34.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste .menu-marcador {
+  transition: none;
+}
+
+body.alto-contraste .nav-com-marcador a:hover,
+body.alto-contraste .nav-com-marcador a:focus-visible {
+  background-color: var(--cor-acento);
+  color: var(--cor-fundo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-marcador {
+    transition: opacity 120ms linear;
+  }
+}
+
+/* O âmbar viaja junto com o traço: enquanto o ponteiro (ou o foco)
+   está sobre outro item, a página atual devolve a cor e fica em
+   repouso. Só a COR muda — o peso continua o mesmo, senão o texto
+   mudaria de largura e o traço perderia a mira. */
+.nav-com-marcador a {
+  transition: color 260ms var(--curva-suave);
+}
+
+.nav-com-marcador:hover a[aria-current="page"]:not(:hover),
+.nav-com-marcador:focus-within a[aria-current="page"]:not(:focus-visible) {
+  color: var(--cor-texto-suave);
+}
+
+body.alto-contraste .nav-com-marcador:hover a[aria-current="page"]:not(:hover),
+body.alto-contraste .nav-com-marcador:focus-within a[aria-current="page"]:not(:focus-visible) {
+  color: var(--cor-acento);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-com-marcador a {
+    transition: none;
+  }
+}
