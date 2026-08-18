@@ -51,7 +51,7 @@
 
   <script src="script.js" defer></script>
 </head>
-<body>
+<body data-pagina="leis">
   <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
   <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
@@ -138,6 +138,49 @@
             <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
           </button>
         </div>
+
+        <!-- Índice das seis leis: preenche a abertura com conteúdo real e
+             leva direto ao item correspondente na linha do tempo. -->
+        <nav class="leis-atalhos" aria-label="Ir para cada lei" data-anima>
+          <ul>
+            <li>
+              <a href="#lei-1991">
+                <span class="leis-atalho-ano">1991</span>
+                <span class="leis-atalho-nome">Lei de Cotas</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lei-2000">
+                <span class="leis-atalho-ano">2000</span>
+                <span class="leis-atalho-nome">Normas gerais de acessibilidade</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lei-2004">
+                <span class="leis-atalho-ano">2004</span>
+                <span class="leis-atalho-nome">O decreto que detalhou tudo</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lei-2005">
+                <span class="leis-atalho-ano">2005</span>
+                <span class="leis-atalho-nome">O cão-guia entra junto</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lei-2015">
+                <span class="leis-atalho-ano">2015</span>
+                <span class="leis-atalho-nome">LBI — o Estatuto da Pessoa com Deficiência</span>
+              </a>
+            </li>
+            <li>
+              <a href="#lei-2021">
+                <span class="leis-atalho-ano">2021</span>
+                <span class="leis-atalho-nome">A visão monocular entra na conta</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
 
       <a class="hero-rolar" href="#titulo-linha">
@@ -163,7 +206,7 @@
         <div class="rota-palco rota-anos">
           <span class="rota-trilho" aria-hidden="true"><span class="rota-avanco"></span></span>
           <ol class="rota">
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-1991" data-anima>
               <span class="rota-marca">1991</span>
               <div class="rota-texto">
                 <p class="rota-titulo">Lei de Cotas</p>
@@ -181,7 +224,7 @@
               </div>
             </li>
 
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-2000" data-anima>
               <span class="rota-marca">2000</span>
               <div class="rota-texto">
                 <p class="rota-titulo">Normas gerais de acessibilidade</p>
@@ -199,7 +242,7 @@
               </div>
             </li>
 
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-2004" data-anima>
               <span class="rota-marca">2004</span>
               <div class="rota-texto">
                 <p class="rota-titulo">O decreto que detalhou tudo</p>
@@ -219,7 +262,7 @@
               </div>
             </li>
 
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-2005" data-anima>
               <span class="rota-marca">2005</span>
               <div class="rota-texto">
                 <p class="rota-titulo">O cão-guia entra junto</p>
@@ -236,7 +279,7 @@
               </div>
             </li>
 
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-2015" data-anima>
               <span class="rota-marca">2015</span>
               <div class="rota-texto">
                 <p class="rota-titulo">LBI — o Estatuto da Pessoa com Deficiência</p>
@@ -254,7 +297,7 @@
               </div>
             </li>
 
-            <li class="rota-parada">
+            <li class="rota-parada" id="lei-2021" data-anima>
               <span class="rota-marca">2021</span>
               <div class="rota-texto">
                 <p class="rota-titulo">A visão monocular entra na conta</p>
@@ -298,7 +341,7 @@
             entrada, ou cobrar a mais por causa dele, é <strong>infração prevista no
             decreto</strong> — que estabelece penalidades que vão de advertência a multa.
           </p>
-          <p>
+          <p class="leis-soco">
             Ou seja: não é gentileza deixar entrar. É obrigação.
           </p>
         </div>

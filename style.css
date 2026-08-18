@@ -2326,6 +2326,12 @@ body.alto-contraste .pagina-topo::after {
   color: var(--cor-texto-suave);
 }
 
+/* Nesta página o crédito é só a fonte oficial do decreto (uma linha
+   curta): centralizado combina com a seção, que é toda centrada. */
+[data-pagina="leis"] .artigo-credito {
+  text-align: center;
+}
+
 .artigo-credito strong {
   color: var(--cor-texto);
 }
@@ -2341,6 +2347,14 @@ body.alto-contraste .pagina-topo::after {
   font-size: 0.92rem;
   text-align: left;
   color: var(--cor-texto-suave);
+}
+
+/* Dentro do encerramento a nota colava nos botões: a regra
+   .encerramento-caixa p é mais específica e zerava o espaço de cima
+   dela (e encurtava a medida). Devolve o respiro e a largura. */
+.encerramento-caixa .nota-saude {
+  max-width: 60ch;
+  margin: clamp(2.5rem, 5vw, 3.5rem) auto 0;
 }
 
 .nota-saude strong {
@@ -4652,4 +4666,195 @@ body.alto-contraste .nav-com-marcador:focus-within a[aria-current="page"]:not(:f
 .lei-fonte a:hover,
 .lei-fonte a:focus-visible {
   color: var(--cor-acento);
+}
+
+
+/* ==========================================================
+   36. Direitos e leis — composição e motion (leis.html)
+   ----------------------------------------------------------
+   Escopo: body[data-pagina="leis"]. Nada aqui alcança as outras
+   páginas. Dois problemas resolvidos: a abertura estava vazia
+   (agora traz o índice das seis leis) e a linha do tempo era
+   estreita demais para a largura da tela.
+   ========================================================== */
+
+/* --- Abertura: o índice das seis leis ----------------------- */
+[data-pagina="leis"] .leis-atalhos {
+  margin-top: clamp(2rem, 4vh, 3rem);
+}
+
+[data-pagina="leis"] .leis-atalhos ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+[data-pagina="leis"] .leis-atalhos a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  color: var(--cor-texto-suave);
+  text-decoration: none;
+  transition:
+    border-color var(--mov-curto) var(--curva-suave),
+    color var(--mov-curto) var(--curva-suave),
+    transform var(--mov-medio) var(--curva-saida);
+}
+
+[data-pagina="leis"] .leis-atalho-ano {
+  font-family: var(--fonte-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--cor-acento);
+}
+
+[data-pagina="leis"] .leis-atalho-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 0.9rem;
+  letter-spacing: -0.01em;
+}
+
+[data-pagina="leis"] .leis-atalhos a:hover,
+[data-pagina="leis"] .leis-atalhos a:focus-visible {
+  border-color: var(--cor-acento);
+  color: var(--cor-texto);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-pagina="leis"] .leis-atalhos a:hover,
+  [data-pagina="leis"] .leis-atalhos a:focus-visible {
+    transform: translateY(-2px);
+  }
+
+  /* Entram em cascata quando a abertura é revelada (uma vez) */
+  [data-pagina="leis"] .leis-atalhos.visivel li {
+    animation: cela-entra 480ms var(--curva-saida) both;
+  }
+
+  [data-pagina="leis"] .leis-atalhos.visivel li:nth-child(2) { animation-delay: 60ms; }
+  [data-pagina="leis"] .leis-atalhos.visivel li:nth-child(3) { animation-delay: 120ms; }
+  [data-pagina="leis"] .leis-atalhos.visivel li:nth-child(4) { animation-delay: 180ms; }
+  [data-pagina="leis"] .leis-atalhos.visivel li:nth-child(5) { animation-delay: 240ms; }
+  [data-pagina="leis"] .leis-atalhos.visivel li:nth-child(6) { animation-delay: 300ms; }
+}
+
+/* --- Linha do tempo: mais larga, o ano com mais presença ---- */
+[data-pagina="leis"] .rota-anos {
+  --rota-marca: 6.5rem;
+  max-width: 62rem;
+}
+
+[data-pagina="leis"] .rota-anos .rota {
+  gap: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+[data-pagina="leis"] .rota-anos .rota-marca {
+  height: 2.9rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+}
+
+/* O alvo do atalho não pode encostar no cabeçalho fixo */
+[data-pagina="leis"] .rota-parada {
+  scroll-margin-top: calc(var(--cabecalho-real, var(--altura-cabecalho)) + 2rem);
+}
+
+/* Alcançada: além do âmbar que já existia, um halo curto de luz */
+[data-pagina="leis"] .rota-anos .rota-parada.alcancada .rota-marca {
+  box-shadow: 0 0 0 0.4rem rgba(245, 185, 66, 0.12);
+}
+
+[data-pagina="leis"] .rota-texto {
+  max-width: 46rem;
+}
+
+/* O link para o texto oficial: a seta sai andando */
+[data-pagina="leis"] .lei-fonte a span {
+  display: inline-block;
+  transition: transform var(--mov-curto) var(--curva-saida);
+}
+
+[data-pagina="leis"] .lei-fonte a:hover span,
+[data-pagina="leis"] .lei-fonte a:focus-visible span {
+  transform: translate(0.2rem, -0.2rem);
+}
+
+/* --- O soco do trecho do cão-guia --------------------------- */
+[data-pagina="leis"] .leis-soco {
+  position: relative;
+  margin-top: 2rem;
+  padding-left: 1.4rem;
+  font-family: var(--fonte-editorial);
+  font-size: clamp(1.35rem, 1.4vw + 1rem, 1.95rem);
+  line-height: 1.3;
+  color: var(--cor-texto);
+}
+
+[data-pagina="leis"] .leis-soco::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 3px;
+  border-radius: 3px;
+  background-color: var(--cor-acento);
+  transform-origin: top center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-pagina="leis"] .leis-soco::before {
+    transform: scaleY(0);
+    transition: transform 700ms var(--curva-saida) 200ms;
+  }
+
+  [data-pagina="leis"] .secao-vista .leis-soco::before {
+    transform: scaleY(1);
+  }
+}
+
+/* ----------------------------------------------------------
+   36.z Guardas — alto contraste e redução de movimento
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="leis"] .leis-atalhos.visivel li {
+  animation: none !important;
+}
+
+body.alto-contraste[data-pagina="leis"] .leis-atalhos a:hover,
+body.alto-contraste[data-pagina="leis"] .leis-atalhos a:focus-visible {
+  transform: none !important;
+  background-color: var(--cor-acento);
+  color: var(--cor-fundo);
+}
+
+body.alto-contraste[data-pagina="leis"] .leis-atalhos a:hover .leis-atalho-ano,
+body.alto-contraste[data-pagina="leis"] .leis-atalhos a:focus-visible .leis-atalho-ano {
+  color: var(--cor-fundo);
+}
+
+body.alto-contraste[data-pagina="leis"] .rota-anos .rota-parada.alcancada .rota-marca {
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="leis"] .leis-soco::before {
+  transform: none !important;
+}
+
+body.alto-contraste[data-pagina="leis"] .lei-fonte a:hover span {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pagina="leis"] .leis-atalhos li,
+  [data-pagina="leis"] .leis-soco::before {
+    animation: none !important;
+    transform: none !important;
+  }
 }
