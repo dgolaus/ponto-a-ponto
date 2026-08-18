@@ -4614,3 +4614,42 @@ body.alto-contraste .nav-com-marcador:focus-within a[aria-current="page"]:not(:f
     transition: none;
   }
 }
+
+/* ----------------------------------------------------------
+   35. Linha do tempo das leis (leis.html)
+   Reusa a .rota-palco do AcessiCar; só a marca muda de círculo
+   para pílula, porque precisa caber um ano de quatro dígitos.
+---------------------------------------------------------- */
+.rota-anos {
+  --rota-marca: 5rem;
+}
+
+.rota-anos .rota-marca {
+  width: var(--rota-marca);
+  height: 2.4rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+/* O ano é conteúdo, não enfeite: fica maior e mais firme ao acender */
+.rota-anos .rota-parada.alcancada .rota-marca {
+  transform: scale(1.04);
+}
+
+/* Link para o texto oficial da lei */
+.lei-fonte {
+  margin-top: 0.6rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.lei-fonte a {
+  color: var(--cor-texto-suave);
+}
+
+.lei-fonte a:hover,
+.lei-fonte a:focus-visible {
+  color: var(--cor-acento);
+}

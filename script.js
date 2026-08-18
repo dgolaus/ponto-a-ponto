@@ -1143,71 +1143,75 @@
      nasce inteiro aceso e não há listener de scroll.
   --------------------------------------------------------- */
   (function rotaConceito() {
-    const palco = document.getElementById("rota-acessicar");
-    if (!palco) return;
+    // Serve para QUALQUER .rota-palco da página: o trajeto do AcessiCar e
+    // a linha do tempo das leis usam o mesmo componente.
+    const palcos = Array.prototype.slice.call(document.querySelectorAll(".rota-palco"));
+    if (!palcos.length) return;
 
-    const paradas = Array.prototype.slice.call(palco.querySelectorAll(".rota-parada"));
-    if (!paradas.length) return;
+    palcos.forEach(function (palco) {
+      const paradas = Array.prototype.slice.call(palco.querySelectorAll(".rota-parada"));
+      if (!paradas.length) return;
 
-    // Onde o trilho começa/termina e onde fica o centro de cada parada.
-    let trilhoTopo = 0;
-    let trilhoAltura = 1;
-    let centros = [];
+      // Onde o trilho começa/termina e onde fica o centro de cada parada.
+      let trilhoTopo = 0;
+      let trilhoAltura = 1;
+      let centros = [];
 
-    function medir() {
-      const base = palco.getBoundingClientRect().top;
-      const marcas = paradas.map(function (p) {
-        const m = p.querySelector(".rota-marca").getBoundingClientRect();
-        return m.top - base + m.height / 2;
+      function medir() {
+        const base = palco.getBoundingClientRect().top;
+        const marcas = paradas.map(function (p) {
+          const m = p.querySelector(".rota-marca").getBoundingClientRect();
+          return m.top - base + m.height / 2;
+        });
+        trilhoTopo = marcas[0];
+        trilhoAltura = Math.max(1, marcas[marcas.length - 1] - marcas[0]);
+        centros = marcas.map(function (c) { return c - trilhoTopo; });
+        palco.style.setProperty("--rota-topo", trilhoTopo.toFixed(1) + "px");
+        palco.style.setProperty("--rota-altura", trilhoAltura.toFixed(1) + "px");
+      }
+
+      function acenderTudo() {
+        palco.style.setProperty("--rota", "1");
+        paradas.forEach(function (p) { p.classList.add("alcancada"); });
+      }
+
+      function estatico() {
+        return prefereMenosMovimento || corpo.classList.contains("alto-contraste");
+      }
+
+      function aoRolar() {
+        if (estatico()) { acenderTudo(); return; }
+        const topoNaTela = palco.getBoundingClientRect().top + trilhoTopo;
+        // linha de referência um pouco abaixo do meio da tela
+        const referencia = window.innerHeight * 0.62;
+        let avanco = (referencia - topoNaTela) / trilhoAltura;
+        avanco = Math.max(0, Math.min(1, avanco));
+        palco.style.setProperty("--rota", avanco.toFixed(4));
+
+        const percorrido = avanco * trilhoAltura;
+        for (let i = 0; i < paradas.length; i++) {
+          paradas[i].classList.toggle("alcancada", percorrido >= centros[i] - 1);
+        }
+      }
+
+      function atualizar() {
+        medir();
+        aoRolar();
+      }
+
+      atualizar();
+      window.addEventListener("scroll", aoRolar, { passive: true });
+      window.addEventListener("resize", atualizar);
+      window.addEventListener("load", atualizar);
+      // a imagem da marca acima pode empurrar o layout ao carregar
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(atualizar);
+
+      // Ao ligar/desligar o alto contraste, o modo muda na hora
+      document.addEventListener("click", function (evento) {
+        if (evento.target && evento.target.closest && evento.target.closest("#btn-contraste")) {
+          window.setTimeout(atualizar, 60);
+        }
       });
-      trilhoTopo = marcas[0];
-      trilhoAltura = Math.max(1, marcas[marcas.length - 1] - marcas[0]);
-      centros = marcas.map(function (c) { return c - trilhoTopo; });
-      palco.style.setProperty("--rota-topo", trilhoTopo.toFixed(1) + "px");
-      palco.style.setProperty("--rota-altura", trilhoAltura.toFixed(1) + "px");
-    }
-
-    function acenderTudo() {
-      palco.style.setProperty("--rota", "1");
-      paradas.forEach(function (p) { p.classList.add("alcancada"); });
-    }
-
-    function estatico() {
-      return prefereMenosMovimento || corpo.classList.contains("alto-contraste");
-    }
-
-    function aoRolar() {
-      if (estatico()) { acenderTudo(); return; }
-      const topoNaTela = palco.getBoundingClientRect().top + trilhoTopo;
-      // linha de referência um pouco abaixo do meio da tela
-      const referencia = window.innerHeight * 0.62;
-      let avanco = (referencia - topoNaTela) / trilhoAltura;
-      avanco = Math.max(0, Math.min(1, avanco));
-      palco.style.setProperty("--rota", avanco.toFixed(4));
-
-      const percorrido = avanco * trilhoAltura;
-      for (let i = 0; i < paradas.length; i++) {
-        paradas[i].classList.toggle("alcancada", percorrido >= centros[i] - 1);
-      }
-    }
-
-    function atualizar() {
-      medir();
-      aoRolar();
-    }
-
-    atualizar();
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    window.addEventListener("resize", atualizar);
-    window.addEventListener("load", atualizar);
-    // a imagem da marca acima pode empurrar o layout ao carregar
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(atualizar);
-
-    // Ao ligar/desligar o alto contraste, o modo muda na hora
-    document.addEventListener("click", function (evento) {
-      if (evento.target && evento.target.closest && evento.target.closest("#btn-contraste")) {
-        window.setTimeout(atualizar, 60);
-      }
     });
   })();
 

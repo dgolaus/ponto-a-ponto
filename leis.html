@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="As leis brasileiras que amparam pessoas cegas e com baixa visão: Lei de Cotas, acessibilidade, cão-guia, LBI e visão monocular — em ordem, com o texto oficial de cada uma."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Direitos e leis — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/leis.html" />
+  <meta property="og:title" content="Direitos e leis — Ponto a Ponto" />
+  <meta property="og:description" content="Trinta anos de conquistas: as leis que garantem acessibilidade, trabalho, cão-guia e autonomia para pessoas com deficiência visual." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Entrada suave: esconde a página antes da pintura; o script.js revela. -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="doencas.html" aria-label="Saúde e prevenção">Saúde</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Abertura -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+      <div class="container">
+        <p class="rotulo-secao">Direitos e leis</p>
+        <h1 id="titulo-pagina" data-anima>Acessibilidade não é favor: é lei</h1>
+        <p class="secao-intro" data-anima>
+          São normas federais, decretos e estatutos que garantem direitos fundamentais de
+          <strong>acessibilidade</strong>, <strong>inclusão social</strong>,
+          <strong>trabalho</strong>, <strong>educação</strong> e benefícios assistenciais a
+          pessoas cegas ou com baixa visão.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+      </div>
+
+      <a class="hero-rolar" href="#titulo-linha">
+        <span class="seta" aria-hidden="true">↓</span> Role para explorar
+      </a>
+    </section>
+
+    <!--
+      A linha do tempo reusa o componente .rota-palco (o mesmo trajeto do
+      AcessiCar): o trilho se preenche conforme a pessoa rola e cada ano
+      acende ao ser alcançado. A variante .rota-anos só alarga a marca
+      para caber o ano.
+    -->
+    <section class="secao" aria-labelledby="titulo-linha">
+      <div class="container">
+        <p class="rotulo-secao">Linha do tempo</p>
+        <h2 id="titulo-linha">Trinta anos de conquistas</h2>
+        <p class="secao-intro">
+          Nenhuma dessas leis nasceu pronta: cada uma respondeu a uma barreira concreta.
+          Role para percorrer, de 1991 até hoje — cada item leva ao texto oficial.
+        </p>
+
+        <div class="rota-palco rota-anos">
+          <span class="rota-trilho" aria-hidden="true"><span class="rota-avanco"></span></span>
+          <ol class="rota">
+            <li class="rota-parada">
+              <span class="rota-marca">1991</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Lei de Cotas</p>
+                <p>
+                  Empresas com <strong>100 ou mais empregados</strong> devem preencher de
+                  <strong>2% a 5%</strong> dos cargos com pessoas com deficiência ou
+                  reabilitados da Previdência Social. Abre a porta do mercado de trabalho e
+                  ajuda a combater a discriminação.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm" target="_blank" rel="noopener">
+                    Lei nº 8.213/1991, art. 93 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+
+            <li class="rota-parada">
+              <span class="rota-marca">2000</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">Normas gerais de acessibilidade</p>
+                <p>
+                  Determina que <strong>espaços, edifícios, transportes e sistemas de
+                  comunicação</strong> sejam adaptados. Para quem tem deficiência visual, isso
+                  inclui sinalização adequada e recursos de acessibilidade. Cria obrigações
+                  para o poder público e para determinados espaços e serviços.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/leis/l10098.htm" target="_blank" rel="noopener">
+                    Lei nº 10.098/2000 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+
+            <li class="rota-parada">
+              <span class="rota-marca">2004</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">O decreto que detalhou tudo</p>
+                <p>
+                  Regulamenta as Leis nº 10.048/2000 e nº 10.098/2000 e diz o que precisa
+                  existir na prática: <strong>edificações públicas</strong> acessíveis,
+                  <strong>vias</strong> que permitam circular com segurança,
+                  <strong>transporte público</strong> adaptado, <strong>sinalização</strong>,
+                  recursos de <strong>comunicação e informação</strong> e
+                  <strong>atendimento prioritário</strong>.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/decreto/d5296.htm" target="_blank" rel="noopener">
+                    Decreto nº 5.296/2004 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+
+            <li class="rota-parada">
+              <span class="rota-marca">2005</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">O cão-guia entra junto</p>
+                <p>
+                  Garante o direito de <strong>ingressar e permanecer</strong> acompanhada de
+                  cão-guia em qualquer ambiente — e é a lei mais fácil de ver sendo
+                  desrespeitada no dia a dia.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2005/lei/l11126.htm" target="_blank" rel="noopener">
+                    Lei nº 11.126/2005 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+
+            <li class="rota-parada">
+              <span class="rota-marca">2015</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">LBI — o Estatuto da Pessoa com Deficiência</p>
+                <p>
+                  A mais ampla de todas. Garante <strong>recursos de acessibilidade</strong>
+                  como materiais ampliados, tecnologias assistivas e
+                  <strong>adaptações razoáveis</strong> — o dever de ajustar o que for preciso
+                  para que a pessoa participe em igualdade de condições.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm" target="_blank" rel="noopener">
+                    Lei nº 13.146/2015 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+
+            <li class="rota-parada">
+              <span class="rota-marca">2021</span>
+              <div class="rota-texto">
+                <p class="rota-titulo">A visão monocular entra na conta</p>
+                <p>
+                  Reconhece a <strong>visão monocular</strong> — enxergar por um olho só — como
+                  deficiência visual <strong>para todos os efeitos legais</strong>. Quem antes
+                  ficava de fora de cotas e benefícios passou a ter os mesmos direitos.
+                </p>
+                <p class="lei-fonte">
+                  <a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/L14126.htm" target="_blank" rel="noopener">
+                    Lei nº 14.126/2021 <span aria-hidden="true">↗</span>
+                  </a>
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Destaque: cão-guia -->
+    <section class="secao" aria-labelledby="titulo-caoguia">
+      <div class="container">
+        <p class="rotulo-secao">Na prática</p>
+        <h2 id="titulo-caoguia">Aquela placa de “proibido animais” não vale</h2>
+        <p class="secao-intro">
+          É a dúvida mais comum — e a resposta é clara: o cão-guia não é bicho de estimação,
+          é um recurso de acessibilidade.
+        </p>
+
+        <div class="artigo" data-anima>
+          <p>
+            A <strong>Lei nº 11.126/2005</strong>, regulamentada pelo
+            <strong>Decreto nº 5.904/2006</strong>, assegura o direito de entrar e permanecer
+            com cão-guia em <strong>veículos e estabelecimentos de uso coletivo</strong>,
+            públicos ou privados: ônibus, metrô, shoppings, restaurantes, hospitais, hotéis,
+            escolas.
+          </p>
+          <p>
+            Uma placa de “proibido animais” <strong>não se aplica ao cão-guia</strong>. Impedir a
+            entrada, ou cobrar a mais por causa dele, é <strong>infração prevista no
+            decreto</strong> — que estabelece penalidades que vão de advertência a multa.
+          </p>
+          <p>
+            Ou seja: não é gentileza deixar entrar. É obrigação.
+          </p>
+        </div>
+
+        <p class="artigo-credito">
+          Texto oficial:
+          <a href="https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/decreto/d5904.htm" target="_blank" rel="noopener">Decreto nº 5.904/2006 <span aria-hidden="true">↗</span></a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- Fecho: o recado da turma -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <p class="rotulo-secao">O recado</p>
+        <h2 id="titulo-fecho">Agora que você sabe, pense diferente</h2>
+        <p>
+          Quando for a algum lugar que tenha alguma dessas regras, não infrinja — como as
+          famosas faixas para PCDs e as vagas no estacionamento. Se está dizendo que é vaga
+          especial, não banque o engraçadinho e desrespeite.
+        </p>
+        <p class="conceito-fecho">
+          <em>O mundo só pode ser melhor quando nós começarmos a pensar no próximo.</em>
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="tecnologia.html">Ver tecnologia assistiva</a>
+        </div>
+
+        <p class="nota-saude">
+          Este é um <strong>trabalho escolar com fins educativos</strong> — não é orientação
+          jurídica. O texto oficial de cada lei está linkado acima; em caso de dúvida sobre um
+          direito, procure a Defensoria Pública ou um advogado.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html">Tecnologia Assistiva</a></li>
+          <li><a href="doencas.html">Saúde e prevenção</a></li>
+          <li><a href="leis.html" aria-current="page">Direitos e leis</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <p>
+          Conteúdo desta página de <strong>Ingridy</strong>, <strong>Priscila</strong>,
+          <strong>Emanuelly</strong>, <strong>Maysa</strong>, <strong>Bryan</strong> e
+          <strong>Victor Kauam</strong>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>
