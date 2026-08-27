@@ -1134,8 +1134,703 @@
     atualizarPlacar();
   })();
 
+
   /* ---------------------------------------------------------
-     7f. A rota do AcessiCar (tecnologia.html): o trilho se
+     7f. Labirinto Sonoro (jogo-labirinto.html) — audiogame.
+     A partir do projeto de João Lucas Marino (@joaomarino767).
+
+     A ideia é dele: achar a saída guiado por som estéreo, com o
+     pan dizendo o lado e a frequência dizendo a distância. O que
+     mudou na remontagem para o Ponto a Ponto:
+
+     - O som NUNCA começa sozinho. O jogo abre num portão onde a
+       pessoa escolhe jogar com ou sem áudio (regra do site e
+       WCAG 1.4.2). Nada toca antes desse clique.
+     - O labirinto NÃO nasce desenhado: a parede só aparece
+       depois que você esbarra nela, que é como se anda de
+       bengala. No original a saída ficava visível na tela, então
+       quem enxerga andava direto até ela e o jogo de ouvido se
+       desmontava sozinho.
+     - Tudo que o som diz, o texto também diz. Direção, distância
+       e cada esbarrão vão para o aria-live, então dá pra jogar
+       com leitor de tela, sem fone, ou com o som desligado.
+     - A direção informa os DOIS eixos ("à direita e acima"). No
+       original o eixo vertical sumia sempre que havia desvio
+       horizontal — ou seja, na maioria das posições.
+     - Desenha só quando algo muda. O original abria um loop de
+       requestAnimationFrame por fase carregada e não cancelava
+       nenhum: depois de três reinícios eram ~10 loops juntos.
+     - As cores saem dos tokens do site, então o alto contraste
+       do menu alcança o canvas de graça.
+  --------------------------------------------------------- */
+  (function labirintoSonoro() {
+    const palco = document.getElementById("labirinto");
+    if (!palco) return;
+
+    /* Mapas: '#' parede, ' ' chão, 'P' onde a pessoa começa.
+       Todas as linhas de um mapa têm a mesma largura e a borda é
+       fechada — no original a fase 5 tinha linhas de 20 e 21
+       caracteres e o código tapava o buraco com parede.
+       As fases 4 e 5 foram geradas por busca em profundidade com
+       alguns atalhos abertos depois: labirinto "perfeito" (só
+       becos) é cruel de navegar só de ouvido. */
+    const MAPAS = [
+      [
+        "###########",
+        "#P    #   #",
+        "# ### # # #",
+        "#   #   # #",
+        "### ##### #",
+        "#         #",
+        "###########"
+      ],
+      [
+        "#############",
+        "#P  #       #",
+        "# # # ### # #",
+        "# #   #   # #",
+        "# ##### ### #",
+        "#     #     #",
+        "# ### # ### #",
+        "#   #   #   #",
+        "#############"
+      ],
+      [
+        "###############",
+        "#P    #       #",
+        "# ### # ##### #",
+        "#   #     #   #",
+        "### ##### # ###",
+        "#     #   #   #",
+        "# ### # ##### #",
+        "#   #       # #",
+        "###############"
+      ],
+      [
+        "#################",
+        "#P#   #         #",
+        "#   # #  ## # ###",
+        "#   #     #     #",
+        "######### # # # #",
+        "#         #   # #",
+        "# ## #### ##### #",
+        "# #       #     #",
+        "# #   #  ## # # #",
+        "#           #   #",
+        "#################"
+      ],
+      [
+        "#####################",
+        "#P#     #           #",
+        "# # # # #### ##     #",
+        "# #           # #   #",
+        "# # ##### ### # ### #",
+        "# #     #   # # #   #",
+        "# # ### # ### # #   #",
+        "# # #   #   #     # #",
+        "# ### ### # ### #   #",
+        "#     #             #",
+        "#####################"
+      ]
+    ];
+
+    const CHAVE_FASES = "pontoaponto-labirinto-fases";
+    const VIZINHOS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    const arena = document.getElementById("lab-arena");
+    const tela = document.getElementById("lab-canvas");
+    const pincel = tela && tela.getContext ? tela.getContext("2d") : null;
+    if (!arena || !pincel) return;
+
+    const portao = document.getElementById("lab-inicio");
+    const mesa = document.getElementById("lab-mesa");
+    const elFase = document.getElementById("lab-fase-num");
+    const elTotal = document.getElementById("lab-fase-total");
+    const elPassos = document.getElementById("lab-passos");
+    const elEstado = document.getElementById("lab-estado");
+    const elDirecao = document.getElementById("lab-direcao");
+    const elDistancia = document.getElementById("lab-distancia");
+    const elMedidor = document.getElementById("lab-medidor");
+    const btnPulso = document.getElementById("lab-pulso");
+    const btnSom = document.getElementById("lab-som");
+    const btnMapa = document.getElementById("lab-mapa");
+    const btnReiniciar = document.getElementById("lab-reiniciar");
+    const listaFases = document.getElementById("lab-fases");
+    const vitoria = document.getElementById("lab-vitoria");
+    const elVitoriaTexto = document.getElementById("lab-vitoria-texto");
+    const btnProxima = document.getElementById("lab-proxima");
+
+    let fase = 0;
+    let grade = [];
+    let jogador = { l: 1, c: 1 };
+    let saida = { l: 1, c: 1 };
+    let passos = 0;
+    let paredesVistas = {};
+    let chaoPisado = {};
+    let mostrarMapa = false;
+    let somLigado = false;
+    let jogando = false;
+    let venceu = false;
+
+    /* --- áudio: criado só no primeiro gesto da pessoa --- */
+    let audio = null;
+    let mestre = null;
+
+    function ligarAudio() {
+      const Contexto = window.AudioContext || window.webkitAudioContext;
+      if (!Contexto) return false;
+      if (!audio) {
+        audio = new Contexto();
+        mestre = audio.createGain();
+        mestre.gain.value = 0.16;
+        mestre.connect(audio.destination);
+      }
+      if (audio.state === "suspended") audio.resume();
+      return true;
+    }
+
+    function desligarAudio() {
+      if (!audio) return;
+      try { audio.close(); } catch (erro) { /* segue funcionando */ }
+      audio = null;
+      mestre = null;
+    }
+
+    function tocar(frequencia, duracao, forma, volume, lado) {
+      if (!somLigado || !audio || !mestre) return;
+      const oscilador = audio.createOscillator();
+      const ganho = audio.createGain();
+      oscilador.type = forma;
+      oscilador.frequency.value = frequencia;
+
+      // O pan estéreo é o coração do jogo, mas nem todo navegador
+      // tem StereoPannerNode — sem ele o som sai centralizado e o
+      // painel de texto continua dizendo o lado.
+      let destino = ganho;
+      if (audio.createStereoPanner) {
+        const pan = audio.createStereoPanner();
+        pan.pan.value = Math.max(-1, Math.min(1, lado));
+        ganho.connect(pan);
+        destino = pan;
+      }
+
+      const agora = audio.currentTime;
+      ganho.gain.setValueAtTime(0.0001, agora);
+      ganho.gain.exponentialRampToValueAtTime(Math.max(0.0005, volume), agora + 0.012);
+      ganho.gain.exponentialRampToValueAtTime(0.0001, agora + duracao);
+      oscilador.connect(ganho);
+      destino.connect(mestre);
+      oscilador.start(agora);
+      oscilador.stop(agora + duracao + 0.03);
+    }
+
+    /* --- mapa --- */
+    function ehLivre(l, c) {
+      return !!grade[l] && grade[l][c] !== undefined && grade[l][c] !== "#";
+    }
+
+    /* Ideia do João: a saída não fica onde o mapa desenha, ela é
+       sorteada entre as casas mais distantes do começo. Num jogo
+       de ouvido isso fica ainda melhor — não dá pra decorar o
+       caminho, tem que escutar de novo a cada partida. */
+    function sortearSaida() {
+      const fila = [{ l: jogador.l, c: jogador.c, d: 0 }];
+      const vistos = {};
+      const candidatas = [];
+      vistos[jogador.l + "," + jogador.c] = true;
+
+      while (fila.length) {
+        const atual = fila.shift();
+        if (atual.d > 0) candidatas.push(atual);
+        for (let i = 0; i < VIZINHOS.length; i++) {
+          const l = atual.l + VIZINHOS[i][0];
+          const c = atual.c + VIZINHOS[i][1];
+          const chave = l + "," + c;
+          if (ehLivre(l, c) && !vistos[chave]) {
+            vistos[chave] = true;
+            fila.push({ l: l, c: c, d: atual.d + 1 });
+          }
+        }
+      }
+
+      if (!candidatas.length) {
+        saida = { l: jogador.l, c: jogador.c };
+        return;
+      }
+      let maior = 0;
+      for (let i = 0; i < candidatas.length; i++) {
+        if (candidatas[i].d > maior) maior = candidatas[i].d;
+      }
+      const longe = candidatas.filter(function (casa) { return casa.d >= maior * 0.6; });
+      const escolhida = longe[Math.floor(Math.random() * longe.length)];
+      saida = { l: escolhida.l, c: escolhida.c };
+    }
+
+    function fasesConcluidas() {
+      const salvo = parseInt(lerPreferencia(CHAVE_FASES), 10);
+      return isNaN(salvo) ? 0 : Math.max(0, Math.min(MAPAS.length, salvo));
+    }
+
+    /* --- cores: saem dos tokens, então o alto contraste vale aqui --- */
+    let coresSalvas = null;
+    let contrasteSalvoNoDesenho = null;
+
+    function cores() {
+      const alto = corpo.classList.contains("alto-contraste");
+      if (coresSalvas && contrasteSalvoNoDesenho === alto) return coresSalvas;
+      const estilo = getComputedStyle(corpo);
+      function token(nome, reserva) {
+        const valor = estilo.getPropertyValue(nome).trim();
+        return valor || reserva;
+      }
+      contrasteSalvoNoDesenho = alto;
+      coresSalvas = {
+        fundo: token("--cor-fundo", "#080a11"),
+        parede: token("--cor-borda", "#252a37"),
+        rastro: token("--cor-texto-suave", "#a3a9b7"),
+        acento: token("--cor-acento", "#f5b942"),
+        texto: token("--cor-texto", "#f0f2f7"),
+        alto: alto
+      };
+      return coresSalvas;
+    }
+
+    let larguraAnterior = 0;
+    let alturaAnterior = 0;
+
+    // Altura máxima do tabuleiro. Sem isso a célula cresce junto com a
+    // largura da tela e um labirinto pequeno vira um paredão de 800px.
+    const ALTURA_MAXIMA = 380;
+
+    function desenhar() {
+      if (!grade.length) return;
+      const c = cores();
+      const linhas = grade.length;
+      const colunas = grade[0].length;
+      // Mede pela MESA, não pela moldura: a moldura encolhe junto com o
+      // canvas, e medir por ela realimentaria o observador de tamanho.
+      const disponivel = Math.max(240, (mesa && mesa.clientWidth) || arena.clientWidth || 640);
+      const celula = Math.min(disponivel / colunas, ALTURA_MAXIMA / linhas);
+      const largura = celula * colunas;
+      const altura = celula * linhas;
+
+      // Só mexe no tamanho do canvas quando ele mudou de verdade:
+      // trocar width/height limpa o contexto e faz piscar.
+      if (Math.abs(largura - larguraAnterior) > 0.5 || Math.abs(altura - alturaAnterior) > 0.5) {
+        const densidade = window.devicePixelRatio || 1;
+        tela.style.width = largura + "px";
+        tela.style.height = altura + "px";
+        tela.width = Math.round(largura * densidade);
+        tela.height = Math.round(altura * densidade);
+        pincel.setTransform(densidade, 0, 0, densidade, 0, 0);
+        larguraAnterior = largura;
+        alturaAnterior = altura;
+      }
+
+      pincel.clearRect(0, 0, largura, altura);
+      pincel.fillStyle = c.fundo;
+      pincel.fillRect(0, 0, largura, altura);
+
+      for (let l = 0; l < linhas; l++) {
+        for (let col = 0; col < colunas; col++) {
+          const chave = l + "," + col;
+          const parede = grade[l][col] === "#";
+          const revelada = mostrarMapa || (parede ? paredesVistas[chave] : chaoPisado[chave]);
+          if (!revelada) continue;
+
+          const x = col * celula;
+          const y = l * celula;
+          if (parede) {
+            // Parede = bloco cheio. Caminho = ponto.
+            // A diferença é de FORMA, não só de cor (regra 2 do site).
+            pincel.fillStyle = c.parede;
+            pincel.fillRect(x, y, Math.ceil(celula), Math.ceil(celula));
+          } else {
+            pincel.fillStyle = c.rastro;
+            pincel.globalAlpha = c.alto ? 1 : 0.5;
+            pincel.beginPath();
+            pincel.arc(x + celula / 2, y + celula / 2, Math.max(1.5, celula * 0.16), 0, Math.PI * 2);
+            pincel.fill();
+            pincel.globalAlpha = 1;
+          }
+        }
+      }
+
+      // Contorno da sala: diz o tamanho do labirinto sem entregar as paredes
+      pincel.strokeStyle = c.parede;
+      pincel.globalAlpha = c.alto ? 1 : 0.4;
+      pincel.lineWidth = 1;
+      pincel.strokeRect(0.5, 0.5, largura - 1, altura - 1);
+      pincel.globalAlpha = 1;
+
+      // A saída só aparece com o mapa aberto (ou depois de vencer).
+      // Enquanto o mapa está fechado, ela é só som e texto.
+      if (mostrarMapa || venceu) {
+        const sx = saida.c * celula + celula / 2;
+        const sy = saida.l * celula + celula / 2;
+        pincel.strokeStyle = c.acento;
+        pincel.lineWidth = Math.max(2, celula * 0.09);
+        pincel.beginPath();
+        pincel.arc(sx, sy, celula * 0.34, 0, Math.PI * 2);
+        pincel.stroke();
+        pincel.fillStyle = c.acento;
+        pincel.font = "700 " + Math.max(10, Math.round(celula * 0.46)) + "px " +
+          getComputedStyle(corpo).fontFamily;
+        pincel.textAlign = "center";
+        pincel.textBaseline = "middle";
+        pincel.fillText("★", sx, sy + celula * 0.02);
+      }
+
+      // A pessoa: círculo âmbar com anel, pra separar do fundo
+      // mesmo quando cai em cima da saída.
+      const px = jogador.c * celula + celula / 2;
+      const py = jogador.l * celula + celula / 2;
+      pincel.fillStyle = c.acento;
+      pincel.beginPath();
+      pincel.arc(px, py, Math.max(4, celula * 0.28), 0, Math.PI * 2);
+      pincel.fill();
+      pincel.strokeStyle = c.texto;
+      pincel.lineWidth = Math.max(1.5, celula * 0.06);
+      pincel.stroke();
+    }
+
+    /* --- texto: tudo que o som diz, o painel também diz --- */
+    function descreverDirecao(dl, dc) {
+      const partes = [];
+      if (dc > 0) partes.push("à direita");
+      else if (dc < 0) partes.push("à esquerda");
+      if (dl > 0) partes.push("abaixo");
+      else if (dl < 0) partes.push("acima");
+      if (!partes.length) return "bem aqui";
+      return partes.join(" e ");
+    }
+
+    function medidas() {
+      const dl = saida.l - jogador.l;
+      const dc = saida.c - jogador.c;
+      const casas = Math.abs(dl) + Math.abs(dc);
+      const maximo = grade.length + grade[0].length;
+      return {
+        dl: dl,
+        dc: dc,
+        casas: casas,
+        // 0 = longe, 1 = em cima da saída
+        forca: Math.max(0, Math.min(1, 1 - casas / maximo)),
+        lado: dc / Math.max(1, Math.abs(dl) + Math.abs(dc))
+      };
+    }
+
+    function pintarPainel() {
+      const m = medidas();
+      if (elPassos) elPassos.textContent = String(passos);
+      if (elDirecao) elDirecao.textContent = descreverDirecao(m.dl, m.dc);
+      if (elDistancia) {
+        elDistancia.textContent = m.casas === 1 ? "1 casa" : m.casas + " casas";
+      }
+      if (elMedidor) elMedidor.style.width = Math.round(m.forca * 100) + "%";
+    }
+
+    function dizer(mensagem) {
+      if (elEstado) elEstado.textContent = mensagem;
+      anunciar(mensagem);
+    }
+
+    function resumo() {
+      const m = medidas();
+      return "A saída está " + descreverDirecao(m.dl, m.dc) + ", a " +
+        (m.casas === 1 ? "1 casa" : m.casas + " casas") + ".";
+    }
+
+    /* O "pulso": toca o tom da saída sem gastar um passo. Serve pra
+       quem está se reorientando — de ouvido, parar e escutar de novo
+       é metade do jogo. */
+    function pulso(comFala) {
+      const m = medidas();
+      tocar(220 + m.forca * 460, 0.22, "sine", 0.03 + m.forca * 0.05, m.lado);
+      if (comFala) dizer(resumo());
+    }
+
+    function mover(dl, dc) {
+      if (!jogando || venceu) return;
+      const l = jogador.l + dl;
+      const c = jogador.c + dc;
+
+      if (!ehLivre(l, c)) {
+        paredesVistas[l + "," + c] = true;
+        tocar(90, 0.18, "square", 0.09, dc);
+        dizer("Parede " + descreverDirecao(dl, dc) + ". " + resumo());
+        desenhar();
+        return;
+      }
+
+      jogador = { l: l, c: c };
+      chaoPisado[l + "," + c] = true;
+      passos += 1;
+      tocar(150, 0.07, "triangle", 0.045, 0);
+
+      if (jogador.l === saida.l && jogador.c === saida.c) {
+        vencer();
+        return;
+      }
+
+      pintarPainel();
+      pulso(false);
+      dizer(resumo());
+      desenhar();
+    }
+
+    function vencer() {
+      venceu = true;
+      jogando = false;
+      passos += 1;
+      pintarPainel();
+      desenhar();
+
+      const concluidas = fasesConcluidas();
+      if (fase + 1 > concluidas) salvarPreferencia(CHAVE_FASES, String(fase + 1));
+      montarListaDeFases();
+
+      const ultima = fase >= MAPAS.length - 1;
+      if (elVitoriaTexto) {
+        elVitoriaTexto.textContent = "Fase " + (fase + 1) + " concluída em " + passos +
+          (passos === 1 ? " passo." : " passos.");
+      }
+      if (btnProxima) {
+        btnProxima.textContent = ultima ? "Jogar de novo" : "Próxima fase";
+      }
+      if (vitoria) vitoria.hidden = false;
+
+      // Arpejo curto de vitória (só se a pessoa ligou o som)
+      tocar(392, 0.14, "sine", 0.07, 0);
+      window.setTimeout(function () { tocar(523, 0.16, "sine", 0.075, 0); }, 130);
+      window.setTimeout(function () { tocar(659, 0.28, "sine", 0.08, 0); }, 280);
+
+      dizer("Você encontrou a saída! Fase " + (fase + 1) + " concluída em " + passos +
+        (passos === 1 ? " passo." : " passos."));
+      if (btnProxima) window.setTimeout(function () { btnProxima.focus(); }, 120);
+    }
+
+    function carregarFase(indice, anunciarEntrada) {
+      fase = Math.max(0, Math.min(MAPAS.length - 1, indice));
+      grade = MAPAS[fase].map(function (linha) { return linha.split(""); });
+      paredesVistas = {};
+      chaoPisado = {};
+      passos = 0;
+      venceu = false;
+      jogando = true;
+
+      for (let l = 0; l < grade.length; l++) {
+        for (let c = 0; c < grade[l].length; c++) {
+          if (grade[l][c] === "P") {
+            jogador = { l: l, c: c };
+            grade[l][c] = " ";
+          }
+        }
+      }
+      sortearSaida();
+      chaoPisado[jogador.l + "," + jogador.c] = true;
+
+      if (elFase) elFase.textContent = String(fase + 1);
+      if (vitoria) vitoria.hidden = true;
+      pintarPainel();
+      montarListaDeFases();
+      desenhar();
+
+      if (anunciarEntrada) {
+        dizer("Fase " + (fase + 1) + " de " + MAPAS.length + ". " + resumo());
+        pulso(false);
+      } else if (elEstado) {
+        elEstado.textContent = resumo();
+      }
+    }
+
+    function montarListaDeFases() {
+      if (!listaFases) return;
+      const concluidas = fasesConcluidas();
+      listaFases.innerHTML = "";
+
+      for (let i = 0; i < MAPAS.length; i++) {
+        const liberada = i === 0 || i <= concluidas;
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "lab-fase-botao";
+        botao.setAttribute("data-fase", String(i));
+
+        // Nunca só pela cor: o estado vai escrito no próprio botão.
+        const situacao = i === fase ? "atual" : liberada ? "aberta" : "bloqueada";
+        botao.classList.toggle("lab-fase-atual", i === fase);
+        botao.classList.toggle("lab-fase-presa", !liberada);
+        botao.innerHTML = '<span class="lab-fase-numero">' + (i + 1) + "</span>" +
+          '<span class="lab-fase-situacao">' + situacao + "</span>";
+        botao.setAttribute("aria-label", "Fase " + (i + 1) + " — " + situacao);
+        if (i === fase) botao.setAttribute("aria-current", "true");
+
+        if (!liberada) {
+          botao.disabled = true;
+        } else {
+          botao.addEventListener("click", function () {
+            carregarFase(Number(this.getAttribute("data-fase")), true);
+            focarArena();
+          });
+        }
+        listaFases.appendChild(botao);
+      }
+    }
+
+    function focarArena() {
+      window.setTimeout(function () {
+        // preventScroll: focar o canvas dava um tranco na página, e ele
+        // já está à vista quando alguém clica em jogar / trocar de fase.
+        try { tela.focus({ preventScroll: true }); } catch (erro) { tela.focus(); }
+      }, 60);
+    }
+
+    function comecar(comSom) {
+      somLigado = !!comSom;
+      if (somLigado && !ligarAudio()) {
+        somLigado = false;
+        mostrarToast("Seu navegador não oferece o áudio do jogo.");
+      }
+      if (portao) portao.hidden = true;
+      if (mesa) mesa.hidden = false;
+      pintarBotaoSom();
+      carregarFase(fasesConcluidas() >= MAPAS.length ? 0 : fasesConcluidas(), true);
+      focarArena();
+    }
+
+    function pintarBotaoSom() {
+      if (!btnSom) return;
+      btnSom.setAttribute("aria-pressed", String(somLigado));
+      btnSom.textContent = somLigado ? "Som: ligado" : "Som: desligado";
+    }
+
+    function pintarBotaoMapa() {
+      if (!btnMapa) return;
+      btnMapa.setAttribute("aria-pressed", String(mostrarMapa));
+      btnMapa.textContent = mostrarMapa ? "Mapa: aberto" : "Mapa: fechado";
+    }
+
+    /* --- ligações --- */
+    if (elTotal) elTotal.textContent = String(MAPAS.length);
+
+    const btnComSom = document.getElementById("lab-comecar-som");
+    const btnSemSom = document.getElementById("lab-comecar-mudo");
+    if (btnComSom) btnComSom.addEventListener("click", function () { comecar(true); });
+    if (btnSemSom) btnSemSom.addEventListener("click", function () { comecar(false); });
+
+    if (btnSom) {
+      btnSom.addEventListener("click", function () {
+        somLigado = !somLigado;
+        if (somLigado && !ligarAudio()) somLigado = false;
+        if (!somLigado) desligarAudio();
+        pintarBotaoSom();
+        dizer(somLigado ? "Som ligado." : "Som desligado. O painel continua dizendo a direção.");
+        if (somLigado) pulso(false);
+      });
+    }
+
+    if (btnMapa) {
+      btnMapa.addEventListener("click", function () {
+        mostrarMapa = !mostrarMapa;
+        pintarBotaoMapa();
+        desenhar();
+        dizer(mostrarMapa
+          ? "Mapa aberto: as paredes e a saída estão desenhadas."
+          : "Mapa fechado: só aparece o caminho que você já andou.");
+      });
+    }
+
+    if (btnPulso) {
+      btnPulso.addEventListener("click", function () {
+        if (!jogando) return;
+        pulso(true);
+      });
+    }
+
+    if (btnReiniciar) {
+      btnReiniciar.addEventListener("click", function () {
+        carregarFase(fase, true);
+        focarArena();
+      });
+    }
+
+    if (btnProxima) {
+      btnProxima.addEventListener("click", function () {
+        carregarFase(fase >= MAPAS.length - 1 ? 0 : fase + 1, true);
+        focarArena();
+      });
+    }
+
+    // Botões de direção na tela: fazem o jogo funcionar no celular
+    // e dão um alvo de Tab pra quem não usa as setas.
+    const teclas = Array.prototype.slice.call(palco.querySelectorAll("[data-mover]"));
+    for (let i = 0; i < teclas.length; i++) {
+      teclas[i].addEventListener("click", function () {
+        const passo = {
+          cima: [-1, 0], baixo: [1, 0], esquerda: [0, -1], direita: [0, 1]
+        }[this.getAttribute("data-mover")];
+        if (passo) mover(passo[0], passo[1]);
+      });
+    }
+
+    /* Atalhos presos ao painel do jogo, nunca ao documento: as setas
+       são de quem está lendo a página até o foco entrar aqui. */
+    palco.addEventListener("keydown", function (evento) {
+      const alvo = evento.target;
+      if (alvo && (alvo.tagName === "INPUT" || alvo.tagName === "TEXTAREA" || alvo.isContentEditable)) return;
+
+      const setas = {
+        ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1]
+      };
+      if (setas[evento.key]) {
+        evento.preventDefault();
+        mover(setas[evento.key][0], setas[evento.key][1]);
+        return;
+      }
+
+      const tecla = (evento.key || "").toLowerCase();
+      if (tecla === "p") {
+        evento.preventDefault();
+        if (jogando) pulso(true);
+        return;
+      }
+      if (tecla === "m" && btnMapa) {
+        evento.preventDefault();
+        btnMapa.click();
+      }
+    });
+
+    // Redesenha quando a caixa muda de largura (A+/A−, girar o celular,
+    // recolher a nav). Observa a MOLDURA, não o canvas: mexer na altura
+    // do canvas realimentaria o observador.
+    let mesaAnterior = 0;
+    function conferirLargura() {
+      const atual = (mesa && mesa.clientWidth) || 0;
+      if (Math.abs(atual - mesaAnterior) < 1) return;
+      mesaAnterior = atual;
+      desenhar();
+    }
+    if (window.ResizeObserver && mesa) {
+      new ResizeObserver(conferirLargura).observe(mesa);
+    } else {
+      window.addEventListener("resize", conferirLargura);
+    }
+
+    // O alto contraste troca os tokens: joga fora as cores guardadas
+    // e redesenha com a paleta nova.
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        coresSalvas = null;
+        desenhar();
+      }).observe(corpo, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    pintarBotaoSom();
+    pintarBotaoMapa();
+    montarListaDeFases();
+  })();
+  /* ---------------------------------------------------------
+     7g. A rota do AcessiCar (tecnologia.html): o trilho se
      preenche conforme a pessoa rola e cada parada acende ao
      ser alcançada. É enfeite — o texto e a ordem já estão no
      HTML (<ol>), então quem não vê a animação não perde nada.

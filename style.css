@@ -4858,3 +4858,339 @@ body.alto-contraste[data-pagina="leis"] .lei-fonte a:hover span {
     transform: none !important;
   }
 }
+
+/* ----------------------------------------------------------
+   37. Labirinto Sonoro (jogo-labirinto.html)
+   O canvas é desenhado no script.js lendo os TOKENS daqui,
+   então o alto contraste alcança o jogo sem regra extra.
+---------------------------------------------------------- */
+.labirinto {
+  max-width: 52rem;
+  text-align: left;
+}
+
+/* Portão de entrada: nada toca antes da pessoa escolher */
+.lab-inicio {
+  text-align: center;
+}
+
+.lab-inicio-texto {
+  max-width: 42ch;
+  margin: 0 auto 1.75rem;
+  color: var(--cor-texto-suave);
+}
+
+.lab-inicio-texto strong {
+  color: var(--cor-texto);
+}
+
+.lab-inicio-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.lab-inicio-nota {
+  max-width: 40ch;
+  margin: 1.75rem auto 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--cor-texto-suave);
+}
+
+/* Faixa de cima: fase e passos */
+.lab-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.lab-cabecalho b {
+  color: var(--cor-acento);
+  font-weight: 500;
+}
+
+/* Moldura do canvas */
+.lab-arena {
+  position: relative;
+  /* Abraça o labirinto em vez de esticar: o tamanho da célula tem teto,
+     então num mapa pequeno a moldura encolhe junto e fica centrada. */
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  overflow: hidden;
+}
+
+.lab-arena canvas {
+  display: block;
+  max-width: 100%;
+}
+
+.lab-arena canvas:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: -3px;
+}
+
+/* Linha de estado — é o que o leitor de tela também recebe */
+.lab-estado {
+  min-height: 3rem;
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  color: var(--cor-texto);
+}
+
+/* Bússola: direção, distância e intensidade em TEXTO */
+.lab-bussola {
+  display: grid;
+  gap: 0.35rem 1.25rem;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+}
+
+.lab-bussola-rotulo {
+  margin: 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.lab-direcao {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--cor-acento);
+}
+
+.lab-distancia {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+.lab-medidor {
+  grid-column: 2;
+  height: 0.4rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lab-medidor span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--cor-acento);
+  transition: width var(--mov-medio) var(--curva-suave);
+}
+
+.lab-medidor-rotulo {
+  grid-column: 2;
+  margin: 0.4rem 0 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+/* Setas na tela: no celular são o único jeito de jogar */
+.lab-teclado {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-areas:
+    ". cima ."
+    "esquerda baixo direita";
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.lab-tecla {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  font-family: var(--fonte-mono);
+  font-size: 1.1rem;
+  color: var(--cor-texto);
+  background: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  cursor: pointer;
+  transition: border-color var(--mov-curto) var(--curva-suave),
+              color var(--mov-curto) var(--curva-suave);
+}
+
+.lab-tecla:hover {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+.lab-tecla:active {
+  background: var(--cor-superficie-2);
+}
+
+.lab-tecla[data-mover="cima"] { grid-area: cima; }
+.lab-tecla[data-mover="baixo"] { grid-area: baixo; }
+.lab-tecla[data-mover="esquerda"] { grid-area: esquerda; }
+.lab-tecla[data-mover="direita"] { grid-area: direita; }
+
+.lab-teclado-dica {
+  margin: 0.75rem 0 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+/* Ações */
+.lab-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.lab-acoes .botao-barra {
+  font-size: 0.85rem;
+}
+
+/* Seleção de fase */
+.lab-fases-rotulo {
+  margin: 2rem 0 0.75rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.lab-fases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.lab-fase-botao {
+  display: grid;
+  gap: 0.15rem;
+  place-items: center;
+  min-width: 4.25rem;
+  padding: 0.6rem 0.5rem;
+  color: var(--cor-texto);
+  background: transparent;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  cursor: pointer;
+  transition: border-color var(--mov-curto) var(--curva-suave),
+              color var(--mov-curto) var(--curva-suave);
+}
+
+.lab-fase-botao:hover:not(:disabled) {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+.lab-fase-numero {
+  font-family: var(--fonte-mono);
+  font-size: 1.05rem;
+}
+
+/* O estado vem escrito, nunca só pela cor */
+.lab-fase-situacao {
+  font-family: var(--fonte-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.lab-fase-botao.lab-fase-atual {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento);
+}
+
+.lab-fase-botao.lab-fase-atual .lab-fase-situacao {
+  color: var(--cor-acento);
+}
+
+.lab-fase-botao:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Vitória: painel no lugar, sem modal por cima */
+.lab-vitoria {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid var(--cor-acento);
+  border-radius: var(--raio-botao);
+}
+
+.lab-vitoria-marca {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--cor-acento);
+}
+
+.lab-vitoria h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--fonte-titulo);
+  font-size: 1.25rem;
+}
+
+.lab-vitoria p {
+  margin: 0 0 1.25rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 34rem) {
+  .lab-bussola {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-distancia,
+  .lab-medidor,
+  .lab-medidor-rotulo {
+    grid-column: 1;
+  }
+
+  .lab-tecla {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
+/* No alto contraste a barra de intensidade ganha contorno sólido:
+   ela é enfeite do texto ao lado, mas não pode sumir no preto. */
+body.alto-contraste .lab-medidor span {
+  background: var(--cor-acento);
+}

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Labirinto Sonoro: um jogo que se joga pelo ouvido. O som estéreo diz de que lado está a saída e o quanto você chegou perto — as paredes só aparecem quando você esbarra nelas."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Labirinto Sonoro — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogo-labirinto.html" />
+  <meta property="og:title" content="Labirinto Sonoro — Ponto a Ponto" />
+  <meta property="og:description" content="Um jogo que se joga pelo ouvido: o som diz de que lado está a saída e as paredes só aparecem quando você esbarra nelas." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Entrada suave: esconde a página antes da pintura; o script.js revela. -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="doencas.html" aria-label="Saúde e prevenção">Saúde</a></li>
+          <li><a href="jogos.html" aria-current="page">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Jogo -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-labirinto">
+      <div class="container">
+        <p class="rotulo-secao">Jogo 04</p>
+        <h1 id="titulo-labirinto" data-anima>Labirinto Sonoro</h1>
+        <p class="secao-intro" data-anima>
+          Um labirinto que <strong>não aparece na tela</strong>. Você começa às cegas e descobre
+          cada parede esbarrando nela — como quem anda de bengala. Para achar a saída, o que
+          você tem é o <strong>som</strong>: ele vem do lado em que ela está e fica mais agudo
+          conforme você chega perto. Quem não usa fone acompanha tudo pelo painel de texto.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+
+        <div class="jogo labirinto" id="labirinto" data-anima>
+
+          <!-- Portão: o som nunca começa sozinho -->
+          <div class="lab-inicio" id="lab-inicio">
+            <p class="lab-inicio-texto">
+              Este jogo se joga <strong>pelo ouvido</strong>. Coloque fones estéreo, se puder —
+              é o que separa a esquerda da direita. Se preferir jogar em silêncio, dá:
+              a direção e a distância também vêm escritas.
+            </p>
+            <div class="lab-inicio-acoes">
+              <button type="button" id="lab-comecar-som" class="botao botao-primario">
+                Ligar o som e jogar
+              </button>
+              <button type="button" id="lab-comecar-mudo" class="botao botao-secundario">
+                Jogar sem som
+              </button>
+            </div>
+            <p class="lab-inicio-nota">
+              Nada toca antes de você escolher. Som que começa sozinho atropela quem está
+              usando leitor de tela.
+            </p>
+          </div>
+
+          <!-- Mesa de jogo -->
+          <div class="lab-mesa" id="lab-mesa" hidden>
+            <p class="lab-cabecalho">
+              <span>Fase <b id="lab-fase-num">1</b> de <b id="lab-fase-total">5</b></span>
+              <span><b id="lab-passos">0</b> passos</span>
+            </p>
+
+            <div class="lab-arena" id="lab-arena">
+              <canvas
+                id="lab-canvas"
+                width="720"
+                height="440"
+                tabindex="0"
+                aria-label="Labirinto. Use as setas do teclado para andar. A direção e a distância da saída estão escritas logo abaixo."
+              ></canvas>
+            </div>
+
+            <!-- aria-live="off": quem anuncia é a região de avisos do site,
+                 senão o leitor de tela falaria duas vezes a cada passo. -->
+            <p class="lab-estado" id="lab-estado" role="status" aria-live="off">
+              Escolha uma direção para começar.
+            </p>
+
+            <div class="lab-bussola">
+              <p class="lab-bussola-rotulo">A saída está</p>
+              <p class="lab-direcao" id="lab-direcao">—</p>
+              <p class="lab-distancia" id="lab-distancia">—</p>
+              <div class="lab-medidor"><span id="lab-medidor"></span></div>
+              <p class="lab-medidor-rotulo">intensidade do som</p>
+            </div>
+
+            <div class="lab-teclado" role="group" aria-label="Andar pelo labirinto">
+              <button type="button" class="lab-tecla" data-mover="cima" aria-label="Andar para cima">↑</button>
+              <button type="button" class="lab-tecla" data-mover="esquerda" aria-label="Andar para a esquerda">←</button>
+              <button type="button" class="lab-tecla" data-mover="baixo" aria-label="Andar para baixo">↓</button>
+              <button type="button" class="lab-tecla" data-mover="direita" aria-label="Andar para a direita">→</button>
+            </div>
+            <p class="lab-teclado-dica">
+              Setas do teclado · <kbd>P</kbd> escuta a saída de novo · <kbd>M</kbd> abre o mapa
+            </p>
+
+            <div class="lab-acoes">
+              <button type="button" id="lab-pulso" class="botao-barra">Ouvir a saída</button>
+              <button type="button" id="lab-som" class="botao-barra" aria-pressed="false">Som: desligado</button>
+              <button type="button" id="lab-mapa" class="botao-barra" aria-pressed="false">Mapa: fechado</button>
+              <button type="button" id="lab-reiniciar" class="botao-barra">Reiniciar fase</button>
+            </div>
+
+            <div class="lab-vitoria" id="lab-vitoria" hidden>
+              <span class="lab-vitoria-marca" aria-hidden="true">★</span>
+              <h3>Você encontrou a saída.</h3>
+              <p id="lab-vitoria-texto">Fase concluída.</p>
+              <button type="button" id="lab-proxima" class="botao botao-primario">Próxima fase</button>
+            </div>
+
+            <p class="lab-fases-rotulo" id="lab-fases-rotulo">Escolher fase</p>
+            <div class="lab-fases" id="lab-fases" role="group" aria-labelledby="lab-fases-rotulo"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fecho -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <h2 id="titulo-fecho">Aqui, enxergar não ajuda muito.</h2>
+        <p>
+          Os outros jogos do site dão para jogar de olhos fechados. Este praticamente
+          <strong>exige</strong>: o mapa nasce fechado e quem enxerga fica na mesma situação de
+          quem não enxerga — dependendo do ouvido, da memória do caminho e das paredes que já
+          encontrou. Abrir o mapa é permitido, mas aí o jogo vira outro.
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="jogos.html">Ver todos os jogos <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="tecnologia.html">Ler sobre tecnologia assistiva</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html">Tecnologia Assistiva</a></li>
+          <li><a href="doencas.html">Saúde e prevenção</a></li>
+          <li><a href="leis.html">Direitos e leis</a></li>
+          <li><a href="jogos.html" aria-current="page">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <p>
+          A partir do projeto <strong>Labirinto Sonoro</strong>, de
+          <strong>João Lucas Marino</strong>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>
