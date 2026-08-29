@@ -2101,6 +2101,8 @@ body.alto-contraste .pagina-topo::after {
 
 .pagina-acoes {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   justify-content: center;
 }
 
@@ -5193,4 +5195,52 @@ body.alto-contraste[data-pagina="leis"] .lei-fonte a:hover span {
    ela é enfeite do texto ao lado, mas não pode sumir no preto. */
 body.alto-contraste .lab-medidor span {
   background: var(--cor-acento);
+}
+
+/* ----------------------------------------------------------
+   38. Selo de som nos cartões de jogo (jogos.html)
+   Avisa ANTES de entrar se o jogo fala ou faz barulho. Quem usa
+   leitor de tela precisa saber disso antes de abrir a página:
+   uma segunda voz por cima da dele atrapalha de verdade.
+   O aviso está no TEXTO — o ícone é reforço e é aria-hidden.
+---------------------------------------------------------- */
+/* O .cartao já é flex-column com gap: aqui a margem seria somada. */
+.cartao-selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.cartao-som-icone {
+  flex-shrink: 0;
+}
+
+.cartao-som {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--fonte-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--cor-texto-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+}
+
+/* Com som: âmbar. Mas quem avisa é o texto, não a cor. */
+.cartao-som-liga {
+  color: var(--cor-acento);
+  border-color: var(--cor-acento-medio);
+}
+
+@media (max-width: 30rem) {
+  .cartao-som {
+    font-size: 0.62rem;
+  }
 }
