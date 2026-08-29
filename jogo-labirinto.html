@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta
     name="description"
-    content="Labirinto Sonoro: um jogo que se joga pelo ouvido. O som estéreo diz de que lado está a saída e o quanto você chegou perto — as paredes só aparecem quando você esbarra nelas."
+    content="Labirinto Sonoro: um jogo que se joga pelo ouvido. Um som contínuo vem do lado em que a saída está e fica mais forte conforme você chega perto."
   />
   <meta name="theme-color" content="#0A0D16" />
   <title>Labirinto Sonoro — Ponto a Ponto</title>
@@ -21,7 +21,7 @@
   <meta property="og:locale" content="pt_BR" />
   <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/jogo-labirinto.html" />
   <meta property="og:title" content="Labirinto Sonoro — Ponto a Ponto" />
-  <meta property="og:description" content="Um jogo que se joga pelo ouvido: o som diz de que lado está a saída e as paredes só aparecem quando você esbarra nelas." />
+  <meta property="og:description" content="Um jogo que se joga pelo ouvido: um som contínuo vem do lado da saída e fica mais forte conforme você chega perto." />
   <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -128,10 +128,10 @@
         <p class="rotulo-secao">Jogo 04</p>
         <h1 id="titulo-labirinto" data-anima>Labirinto Sonoro</h1>
         <p class="secao-intro" data-anima>
-          Um labirinto que <strong>não aparece na tela</strong>. Você começa às cegas e descobre
-          cada parede esbarrando nela — como quem anda de bengala. Para achar a saída, o que
-          você tem é o <strong>som</strong>: ele vem do lado em que ela está e fica mais agudo
-          conforme você chega perto. Quem não usa fone acompanha tudo pelo painel de texto.
+          Você anda por um labirinto procurando a saída, e quem te guia é o <strong>som</strong>:
+          um tom contínuo que vem do <strong>lado</strong> em que a saída está e fica mais forte e
+          mais agudo conforme você chega perto. Dá pra fechar o mapa e jogar só de ouvido — e
+          quem não usa fone acompanha tudo pelo painel de texto.
         </p>
         <div class="pagina-acoes" data-anima>
           <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
@@ -145,8 +145,8 @@
           <div class="lab-inicio" id="lab-inicio">
             <p class="lab-inicio-texto">
               Este jogo se joga <strong>pelo ouvido</strong>. Coloque fones estéreo, se puder —
-              é o que separa a esquerda da direita. Se preferir jogar em silêncio, dá:
-              a direção e a distância também vêm escritas.
+              é o que separa a esquerda da direita. O som fica tocando o tempo todo enquanto
+              você joga. Se preferir em silêncio, dá: a direção e a distância também vêm escritas.
             </p>
             <div class="lab-inicio-acoes">
               <button type="button" id="lab-comecar-som" class="botao botao-primario">
@@ -200,13 +200,13 @@
               <button type="button" class="lab-tecla" data-mover="direita" aria-label="Andar para a direita">→</button>
             </div>
             <p class="lab-teclado-dica">
-              Setas do teclado · <kbd>P</kbd> escuta a saída de novo · <kbd>M</kbd> abre o mapa
+              Setas do teclado · <kbd>P</kbd> realça o som da saída · <kbd>M</kbd> abre e fecha o mapa
             </p>
 
             <div class="lab-acoes">
               <button type="button" id="lab-pulso" class="botao-barra">Ouvir a saída</button>
               <button type="button" id="lab-som" class="botao-barra" aria-pressed="false">Som: desligado</button>
-              <button type="button" id="lab-mapa" class="botao-barra" aria-pressed="false">Mapa: fechado</button>
+              <button type="button" id="lab-mapa" class="botao-barra" aria-pressed="true">Mapa: aberto</button>
               <button type="button" id="lab-reiniciar" class="botao-barra">Reiniciar fase</button>
             </div>
 
@@ -227,12 +227,12 @@
     <!-- Fecho -->
     <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
       <div class="container encerramento-caixa">
-        <h2 id="titulo-fecho">Aqui, enxergar não ajuda muito.</h2>
+        <h2 id="titulo-fecho">Experimente fechar o mapa.</h2>
         <p>
-          Os outros jogos do site dão para jogar de olhos fechados. Este praticamente
-          <strong>exige</strong>: o mapa nasce fechado e quem enxerga fica na mesma situação de
-          quem não enxerga — dependendo do ouvido, da memória do caminho e das paredes que já
-          encontrou. Abrir o mapa é permitido, mas aí o jogo vira outro.
+          Com o labirinto à vista, o som é uma ajuda a mais. Feche o mapa no botão
+          <strong>Mapa: aberto</strong> (ou na tecla <kbd>M</kbd>) e ele vira a única pista: você
+          passa a descobrir cada parede esbarrando nela, como quem anda de bengala, e fica na
+          mesma situação de quem não enxerga. É o mesmo jogo — muito mais difícil.
         </p>
         <div class="encerramento-acoes">
           <a class="botao botao-primario" href="jogos.html">Ver todos os jogos <span aria-hidden="true">←</span></a>

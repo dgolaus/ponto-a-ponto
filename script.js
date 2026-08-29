@@ -1267,7 +1267,9 @@
     let passos = 0;
     let paredesVistas = {};
     let chaoPisado = {};
-    let mostrarMapa = false;
+    // Aberto por padrão, como no original: o labirinto inteiro à vista.
+    // Fechar é OPCIONAL, pro jogo virar exploração de bengala.
+    let mostrarMapa = true;
     let somLigado = false;
     let jogando = false;
     let venceu = false;
@@ -1275,6 +1277,14 @@
     /* --- áudio: criado só no primeiro gesto da pessoa --- */
     let audio = null;
     let mestre = null;
+    // O "farol": um sine que toca SEM PARAR enquanto o som está ligado.
+    // Fica mais agudo e mais alto conforme você se aproxima da saída, e
+    // anda no estéreo para o lado dela. É o coração do jogo do João —
+    // na primeira remontagem eu tinha trocado por um tom curto por passo,
+    // e sem o contínuo não dá pra "virar e sentir" o som mudar.
+    let farol = null;
+    let farolGanho = null;
+    let farolLado = null;
 
     function ligarAudio() {
       const Contexto = window.AudioContext || window.webkitAudioContext;
@@ -1285,6 +1295,22 @@
         mestre.gain.value = 0.16;
         mestre.connect(audio.destination);
       }
+
+      if (!farol) {
+        farol = audio.createOscillator();
+        farolGanho = audio.createGain();
+        farol.type = "sine";
+        farol.frequency.value = 260;
+        farolGanho.gain.value = 0.0001; // nasce mudo; sobe no primeiro ajuste
+        if (audio.createStereoPanner) {
+          farolLado = audio.createStereoPanner();
+          farol.connect(farolGanho).connect(farolLado).connect(mestre);
+        } else {
+          farolLado = null;
+          farol.connect(farolGanho).connect(mestre);
+        }
+        farol.start();
+      }
       if (audio.state === "suspended") audio.resume();
       return true;
     }
@@ -1294,6 +1320,28 @@
       try { audio.close(); } catch (erro) { /* segue funcionando */ }
       audio = null;
       mestre = null;
+      farol = null;
+      farolGanho = null;
+      farolLado = null;
+    }
+
+    // Chamada a cada passo, troca de fase e liga/desliga do som.
+    // setTargetAtTime em vez de valor seco: o som desliza, não pula.
+    function atualizarFarol() {
+      if (!audio || !farol) return;
+      const agora = audio.currentTime;
+      if (!somLigado || venceu || !jogando) {
+        farolGanho.gain.cancelScheduledValues(agora);
+        farolGanho.gain.setTargetAtTime(0.0001, agora, 0.05);
+        return;
+      }
+      const m = medidas();
+      farolGanho.gain.cancelScheduledValues(agora);
+      farol.frequency.setTargetAtTime(200 + m.forca * 420, agora, 0.07);
+      farolGanho.gain.setTargetAtTime(0.012 + m.forca * 0.05, agora, 0.07);
+      if (farolLado) {
+        farolLado.pan.setTargetAtTime(Math.max(-1, Math.min(1, m.lado)), agora, 0.07);
+      }
     }
 
     function tocar(frequencia, duracao, forma, volume, lado) {
@@ -1541,12 +1589,16 @@
         (m.casas === 1 ? "1 casa" : m.casas + " casas") + ".";
     }
 
-    /* O "pulso": toca o tom da saída sem gastar um passo. Serve pra
-       quem está se reorientando — de ouvido, parar e escutar de novo
-       é metade do jogo. */
+    /* O "pulso": dá um realce curto no farol sem gastar um passo, e diz
+       a posição em voz/texto. Serve pra quem está se reorientando — de
+       ouvido, parar e escutar de novo é metade do jogo. */
     function pulso(comFala) {
-      const m = medidas();
-      tocar(220 + m.forca * 460, 0.22, "sine", 0.03 + m.forca * 0.05, m.lado);
+      if (somLigado && audio && farol && jogando && !venceu) {
+        const agora = audio.currentTime;
+        farolGanho.gain.cancelScheduledValues(agora);
+        farolGanho.gain.setTargetAtTime(0.10, agora, 0.015);
+        window.setTimeout(atualizarFarol, 240);
+      }
       if (comFala) dizer(resumo());
     }
 
@@ -1574,7 +1626,7 @@
       }
 
       pintarPainel();
-      pulso(false);
+      atualizarFarol();
       dizer(resumo());
       desenhar();
     }
@@ -1582,6 +1634,7 @@
     function vencer() {
       venceu = true;
       jogando = false;
+      atualizarFarol(); // cala o farol antes do arpejo
       passos += 1;
       pintarPainel();
       desenhar();
@@ -1638,7 +1691,7 @@
 
       if (anunciarEntrada) {
         dizer("Fase " + (fase + 1) + " de " + MAPAS.length + ". " + resumo());
-        pulso(false);
+        atualizarFarol();
       } else if (elEstado) {
         elEstado.textContent = resumo();
       }
@@ -1725,7 +1778,7 @@
         if (!somLigado) desligarAudio();
         pintarBotaoSom();
         dizer(somLigado ? "Som ligado." : "Som desligado. O painel continua dizendo a direção.");
-        if (somLigado) pulso(false);
+        if (somLigado) atualizarFarol();
       });
     }
 
