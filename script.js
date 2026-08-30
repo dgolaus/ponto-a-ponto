@@ -1450,14 +1450,59 @@
     // largura da tela e um labirinto pequeno vira um paredão de 800px.
     const ALTURA_MAXIMA = 380;
 
+    /* A bola desliza entre as casas. A grade continua sendo de passos
+       inteiros — o jogo não muda, só o desenho interpola. No alto
+       contraste e em prefers-reduced-motion ela salta direto. */
+    const suave = { l: 0, c: 0 };
+    let quadroSuave = 0;
+
+    function pousarBola() {
+      suave.l = jogador.l;
+      suave.c = jogador.c;
+      if (quadroSuave) {
+        window.cancelAnimationFrame(quadroSuave);
+        quadroSuave = 0;
+      }
+    }
+
+    function deslizarBola() {
+      if (prefereMenosMovimento || corpo.classList.contains("alto-contraste")) {
+        pousarBola();
+        desenhar();
+        return;
+      }
+      if (quadroSuave) return;
+
+      function passo() {
+        quadroSuave = 0;
+        const dl = jogador.l - suave.l;
+        const dc = jogador.c - suave.c;
+        if (Math.abs(dl) < 0.004 && Math.abs(dc) < 0.004) {
+          pousarBola();
+          desenhar();
+          return;
+        }
+        suave.l += dl * 0.3;
+        suave.c += dc * 0.3;
+        desenhar();
+        quadroSuave = window.requestAnimationFrame(passo);
+      }
+      quadroSuave = window.requestAnimationFrame(passo);
+    }
+
     function desenhar() {
       if (!grade.length) return;
       const c = cores();
       const linhas = grade.length;
       const colunas = grade[0].length;
-      // Mede pela MESA, não pela moldura: a moldura encolhe junto com o
-      // canvas, e medir por ela realimentaria o observador de tamanho.
-      const disponivel = Math.max(240, (mesa && mesa.clientWidth) || arena.clientWidth || 640);
+      // Mede pela COLUNA do mapa, não pela moldura: a moldura encolhe junto
+      // com o canvas e realimentaria o observador de tamanho. A mesa inteira
+      // também não serve — em duas colunas ela é bem mais larga que o mapa.
+      const coluna = arena.closest(".lab-coluna-mapa");
+      const disponivel = Math.max(
+        240,
+        (coluna && coluna.clientWidth) || (mesa && mesa.clientWidth) || arena.clientWidth || 640
+      );
       const celula = Math.min(disponivel / colunas, ALTURA_MAXIMA / linhas);
       const largura = celula * colunas;
       const altura = celula * linhas;
@@ -1479,37 +1524,93 @@
       pincel.fillStyle = c.fundo;
       pincel.fillRect(0, 0, largura, altura);
 
+      function paredeVisivel(l, col) {
+        return grade[l][col] === "#" && (mostrarMapa || paredesVistas[l + "," + col]);
+      }
+
+      function pisada(l, col) {
+        return grade[l][col] !== "#" && !!chaoPisado[l + "," + col];
+      }
+
+      // 1. A parede: cada casa é um bloco próprio, com uma fresta escura
+      //    entre ela e a vizinha. Coladas, viravam uma mancha só e não se
+      //    conseguia contar as casas; a fresta devolve a leitura de grade.
+      //    Sem pontes: eram elas que serrilhavam os cantos.
+      const folgaParede = Math.max(0.5, celula * 0.09);
+      const ladoParede = celula - folgaParede * 2;
+      const raioParede = Math.max(1, celula * 0.2);
+      pincel.fillStyle = c.parede;
       for (let l = 0; l < linhas; l++) {
         for (let col = 0; col < colunas; col++) {
-          const chave = l + "," + col;
-          const parede = grade[l][col] === "#";
-          const revelada = mostrarMapa || (parede ? paredesVistas[chave] : chaoPisado[chave]);
-          if (!revelada) continue;
+          if (!paredeVisivel(l, col)) continue;
 
-          const x = col * celula;
-          const y = l * celula;
-          if (parede) {
-            // Parede = bloco cheio. Caminho = ponto.
-            // A diferença é de FORMA, não só de cor (regra 2 do site).
-            pincel.fillStyle = c.parede;
-            pincel.fillRect(x, y, Math.ceil(celula), Math.ceil(celula));
-          } else {
-            pincel.fillStyle = c.rastro;
-            pincel.globalAlpha = c.alto ? 1 : 0.5;
-            pincel.beginPath();
-            pincel.arc(x + celula / 2, y + celula / 2, Math.max(1.5, celula * 0.16), 0, Math.PI * 2);
-            pincel.fill();
-            pincel.globalAlpha = 1;
+          // A moldura externa do labirinto é estrutura, não obstáculo de
+          // percurso: ela recua para que as paredes internas saltem.
+          const borda = l === 0 || col === 0 || l === linhas - 1 || col === colunas - 1;
+          pincel.globalAlpha = c.alto ? 1 : (borda ? 0.42 : 1);
+
+          const x = col * celula + folgaParede;
+          const y = l * celula + folgaParede;
+          pincel.beginPath();
+          if (pincel.roundRect) pincel.roundRect(x, y, ladoParede, ladoParede, raioParede);
+          else pincel.rect(x, y, ladoParede, ladoParede);
+          pincel.fill();
+        }
+      }
+      pincel.globalAlpha = 1;
+
+      // 2. O caminho já andado: uma LINHA âmbar ligando os pontos das
+      //    casas por onde a pessoa passou. Antes era uma faixa preenchida
+      //    e, transparente sobre o fundo, saía num tom terroso sujo.
+      //    Linha fina e ponto cheio: contraste limpo e a leitura de
+      //    percurso "ponto a ponto".
+      const centro = function (l, col) {
+        return { x: col * celula + celula / 2, y: l * celula + celula / 2 };
+      };
+
+      pincel.strokeStyle = c.acento;
+      pincel.globalAlpha = c.alto ? 1 : 0.45;
+      pincel.lineWidth = Math.max(1.5, celula * 0.1);
+      pincel.lineCap = "round";
+      pincel.beginPath();
+      for (let l = 0; l < linhas; l++) {
+        for (let col = 0; col < colunas; col++) {
+          if (!pisada(l, col)) continue;
+          const a = centro(l, col);
+          if (col + 1 < colunas && pisada(l, col + 1)) {
+            const b = centro(l, col + 1);
+            pincel.moveTo(a.x, a.y);
+            pincel.lineTo(b.x, b.y);
+          }
+          if (l + 1 < linhas && pisada(l + 1, col)) {
+            const b = centro(l + 1, col);
+            pincel.moveTo(a.x, a.y);
+            pincel.lineTo(b.x, b.y);
           }
         }
       }
+      pincel.stroke();
+      pincel.globalAlpha = 1;
+
+      pincel.fillStyle = c.acento;
+      pincel.globalAlpha = c.alto ? 1 : 0.85;
+      for (let l = 0; l < linhas; l++) {
+        for (let col = 0; col < colunas; col++) {
+          if (!pisada(l, col)) continue;
+          const a = centro(l, col);
+          pincel.beginPath();
+          pincel.arc(a.x, a.y, Math.max(1.5, celula * 0.11), 0, Math.PI * 2);
+          pincel.fill();
+        }
+      }
+      pincel.globalAlpha = 1;
 
       // Contorno da sala: diz o tamanho do labirinto sem entregar as paredes
-      pincel.strokeStyle = c.parede;
-      pincel.globalAlpha = c.alto ? 1 : 0.4;
-      pincel.lineWidth = 1;
-      pincel.strokeRect(0.5, 0.5, largura - 1, altura - 1);
-      pincel.globalAlpha = 1;
+      if (c.alto) {
+        pincel.strokeStyle = c.rastro;
+        pincel.lineWidth = 1;
+        pincel.strokeRect(0.5, 0.5, largura - 1, altura - 1);
+      }
 
       // A saída só aparece com o mapa aberto (ou depois de vencer).
       // Enquanto o mapa está fechado, ela é só som e texto.
@@ -1530,9 +1631,10 @@
       }
 
       // A pessoa: círculo âmbar com anel, pra separar do fundo
-      // mesmo quando cai em cima da saída.
-      const px = jogador.c * celula + celula / 2;
-      const py = jogador.l * celula + celula / 2;
+      // mesmo quando cai em cima da saída. Usa a posição SUAVE, não a da
+      // grade: é ela que faz a bola deslizar de uma casa para a outra.
+      const px = suave.c * celula + celula / 2;
+      const py = suave.l * celula + celula / 2;
       pincel.fillStyle = c.acento;
       pincel.beginPath();
       pincel.arc(px, py, Math.max(4, celula * 0.28), 0, Math.PI * 2);
@@ -1628,7 +1730,7 @@
       pintarPainel();
       atualizarFarol();
       dizer(resumo());
-      desenhar();
+      deslizarBola();
     }
 
     function vencer() {
@@ -1637,7 +1739,7 @@
       atualizarFarol(); // cala o farol antes do arpejo
       passos += 1;
       pintarPainel();
-      desenhar();
+      deslizarBola();
 
       const concluidas = fasesConcluidas();
       if (fase + 1 > concluidas) salvarPreferencia(CHAVE_FASES, String(fase + 1));
@@ -1687,6 +1789,7 @@
       if (vitoria) vitoria.hidden = true;
       pintarPainel();
       montarListaDeFases();
+      pousarBola();
       desenhar();
 
       if (anunciarEntrada) {
@@ -1730,6 +1833,32 @@
       }
     }
 
+    /* Aviso de foco: as setas só andam com o painel focado (é a regra que
+       impede o jogo de sequestrar as teclas de quem está lendo a página).
+       Em vez de deixar a pessoa apertando seta sem resposta, o quadro diz. */
+    const avisoFoco = document.getElementById("lab-foco");
+
+    function pintarAvisoFoco() {
+      if (!avisoFoco || !mesa || mesa.hidden) return;
+      // O próprio aviso conta como FORA: ele é visibility:hidden quando
+      // some, e some no focusin do clique — o mouseup caía num elemento
+      // já invisível e o click nunca completava, então clicar no aviso
+      // não devolvia o foco. Enquanto ele estiver focado, fica visível.
+      const dentro = palco.contains(document.activeElement) &&
+        document.activeElement !== avisoFoco;
+      avisoFoco.classList.toggle("lab-foco-ativo", !dentro);
+    }
+
+    document.addEventListener("focusin", pintarAvisoFoco);
+    document.addEventListener("focusout", function () {
+      window.setTimeout(pintarAvisoFoco, 0);
+    });
+    if (avisoFoco) {
+      avisoFoco.addEventListener("click", function () {
+        focarArena();
+      });
+    }
+
     function focarArena() {
       window.setTimeout(function () {
         // preventScroll: focar o canvas dava um tranco na página, e ele
@@ -1749,6 +1878,7 @@
       pintarBotaoSom();
       carregarFase(fasesConcluidas() >= MAPAS.length ? 0 : fasesConcluidas(), true);
       focarArena();
+      window.setTimeout(pintarAvisoFoco, 60);
     }
 
     function pintarBotaoSom() {
@@ -1826,8 +1956,8 @@
       });
     }
 
-    /* Atalhos presos ao painel do jogo, nunca ao documento: as setas
-       são de quem está lendo a página até o foco entrar aqui. */
+    /* Atalhos presos ao painel do jogo, nunca ao documento: as setas são
+       de quem está lendo a página até o foco entrar aqui. */
     palco.addEventListener("keydown", function (evento) {
       const alvo = evento.target;
       if (alvo && (alvo.tagName === "INPUT" || alvo.tagName === "TEXTAREA" || alvo.isContentEditable)) return;

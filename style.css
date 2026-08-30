@@ -3642,7 +3642,9 @@ body.alto-contraste .em-breve-caixa > * {
   left: 0;
   top: 0;
   width: 100%;
-  height: 2px;
+  /* Mesma espessura da borda do cartão: com 2px o traço ficava mais
+     grosso que a própria linha que ele percorre. */
+  height: 1px;
   background-color: var(--cor-acento);
   transform: scaleX(0);
   transform-origin: left center;
@@ -3887,10 +3889,12 @@ body.alto-contraste .botao-primario:focus-visible {
 
 /* --- 23e. Quadros que respondem à inclinação ----------------
    O script.js escreve a inclinação direto no style do cartão
-   (leve, no máximo ~4°), então some sozinha ao tirar o ponteiro. */
+   (leve, no máximo ~4°), então some sozinha ao tirar o ponteiro.
+   Sem preserve-3d de propósito: ele cria um contexto 3D que anula
+   o overflow:hidden do cartão, e o traço de hover escapava por
+   cima da borda arredondada. */
 .cartao,
 .cartao-jogo {
-  transform-style: preserve-3d;
   will-change: transform;
 }
 
@@ -4793,7 +4797,7 @@ body.alto-contraste .nav-com-marcador:focus-within a[aria-current="page"]:not(:f
   position: relative;
   margin-top: 2rem;
   padding-left: 1.4rem;
-  font-family: var(--fonte-editorial);
+  font-family: var(--fonte-display);
   font-size: clamp(1.35rem, 1.4vw + 1rem, 1.95rem);
   line-height: 1.3;
   color: var(--cor-texto);
@@ -5242,5 +5246,1239 @@ body.alto-contraste .lab-medidor span {
 @media (max-width: 30rem) {
   .cartao-som {
     font-size: 0.62rem;
+  }
+}
+
+
+/* ==========================================================
+   39. Simulador Braille — a máquina Perkins na tela
+   ----------------------------------------------------------
+   Escopo: body[data-pagina="jogo-braille"]. Duas coisas:
+   (a) .pagina-topo tem min-height de uma tela inteira, então a
+       abertura empurrava o jogo para baixo da dobra;
+   (b) a cela era seis círculos vazios soltos no escuro — agora é
+       relevo sobre a chapa da máquina, com o teclado desenhado
+       logo abaixo, no lugar da linha de texto que listava as
+       teclas. O teclado é decorativo: o jogo continua sendo os
+       seis botões da cela e o teclado de verdade.
+   ========================================================== */
+
+/* --- (a) A abertura para de ocupar a tela toda -------------- */
+[data-pagina="jogo-braille"] .pagina-topo {
+  min-height: 0;
+  padding-block: clamp(1.75rem, 4vh, 3rem) clamp(2.5rem, 6vh, 4rem);
+  justify-content: flex-start;
+}
+
+[data-pagina="jogo-braille"] .pagina-topo h1 {
+  font-size: clamp(2rem, 2.2vw + 1.2rem, 3.1rem);
+  margin-bottom: 0.75rem;
+}
+
+[data-pagina="jogo-braille"] .pagina-topo .secao-intro {
+  font-size: clamp(0.98rem, 0.35vw + 0.88rem, 1.08rem);
+  max-width: 68ch;
+}
+
+/* O botão de ouvir estava colado no quadro do jogo */
+[data-pagina="jogo-braille"] .pagina-acoes {
+  margin-top: clamp(1.25rem, 2.5vh, 1.75rem);
+  margin-bottom: clamp(2rem, 4.5vh, 3.25rem);
+}
+
+[data-pagina="jogo-braille"] .jogo {
+  max-width: 54rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+[data-pagina="jogo-braille"] .jogo-dica {
+  max-width: 62ch;
+  margin-bottom: clamp(1.5rem, 3vh, 2rem);
+  font-size: 0.86rem;
+}
+
+/* --- (b) A chapa: onde o relevo é gravado ------------------- */
+[data-pagina="jogo-braille"] .simulador-palco {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.6rem;
+  background-color: #12161f;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.03),
+    inset 0 -1.5rem 2rem rgba(0, 0, 0, 0.4);
+  text-align: left;
+}
+
+[data-pagina="jogo-braille"] .simulador-cela {
+  gap: clamp(0.6rem, 1.8vw, 0.85rem);
+}
+
+/* Ponto apagado: cova na chapa. Aceso: relevo que pegou luz. */
+[data-pagina="jogo-braille"] .sim-ponto {
+  width: clamp(2.25rem, 5vw, 2.6rem);
+  height: clamp(2.25rem, 5vw, 2.6rem);
+  border: 0;
+  background-color: #0c0f16;
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-pagina="jogo-braille"] .sim-ponto:hover {
+  background-color: #151a24;
+}
+
+[data-pagina="jogo-braille"] .sim-ponto.aceso {
+  background: radial-gradient(circle at 34% 28%, #ffe1a1, var(--cor-acento) 60%, #7c5514 130%);
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.6),
+    inset 0 -2px 3px rgba(124, 85, 20, 0.7);
+}
+
+/* --- A leitura, ao lado da cela ----------------------------- */
+[data-pagina="jogo-braille"] .simulador-painel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+[data-pagina="jogo-braille"] .simulador-leitura {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+[data-pagina="jogo-braille"] .simulador-glifo {
+  font-size: 1.6rem;
+}
+
+[data-pagina="jogo-braille"] .simulador-letra {
+  font-size: clamp(2.75rem, 7vw, 4rem);
+}
+
+[data-pagina="jogo-braille"] .simulador-legenda {
+  margin-left: 0.15rem;
+}
+
+[data-pagina="jogo-braille"] .simulador-rotulo {
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+[data-pagina="jogo-braille"] .simulador-texto {
+  margin-top: 0.1rem;
+  text-align: left;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  min-height: 1.9rem;
+  overflow-wrap: anywhere;
+}
+
+/* --- O teclado da Perkins ----------------------------------- */
+[data-pagina="jogo-braille"] .simulador-teclado {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: clamp(1.5rem, 3vh, 2rem);
+}
+
+[data-pagina="jogo-braille"] .sim-tecla {
+  display: grid;
+  place-items: center;
+  gap: 0.1rem;
+  width: 3.4rem;
+  height: 3.9rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.5rem 0.5rem 0.85rem 0.85rem;
+  background-image: linear-gradient(180deg, #1a1f2b, #12161f);
+  box-shadow: 0 3px 0 #0a0d14, 0 5px 8px rgba(0, 0, 0, 0.5);
+  transition:
+    transform var(--mov-curto) var(--curva-saida),
+    box-shadow var(--mov-curto) var(--curva-saida),
+    background-image var(--mov-curto) var(--curva-suave);
+}
+
+/* Afunda junto com o ponto que acabou de acender */
+[data-pagina="jogo-braille"] .sim-tecla.aceso {
+  background-image: linear-gradient(180deg, #f7c862, var(--cor-acento));
+  border-color: var(--cor-acento);
+  color: #14100a;
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #7c5514, 0 2px 8px rgba(245, 185, 66, 0.28);
+}
+
+[data-pagina="jogo-braille"] .sim-tecla-barra {
+  width: clamp(5rem, 14vw, 7rem);
+}
+
+[data-pagina="jogo-braille"] .sim-tecla-letra {
+  font-family: var(--fonte-titulo);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+[data-pagina="jogo-braille"] .sim-tecla-barra .sim-tecla-letra {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--cor-texto-suave);
+  text-align: center;
+  padding-inline: 0.4rem;
+}
+
+[data-pagina="jogo-braille"] .sim-tecla-num {
+  font-family: var(--fonte-mono);
+  font-size: 0.55rem;
+  color: var(--cor-texto-suave);
+}
+
+[data-pagina="jogo-braille"] .sim-tecla.aceso .sim-tecla-num {
+  color: rgba(20, 16, 10, 0.6);
+}
+
+[data-pagina="jogo-braille"] .simulador-acoes {
+  margin-top: clamp(1.5rem, 3vh, 2rem);
+}
+
+[data-pagina="jogo-braille"] .simulador-teclas {
+  margin-top: 1rem;
+  font-size: 0.7rem;
+  color: var(--cor-borda);
+}
+
+/* Empilha quando não cabe lado a lado */
+@media (max-width: 46rem) {
+  [data-pagina="jogo-braille"] .simulador-palco {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  [data-pagina="jogo-braille"] .simulador-leitura {
+    justify-content: center;
+  }
+
+  [data-pagina="jogo-braille"] .simulador-rotulo,
+  [data-pagina="jogo-braille"] .simulador-texto {
+    text-align: center;
+  }
+
+  [data-pagina="jogo-braille"] .sim-tecla {
+    width: 2.9rem;
+    height: 3.4rem;
+  }
+}
+
+/* ----------------------------------------------------------
+   39.z Guardas — alto contraste e redução de movimento
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="jogo-braille"] .simulador-palco {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-ponto {
+  border: 2px solid var(--cor-borda);
+  background: transparent;
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-ponto.aceso {
+  background: var(--cor-acento);
+  border-color: var(--cor-acento);
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-tecla {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  border-width: 2px;
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-tecla.aceso {
+  background-image: none;
+  background-color: var(--cor-acento);
+  color: var(--cor-fundo);
+  transform: none;
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-tecla-num,
+body.alto-contraste[data-pagina="jogo-braille"] .simulador-teclas {
+  color: var(--cor-texto);
+}
+
+body.alto-contraste[data-pagina="jogo-braille"] .sim-tecla.aceso .sim-tecla-num {
+  color: var(--cor-fundo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pagina="jogo-braille"] .sim-tecla {
+    transition: none;
+  }
+
+  [data-pagina="jogo-braille"] .sim-tecla.aceso {
+    transform: none;
+  }
+}
+
+/* A legenda "letra formada" some: com a chapa e o teclado desenhados,
+   a relação já se lê sozinha e o rótulo só competia com o "Você
+   escreveu" logo abaixo. */
+[data-pagina="jogo-braille"] .simulador-legenda {
+  display: none;
+}
+
+/* A chapa ganha respiro: a cela sozinha à esquerda deixava um vão. */
+[data-pagina="jogo-braille"] .simulador-palco {
+  padding-block: clamp(1.5rem, 3.5vw, 2.25rem);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  justify-items: start;
+}
+
+[data-pagina="jogo-braille"] .simulador-cela {
+  justify-self: center;
+}
+
+/* Divisória entre a chapa e a leitura, como a régua da máquina */
+[data-pagina="jogo-braille"] .simulador-painel {
+  padding-left: clamp(1.5rem, 4vw, 2.5rem);
+  border-left: 1px solid var(--cor-borda);
+  align-self: stretch;
+  justify-content: center;
+}
+
+@media (max-width: 46rem) {
+  [data-pagina="jogo-braille"] .simulador-palco {
+    justify-items: center;
+  }
+
+  [data-pagina="jogo-braille"] .simulador-painel {
+    padding-left: 0;
+    padding-top: 1.5rem;
+    border-left: 0;
+    border-top: 1px solid var(--cor-borda);
+    width: 100%;
+    align-items: center;
+  }
+}
+
+/* Aperto final para o jogo inteiro caber sem rolagem numa tela de
+   900px: menos folga na abertura e linhas mais largas (menos linhas)
+   na intro e na dica. O texto continua o mesmo. */
+[data-pagina="jogo-braille"] .pagina-topo {
+  padding-block: clamp(1.25rem, 3vh, 2rem) clamp(1.75rem, 4vh, 2.5rem);
+}
+
+[data-pagina="jogo-braille"] .pagina-topo h1 {
+  font-size: clamp(1.9rem, 1.9vw + 1.15rem, 2.7rem);
+  margin-bottom: 0.6rem;
+}
+
+[data-pagina="jogo-braille"] .pagina-topo .secao-intro {
+  max-width: 82ch;
+}
+
+[data-pagina="jogo-braille"] .pagina-acoes {
+  margin-top: clamp(1rem, 2vh, 1.4rem);
+  margin-bottom: clamp(1.5rem, 3vh, 2.25rem);
+}
+
+[data-pagina="jogo-braille"] .jogo-dica {
+  max-width: 80ch;
+  margin-bottom: clamp(1.25rem, 2.5vh, 1.6rem);
+}
+
+[data-pagina="jogo-braille"] .simulador-acoes {
+  margin-top: clamp(1.25rem, 2.5vh, 1.6rem);
+}
+
+/* Últimos ~60px: a máquina fica um pouco mais compacta e o jogo
+   inteiro passa a caber com folga numa tela de 900px. */
+[data-pagina="jogo-braille"] .simulador-palco {
+  padding-block: clamp(1.25rem, 2.6vw, 1.75rem);
+}
+
+[data-pagina="jogo-braille"] .sim-tecla {
+  height: 3.5rem;
+  width: 3.2rem;
+}
+
+[data-pagina="jogo-braille"] .simulador-teclado {
+  margin-top: clamp(1.1rem, 2.2vh, 1.5rem);
+}
+
+[data-pagina="jogo-braille"] .simulador-teclas {
+  margin-top: 0.8rem;
+}
+
+/* Correções: a barra de espaço voltava ao tamanho das outras teclas
+   (a largura do aperto final atingia .sim-tecla inteira) e a legenda
+   usava a cor de borda, ilegível como texto. */
+[data-pagina="jogo-braille"] .sim-tecla {
+  width: auto;
+}
+
+[data-pagina="jogo-braille"] .sim-tecla:not(.sim-tecla-barra) {
+  width: 3.2rem;
+}
+
+[data-pagina="jogo-braille"] .sim-tecla-barra {
+  width: clamp(5.5rem, 14vw, 7rem);
+}
+
+[data-pagina="jogo-braille"] .simulador-teclas,
+[data-pagina="jogo-braille"] .sim-tecla-num {
+  color: var(--cor-texto-suave);
+}
+
+/* O brilho da abertura foi feito para uma seção que era só título num
+   vão vazio. Aqui a seção também abriga o jogo, então o halo caía atrás
+   do botão e da máquina e virava uma mancha. Ele continua — só que
+   preso à faixa do título, terminando antes do quadro do jogo. */
+[data-pagina="jogo-braille"] .pagina-topo::after {
+  bottom: auto;
+  height: calc(var(--cabecalho-real, var(--altura-cabecalho)) + 24rem);
+  background:
+    radial-gradient(38vmax 22vmax at 50% 38%, rgba(245, 185, 66, 0.11), transparent 70%),
+    radial-gradient(24vmax 16vmax at 50% 30%, rgba(240, 191, 95, 0.06), transparent 68%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 46%, transparent 92%),
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image:
+    linear-gradient(to bottom, #000 46%, transparent 92%),
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+
+
+/* ==========================================================
+   40. Labirinto Sonoro — abertura, brilho e portão
+   ----------------------------------------------------------
+   Escopo: body[data-pagina="jogo-labirinto"]. Mesmos dois
+   problemas da página do simulador: a abertura reservava uma
+   tela inteira (o jogo nascia abaixo da dobra) e o halo âmbar,
+   feito para uma seção que era só título num vão vazio, caía
+   atrás do botão e do painel do jogo virando uma mancha.
+   Nada do jogo muda: IDs, [data-mover] e o canvas seguem iguais.
+   ========================================================== */
+
+[data-pagina="jogo-labirinto"] .pagina-topo {
+  min-height: 0;
+  padding-block: clamp(1.25rem, 3vh, 2rem) clamp(1.75rem, 4vh, 2.5rem);
+  justify-content: flex-start;
+}
+
+[data-pagina="jogo-labirinto"] .pagina-topo h1 {
+  font-size: clamp(1.9rem, 1.9vw + 1.15rem, 2.7rem);
+  margin-bottom: 0.6rem;
+}
+
+[data-pagina="jogo-labirinto"] .pagina-topo .secao-intro {
+  font-size: clamp(0.98rem, 0.35vw + 0.88rem, 1.08rem);
+  max-width: 82ch;
+}
+
+/* O botão de ouvir estava colado no quadro do jogo */
+[data-pagina="jogo-labirinto"] .pagina-acoes {
+  margin-top: clamp(1rem, 2vh, 1.4rem);
+  margin-bottom: clamp(1.5rem, 3vh, 2.25rem);
+}
+
+/* O halo fica preso à faixa do título e se apaga antes do jogo */
+[data-pagina="jogo-labirinto"] .pagina-topo::after {
+  bottom: auto;
+  height: calc(var(--cabecalho-real, var(--altura-cabecalho)) + 24rem);
+  background:
+    radial-gradient(38vmax 22vmax at 50% 38%, rgba(245, 185, 66, 0.11), transparent 70%),
+    radial-gradient(24vmax 16vmax at 50% 30%, rgba(240, 191, 95, 0.06), transparent 68%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 46%, transparent 92%),
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+  mask-image:
+    linear-gradient(to bottom, #000 46%, transparent 92%),
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent);
+}
+
+/* --- O portão: a escolha é o assunto, não o parágrafo -------
+   Antes eram três blocos de texto centralizados de mesmo peso,
+   com os botões perdidos no meio. Agora o portão é um painel
+   próprio: o convite, os dois caminhos e, por último, a nota. */
+/* Sem moldura própria: o quadro .jogo já é o painel, e duas bordas
+   aninhadas viravam caixa dentro de caixa. */
+[data-pagina="jogo-labirinto"] .lab-inicio {
+  max-width: 34rem;
+  margin-inline: auto;
+  padding-block: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+[data-pagina="jogo-labirinto"] .lab-inicio-texto {
+  max-width: 46ch;
+  margin-inline: auto;
+  font-size: 0.95rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-inicio-acoes {
+  margin-top: clamp(1.5rem, 3vh, 2rem);
+  gap: 0.75rem;
+}
+
+/* A nota de "nada toca antes" é rodapé do portão, não corpo */
+[data-pagina="jogo-labirinto"] .lab-inicio-nota {
+  max-width: 42ch;
+  margin: clamp(1.5rem, 3vh, 2rem) auto 0;
+  padding-top: clamp(1rem, 2vh, 1.25rem);
+  border-top: 1px solid var(--cor-borda);
+  font-size: 0.74rem;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
+/* ----------------------------------------------------------
+   40.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-inicio-nota {
+  color: var(--cor-texto);
+}
+
+
+/* ==========================================================
+   41. Labirinto Sonoro — a mesa em duas colunas
+   ----------------------------------------------------------
+   Escopo: body[data-pagina="jogo-labirinto"]. A mesa era uma
+   pilha vertical (mapa → estado → bússola → setas → ações →
+   fases) que passava de duas telas de altura. No desktop ela
+   vira duas colunas: o mapa de um lado, os controles do outro.
+   Só layout — nenhum id, atributo ou ordem de foco muda.
+   ========================================================== */
+
+[data-pagina="jogo-labirinto"] .labirinto {
+  max-width: 64rem;
+  padding: clamp(1.25rem, 2.8vw, 2rem);
+}
+
+[data-pagina="jogo-labirinto"] .lab-mesa {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(17rem, 0.95fr);
+  align-items: start;
+  gap: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+
+[data-pagina="jogo-labirinto"] .lab-coluna-painel {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.2vh, 1.4rem);
+  align-self: stretch;
+}
+
+/* --- Coluna do mapa ----------------------------------------- */
+[data-pagina="jogo-labirinto"] .lab-cabecalho {
+  margin-bottom: 0.85rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena {
+  border-radius: calc(var(--raio) * 0.75);
+}
+
+/* A linha de estado repete em texto o que a bússola já mostra —
+   fica como legenda do mapa, não como parágrafo do mesmo peso. */
+[data-pagina="jogo-labirinto"] .lab-estado {
+  min-height: 2.6rem;
+  margin-top: 0.85rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--cor-texto-suave);
+  text-align: center;
+}
+
+/* --- Bússola: a informação principal da coluna -------------- */
+[data-pagina="jogo-labirinto"] .lab-bussola {
+  margin-top: 0;
+  padding: clamp(1rem, 2.2vw, 1.35rem);
+  border-left: 3px solid var(--cor-acento);
+  background-color: rgba(0, 0, 0, 0.22);
+}
+
+[data-pagina="jogo-labirinto"] .lab-direcao {
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+/* --- Setas: bloco compacto em cruz --------------------------- */
+[data-pagina="jogo-labirinto"] .lab-teclado {
+  margin-inline: auto;
+}
+
+[data-pagina="jogo-labirinto"] .lab-teclado-dica {
+  margin-top: 0.75rem;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* --- Ações: uma grade de dois, para não virar escada --------- */
+[data-pagina="jogo-labirinto"] .lab-acoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0;
+}
+
+[data-pagina="jogo-labirinto"] .lab-acoes .botao-barra {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+/* --- Fases: fecham a coluna, separadas por uma linha --------- */
+[data-pagina="jogo-labirinto"] .lab-fases-rotulo {
+  margin: 0;
+  padding-top: clamp(0.75rem, 1.8vh, 1rem);
+  border-top: 1px solid var(--cor-borda);
+}
+
+[data-pagina="jogo-labirinto"] .lab-fases {
+  margin-top: 0.75rem;
+}
+
+/* --- Vitória: aparece na coluna, sem empurrar o mapa --------- */
+[data-pagina="jogo-labirinto"] .lab-vitoria {
+  margin: 0;
+}
+
+/* ----------------------------------------------------------
+   41.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-bussola {
+  background-color: transparent;
+}
+
+/* O canvas tem largura e altura fixas no atributo; com max-width:100%
+   e sem height:auto ele era espremido na coluna e o mapa saía
+   deformado (os pontos viravam elipses). */
+[data-pagina="jogo-labirinto"] .lab-arena canvas {
+  height: auto;
+}
+
+/* O mapa é largo (11x7 até 21x11): merece a coluna maior. */
+[data-pagina="jogo-labirinto"] .lab-mesa {
+  grid-template-columns: minmax(0, 1.35fr) minmax(15.5rem, 0.65fr);
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena {
+  width: 100%;
+}
+
+/* O JS mede o container e escreve width/height inline no canvas. Dentro
+   da coluna ele às vezes calcula uma largura maior que a disponível: o
+   max-width corta a largura, a altura inline continua, e o mapa estica.
+   O !important devolve a proporção sem tocar no cálculo do jogo. */
+[data-pagina="jogo-labirinto"] .lab-arena canvas {
+  height: auto !important;
+}
+
+
+/* ==========================================================
+   42. Labirinto Sonoro — a mesa por dentro
+   ----------------------------------------------------------
+   Escopo: body[data-pagina="jogo-labirinto"].
+   ========================================================== */
+
+/* CORREÇÃO: display:grid na .lab-mesa vencia o atributo hidden, então
+   o jogo aparecia junto com o portão, antes de escolher o som. */
+[data-pagina="jogo-labirinto"] .lab-mesa[hidden],
+[data-pagina="jogo-labirinto"] .lab-vitoria[hidden] {
+  display: none;
+}
+
+/* --- Faixa de fase e passos: painel de máquina --------------- */
+[data-pagina="jogo-labirinto"] .lab-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.25);
+  font-size: 0.7rem;
+}
+
+/* --- A arena: o mapa afundado na mesa ------------------------ */
+[data-pagina="jogo-labirinto"] .lab-arena {
+  padding: 0.4rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena canvas {
+  border-radius: calc(var(--raio) * 0.55);
+}
+
+/* --- As setas: teclas de verdade, com relevo ----------------- */
+[data-pagina="jogo-labirinto"] .lab-tecla {
+  width: 3.1rem;
+  height: 3.1rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 0.55rem;
+  background-image: linear-gradient(180deg, #1a1f2b, #12161f);
+  box-shadow: 0 3px 0 #0a0d14, 0 5px 8px rgba(0, 0, 0, 0.45);
+  font-size: 1.1rem;
+  color: var(--cor-texto);
+  transition:
+    transform var(--mov-curto) var(--curva-saida),
+    box-shadow var(--mov-curto) var(--curva-saida),
+    border-color var(--mov-curto) var(--curva-suave),
+    background-image var(--mov-curto) var(--curva-suave);
+}
+
+[data-pagina="jogo-labirinto"] .lab-tecla:hover {
+  border-color: var(--cor-acento-medio);
+}
+
+[data-pagina="jogo-labirinto"] .lab-tecla:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 #0a0d14, 0 2px 6px rgba(0, 0, 0, 0.4);
+  background-image: linear-gradient(180deg, #f7c862, var(--cor-acento));
+  border-color: var(--cor-acento);
+  color: #14100a;
+}
+
+/* --- O medidor de intensidade: escada de blocos -------------- */
+[data-pagina="jogo-labirinto"] .lab-medidor {
+  height: 0.55rem;
+  border-radius: 0.2rem;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--cor-borda) 0 1px,
+    transparent 1px 8%
+  );
+}
+
+[data-pagina="jogo-labirinto"] .lab-medidor span {
+  border-radius: 0.15rem;
+}
+
+/* --- Os botões de fase: cartelas, não caixas soltas ---------- */
+[data-pagina="jogo-labirinto"] .lab-fases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.1rem, 1fr));
+  gap: 0.4rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-botao {
+  width: 100%;
+  padding: 0.45rem 0.2rem;
+  border-radius: 0.5rem;
+  transition:
+    border-color var(--mov-curto) var(--curva-suave),
+    background-color var(--mov-curto) var(--curva-suave),
+    transform var(--mov-curto) var(--curva-saida);
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-botao:not(.lab-fase-presa):hover {
+  transform: translateY(-2px);
+  border-color: var(--cor-acento);
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-numero {
+  font-size: 1rem;
+}
+
+/* A grade cresce para caber o texto; a palavra "bloqueada" é o
+   indicador que não depende de cor e mantém o corpo original. */
+[data-pagina="jogo-labirinto"] .lab-fases {
+  grid-template-columns: repeat(auto-fit, minmax(4.2rem, 1fr));
+}
+
+/* --- Vitória: painel que fecha a coluna ---------------------- */
+[data-pagina="jogo-labirinto"] .lab-vitoria {
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  border: 1px solid var(--cor-acento);
+  border-radius: calc(var(--raio) * 0.75);
+  background-color: rgba(245, 185, 66, 0.06);
+  text-align: center;
+}
+
+[data-pagina="jogo-labirinto"] .lab-vitoria-marca {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--cor-acento);
+  margin-bottom: 0.4rem;
+}
+
+/* ----------------------------------------------------------
+   42.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-cabecalho,
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-arena,
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-vitoria {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-tecla {
+  background-image: none;
+  background-color: transparent;
+  box-shadow: none;
+  border-width: 2px;
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-tecla:active {
+  background-image: none;
+  background-color: var(--cor-acento);
+  color: var(--cor-fundo);
+  transform: none;
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-medidor {
+  background-image: none;
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-fase-botao:hover {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pagina="jogo-labirinto"] .lab-tecla,
+  [data-pagina="jogo-labirinto"] .lab-fase-botao {
+    transition: none;
+  }
+
+  [data-pagina="jogo-labirinto"] .lab-tecla:active,
+  [data-pagina="jogo-labirinto"] .lab-fase-botao:hover {
+    transform: none;
+  }
+}
+
+
+/* ==========================================================
+   43. Labirinto Sonoro — a coluna de controle, recomposta
+   ----------------------------------------------------------
+   A coluna era uma pilha de caixas soltas: um painel com borda,
+   setas flutuando no vazio, uma linha de texto miúda, quatro
+   botões e as fases quebrando 4+1. Vira um só bloco com ritmo:
+   quatro faixas separadas por hairline, todas alinhadas à
+   esquerda, cada uma com um assunto.
+   ========================================================== */
+
+[data-pagina="jogo-labirinto"] .lab-mesa {
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+}
+
+[data-pagina="jogo-labirinto"] .lab-coluna-painel {
+  gap: 0;
+  padding: clamp(0.9rem, 2vw, 1.25rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: calc(var(--raio) * 0.75);
+  background-color: rgba(0, 0, 0, 0.18);
+}
+
+/* Cada faixa se separa da anterior por uma linha, não por uma caixa */
+[data-pagina="jogo-labirinto"] .lab-coluna-painel > * + * {
+  margin-top: clamp(0.85rem, 2vh, 1.15rem);
+  padding-top: clamp(0.85rem, 2vh, 1.15rem);
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* A dica das setas pertence às setas: sem linha entre as duas */
+[data-pagina="jogo-labirinto"] .lab-teclado-dica {
+  margin-top: 0.6rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* --- 1. A bússola: o dado mais importante da coluna ---------- */
+[data-pagina="jogo-labirinto"] .lab-bussola {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+[data-pagina="jogo-labirinto"] .lab-bussola-rotulo {
+  margin-bottom: 0.35rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-direcao {
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  line-height: 1.15;
+}
+
+[data-pagina="jogo-labirinto"] .lab-distancia {
+  margin-top: 0.15rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-medidor {
+  margin-top: 0.75rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-medidor-rotulo {
+  margin-top: 0.35rem;
+}
+
+/* --- 2. As setas: centradas na faixa ------------------------- */
+[data-pagina="jogo-labirinto"] .lab-teclado {
+  justify-content: center;
+}
+
+[data-pagina="jogo-labirinto"] .lab-tecla {
+  width: 3.4rem;
+  height: 3.4rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-teclado-dica {
+  color: var(--cor-texto-suave);
+}
+
+/* --- 3. Controles: dois a dois, todos do mesmo tamanho ------- */
+[data-pagina="jogo-labirinto"] .lab-acoes .botao-barra {
+  padding-inline: 0.5rem;
+  font-size: 0.78rem;
+}
+
+/* --- 4. Fases: uma linha só, cinco colunas iguais ------------ */
+[data-pagina="jogo-labirinto"] .lab-fases {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-botao {
+  padding: 0.4rem 0.15rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-situacao {
+  font-size: 0.55rem;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+[data-pagina="jogo-labirinto"] .lab-fases-rotulo {
+  text-align: left;
+}
+
+/* --- A vitória entra como faixa, não como caixa flutuante ---- */
+[data-pagina="jogo-labirinto"] .lab-vitoria {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  text-align: left;
+}
+
+[data-pagina="jogo-labirinto"] .lab-vitoria-marca {
+  display: inline;
+  margin-right: 0.35rem;
+}
+
+/* --- O mapa hospeda o próprio tamanho ------------------------ */
+[data-pagina="jogo-labirinto"] .lab-arena {
+  width: fit-content;
+  max-width: 100%;
+}
+
+@media (max-width: 56rem) {
+  [data-pagina="jogo-labirinto"] .lab-coluna-painel {
+    padding: clamp(1rem, 3vw, 1.35rem);
+  }
+}
+
+/* ----------------------------------------------------------
+   43.z Guardas
+---------------------------------------------------------- */
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-coluna-painel {
+  background-color: transparent;
+}
+
+/* A linha de separação nascia curta acima das setas: o bloco das setas
+   é uma grade que só ocupa o tamanho das teclas. Ele passa a ocupar a
+   faixa inteira e centra as teclas por dentro. */
+[data-pagina="jogo-labirinto"] .lab-teclado {
+  width: 100%;
+  justify-items: center;
+}
+
+/* Cinco colunas espremiam a palavra "bloqueada" a ponto de precisar
+   encolher a fonte — e ela é o indicador que não depende de cor.
+   Três colunas em duas linhas devolvem o corpo original. */
+[data-pagina="jogo-labirinto"] .lab-fases {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-fase-situacao {
+  font-size: 0.62rem;
+}
+
+[data-pagina="jogo-labirinto"] .lab-teclado-dica {
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+/* A moldura escura em volta do mapa saiu: o labirinto já tem silhueta
+   própria e a caixa só apertava o desenho. */
+[data-pagina="jogo-labirinto"] .lab-arena {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena canvas {
+  border-radius: calc(var(--raio) * 0.5);
+}
+
+/* Sem a moldura, o foco de teclado precisa aparecer no próprio canvas */
+[data-pagina="jogo-labirinto"] .lab-arena canvas:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+}
+
+/* Quando o painel de vitória entra, a coluna da direita cresce e sobra
+   um vazio enorme embaixo do mapa. As duas colunas passam a ocupar a
+   mesma altura e o mapa se centra na sua — a folga vira respiro
+   dividido em cima e embaixo, em vez de um buraco só. */
+[data-pagina="jogo-labirinto"] .lab-mesa {
+  align-items: stretch;
+}
+
+[data-pagina="jogo-labirinto"] .lab-coluna-mapa {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 56rem) {
+  [data-pagina="jogo-labirinto"] .lab-coluna-mapa {
+    justify-content: flex-start;
+  }
+}
+
+/* --- Aviso de foco do labirinto ----------------------------------
+   Fica reservado (invisível, sem ocupar clique) enquanto o jogo está
+   focado e acende quando o foco sai. Não é aria-live: o texto está
+   sempre no DOM, então o leitor de tela o encontra sem ser
+   interrompido a cada Tab. */
+[data-pagina="jogo-labirinto"] .lab-foco {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px dashed var(--cor-acento-medio);
+  border-radius: calc(var(--raio) * 0.5);
+  background-color: rgba(245, 185, 66, 0.07);
+  color: var(--cor-texto-suave);
+  font-family: var(--fonte-principal);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--mov-medio) var(--curva-suave);
+}
+
+[data-pagina="jogo-labirinto"] .lab-foco.lab-foco-ativo {
+  opacity: 1;
+  visibility: visible;
+}
+
+[data-pagina="jogo-labirinto"] .lab-foco:hover {
+  border-style: solid;
+  color: var(--cor-texto);
+}
+
+[data-pagina="jogo-labirinto"] .lab-foco-icone {
+  flex: none;
+  font-size: 1rem;
+  color: var(--cor-acento);
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-foco {
+  background-color: transparent;
+  border-style: solid;
+  color: var(--cor-texto);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-pagina="jogo-labirinto"] .lab-foco {
+    transition: none;
+  }
+}
+
+/* O mapa encostava na borda do quadro e a moldura de blocos ficava
+   apertada contra ela. Um respiro em volta separa as duas coisas. */
+[data-pagina="jogo-labirinto"] .lab-arena {
+  padding: clamp(0.5rem, 1.6vw, 1rem);
+}
+
+/* A linha âmbar em volta do mapa deixa de ser só o anel de foco e vira
+   a moldura permanente do tabuleiro. O foco continua distinguível: em
+   repouso é âmbar médio de 2px; focado, âmbar cheio de 3px por fora. */
+[data-pagina="jogo-labirinto"] .lab-arena {
+  border: 2px solid var(--cor-acento-medio);
+  border-radius: calc(var(--raio) * 0.85);
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena:focus-within {
+  border-color: var(--cor-acento);
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena canvas:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 6px;
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-arena {
+  border-color: var(--cor-texto);
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-arena:focus-within {
+  border-color: var(--cor-acento);
+}
+
+/* O anel externo de foco sai: a própria moldura passa a marcar o foco,
+   acendendo em âmbar cheio com um halo suave em volta. Continua sendo
+   uma mudança visível (cor + luz), não só cor. */
+[data-pagina="jogo-labirinto"] .lab-arena canvas:focus-visible {
+  outline: none;
+}
+
+[data-pagina="jogo-labirinto"] .lab-arena:focus-within {
+  box-shadow: 0 0 0 0.4rem rgba(245, 185, 66, 0.13);
+}
+
+body.alto-contraste[data-pagina="jogo-labirinto"] .lab-arena:focus-within {
+  box-shadow: none;
+  border-width: 4px;
+}
+
+/* O traço de hover ficava EMPILHADO sobre a borda de cima (1px do traço
+   + 1px da borda = 2px), então o topo parecia mais grosso que os lados.
+   Enquanto o traço corre, a borda de cima cede o lugar: o topo volta a
+   ter exatamente a mesma espessura das outras três linhas. */
+.cartao:hover,
+.cartao:focus-visible,
+.ferramenta:hover,
+.ferramenta:focus-within,
+.doenca:hover,
+.protecao:hover,
+.compromisso:hover {
+  border-top-color: transparent;
+}
+
+body.alto-contraste .cartao:hover,
+body.alto-contraste .cartao:focus-visible,
+body.alto-contraste .ferramenta:hover,
+body.alto-contraste .ferramenta:focus-within,
+body.alto-contraste .doenca:hover,
+body.alto-contraste .protecao:hover,
+body.alto-contraste .compromisso:hover {
+  border-top-color: var(--cor-acento);
+}
+
+/* O traço de hover deixa de ser uma barra dentro do cartão e passa a
+   ser a PRÓPRIA borda de cima, com o mesmo raio e a mesma espessura:
+   um border-top de 1px revelado por clip-path da esquerda para a
+   direita. Não depende mais de overflow para não vazar nos cantos. */
+.cartao::before,
+.ferramenta::before,
+.doenca::before,
+.protecao::before,
+.compromisso::before {
+  inset: 0;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  border-radius: inherit;
+  border-top: 1px solid var(--cor-acento);
+  background-color: transparent;
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 420ms var(--curva-saida);
+}
+
+.cartao:hover::before,
+.cartao:focus-visible::before,
+.ferramenta:hover::before,
+.ferramenta:focus-within::before,
+.doenca:hover::before,
+.protecao:hover::before,
+.compromisso:hover::before {
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+body.alto-contraste .cartao::before,
+body.alto-contraste .ferramenta::before,
+body.alto-contraste .doenca::before,
+body.alto-contraste .protecao::before,
+body.alto-contraste .compromisso::before {
+  clip-path: none;
+  border-top-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cartao::before,
+  .ferramenta::before,
+  .doenca::before,
+  .protecao::before,
+  .compromisso::before {
+    transition: none;
+  }
+}
+
+/* Fim da história do traço de hover: ele era uma SEGUNDA linha, 1px por
+   dentro da borda do cartão. Com raio diferente do raio externo, os
+   cantos mostravam duas curvas concêntricas — daí a sensação de estar
+   "maior" e desalinhado. Some. A borda âmbar do cartão já é o hover, e
+   agora ela é a única linha, com a espessura e o raio do cartão. */
+.cartao::before,
+.ferramenta::before,
+.doenca::before,
+.protecao::before,
+.compromisso::before {
+  display: none;
+}
+
+/* A borda de cima volta a acompanhar as outras três */
+.cartao:hover,
+.cartao:focus-visible,
+.ferramenta:hover,
+.ferramenta:focus-within,
+.doenca:hover,
+.protecao:hover,
+.compromisso:hover {
+  border-top-color: var(--cor-acento);
+}
+
+/* ----------------------------------------------------------
+   43.z Empilhar no celular — precisa vir por último
+   A .lab-mesa redefine grid-template-columns três vezes (seções
+   41, 42 e 43, cada uma refinando a proporção). Com a mesma
+   especificidade, vence a ÚLTIMA — e a media query que empilha
+   estava no meio, então no celular o grid continuava com duas
+   colunas: a segunda tinha mínimo de 16rem e esmagava a do mapa
+   até 0px. Este bloco fecha a lista, depois de todas elas.
+---------------------------------------------------------- */
+@media (max-width: 56rem) {
+  [data-pagina="jogo-labirinto"] .lab-mesa {
+    grid-template-columns: 1fr;
+  }
+
+  [data-pagina="jogo-labirinto"] .lab-estado {
+    text-align: left;
   }
 }

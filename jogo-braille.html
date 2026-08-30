@@ -51,7 +51,7 @@
 
   <script src="script.js" defer></script>
 </head>
-<body>
+<body data-pagina="jogo-braille">
   <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
   <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
@@ -170,16 +170,31 @@
               </button>
             </div>
 
-            <div class="simulador-leitura">
-              <span class="simulador-glifo" id="sim-glifo" aria-hidden="true">⠀</span>
-              <span class="simulador-letra" id="sim-letra" aria-hidden="true">—</span>
-              <span class="simulador-legenda">letra formada</span>
+            <div class="simulador-painel">
+              <div class="simulador-leitura">
+                <span class="simulador-glifo" id="sim-glifo" aria-hidden="true">⠀</span>
+                <span class="simulador-letra" id="sim-letra" aria-hidden="true">—</span>
+                <span class="simulador-legenda">letra formada</span>
+              </div>
+
+              <div class="simulador-saida">
+                <p class="simulador-rotulo">Você escreveu</p>
+                <p class="simulador-texto" id="sim-texto" role="status" aria-live="off"></p>
+              </div>
             </div>
           </div>
 
-          <p class="simulador-teclas" aria-hidden="true">
-            F(1) D(2) S(3) &nbsp;·&nbsp; J(4) K(5) L(6) &nbsp;·&nbsp; Espaço confirma &nbsp;·&nbsp; Backspace apaga
-          </p>
+          <div class="simulador-teclado" aria-hidden="true">
+            <span class="sim-tecla" data-tecla="3"><span class="sim-tecla-letra">S</span><span class="sim-tecla-num">3</span></span>
+            <span class="sim-tecla" data-tecla="2"><span class="sim-tecla-letra">D</span><span class="sim-tecla-num">2</span></span>
+            <span class="sim-tecla" data-tecla="1"><span class="sim-tecla-letra">F</span><span class="sim-tecla-num">1</span></span>
+            <span class="sim-tecla sim-tecla-barra"><span class="sim-tecla-letra">espaço confirma</span></span>
+            <span class="sim-tecla" data-tecla="4"><span class="sim-tecla-letra">J</span><span class="sim-tecla-num">4</span></span>
+            <span class="sim-tecla" data-tecla="5"><span class="sim-tecla-letra">K</span><span class="sim-tecla-num">5</span></span>
+            <span class="sim-tecla" data-tecla="6"><span class="sim-tecla-letra">L</span><span class="sim-tecla-num">6</span></span>
+          </div>
+
+          <p class="simulador-teclas" aria-hidden="true">Backspace apaga a última letra</p>
 
           <div class="simulador-acoes">
             <button type="button" id="sim-confirmar" class="botao botao-primario">Confirmar letra</button>
@@ -187,8 +202,7 @@
             <button type="button" id="sim-limpar" class="botao botao-secundario">Limpar tudo</button>
           </div>
 
-          <p class="simulador-rotulo">Você escreveu</p>
-          <p class="simulador-texto" id="sim-texto" role="status" aria-live="off"></p>
+
         </div>
       </div>
     </section>
@@ -237,6 +251,30 @@
   <div id="toast" class="toast" aria-hidden="true"></div>
 
   <script>
+    /* O teclado desenhado acompanha os pontos acesos da cela. Puramente
+       visual: o jogo continua sendo os seis botões e o teclado real. */
+    (function () {
+      var cela = document.getElementById("cela-simulador");
+      var teclado = document.querySelector(".simulador-teclado");
+      if (!cela || !teclado || !("MutationObserver" in window)) return;
+
+      function espelhar() {
+        var pontos = cela.querySelectorAll(".sim-ponto");
+        for (var i = 0; i < pontos.length; i++) {
+          var n = pontos[i].getAttribute("data-ponto");
+          var tecla = teclado.querySelector('[data-tecla="' + n + '"]');
+          if (tecla) tecla.classList.toggle("aceso", pontos[i].classList.contains("aceso"));
+        }
+      }
+
+      new MutationObserver(espelhar).observe(cela, {
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class"]
+      });
+      espelhar();
+    })();
+
     (function () {
       var btn = document.getElementById("btn-ouvir-pagina");
       if (!btn) return;

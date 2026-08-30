@@ -51,7 +51,7 @@
 
   <script src="script.js" defer></script>
 </head>
-<body>
+<body data-pagina="jogo-labirinto">
   <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
   <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
@@ -164,6 +164,7 @@
 
           <!-- Mesa de jogo -->
           <div class="lab-mesa" id="lab-mesa" hidden>
+            <div class="lab-coluna-mapa">
             <p class="lab-cabecalho">
               <span>Fase <b id="lab-fase-num">1</b> de <b id="lab-fase-total">5</b></span>
               <span><b id="lab-passos">0</b> passos</span>
@@ -185,6 +186,17 @@
               Escolha uma direção para começar.
             </p>
 
+            <!-- Aviso de foco: acende quando o foco sai do painel, porque as
+                 setas só andam com o jogo focado. Botão de propósito — clicar
+                 devolve o foco ao mapa. Fica sempre no DOM (não é aria-live,
+                 para não interromper leitor de tela a cada Tab). -->
+            <button type="button" class="lab-foco" id="lab-foco">
+              <span class="lab-foco-icone" aria-hidden="true">⌨</span>
+              <span>As setas do teclado só andam com o jogo em foco. Clique aqui ou no mapa para voltar a jogar.</span>
+            </button>
+            </div>
+
+            <div class="lab-coluna-painel">
             <div class="lab-bussola">
               <p class="lab-bussola-rotulo">A saída está</p>
               <p class="lab-direcao" id="lab-direcao">—</p>
@@ -219,6 +231,7 @@
 
             <p class="lab-fases-rotulo" id="lab-fases-rotulo">Escolher fase</p>
             <div class="lab-fases" id="lab-fases" role="group" aria-labelledby="lab-fases-rotulo"></div>
+            </div>
           </div>
         </div>
       </div>
