@@ -6489,6 +6489,33 @@ body.alto-contraste .compromisso::before {
 }
 
 /* ----------------------------------------------------------
+   O bloco de ações não tinha margem inferior nenhuma. Na
+   jogo-quiz.html o botão "Ouvir esta página" encostava na borda
+   do primeiro cartão de pergunta (0px, medido). Só quando há algo
+   depois — e como .container é bloco comum, esta margem colapsa
+   com a margem de cima do irmão seguinte: vence a maior, não soma.
+---------------------------------------------------------- */
+.container > .pagina-acoes:not(:last-child) {
+  margin-bottom: 2.5rem;
+}
+
+/* ----------------------------------------------------------
+   Espaçamento do .compromisso quando ele é um BLOCO SOLTO.
+   Na home ele é <li> dentro de uma grade, e quem separa é o gap
+   da grade — por isso a classe nunca teve margem própria. Solto
+   dentro do .container (cidade.html), ele colava no bloco de cima
+   e no de baixo: 0px de folga, medido.
+---------------------------------------------------------- */
+.container > .compromisso {
+  margin-block: 2.75rem;
+}
+
+/* Dois .compromisso seguidos não somam as margens duas vezes */
+.container > .compromisso + .compromisso {
+  margin-top: 0;
+}
+
+/* ----------------------------------------------------------
    44. Cidade acessível (cidade.html)
 
    EXCEÇÃO DE PALETA, de propósito: o site usa um acento âmbar só,
