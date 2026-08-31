@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Como uma pessoa cega ou com baixa visão atravessa a cidade: semáforos que informam por posição, símbolo, som e vibração — e a ecolocalização humana, a habilidade de se orientar pelo eco do próprio som."
+  />
+  <meta name="theme-color" content="#0A0D16" />
+  <title>Cidade acessível — Ponto a Ponto</title>
+
+  <!-- Favicon: cela Braille da letra P (a marca do site) -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Ponto a Ponto" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:url" content="https://dgolaus.github.io/ponto-a-ponto/cidade.html" />
+  <meta property="og:title" content="Cidade acessível — Ponto a Ponto" />
+  <meta property="og:description" content="Semáforos que informam por posição, símbolo, som e vibração — e a ecolocalização humana, a habilidade de se orientar pelo eco do próprio som." />
+  <meta property="og:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ponto a Ponto — portal educativo de acessibilidade." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://dgolaus.github.io/ponto-a-ponto/banner.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Entrada suave: esconde a página antes da pintura; o script.js revela. -->
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      raiz.classList.add("pre-aviso");
+      setTimeout(function () {
+        if (!window.__papPronto) raiz.classList.remove("pre-aviso");
+      }, 8000);
+    })();
+  </script>
+
+  <script src="script.js" defer></script>
+</head>
+<body data-pagina="cidade">
+  <a class="pular-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <div id="regiao-avisos" class="visualmente-oculto" role="status" aria-live="polite"></div>
+
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="pilula marca" href="index.html" aria-label="Ponto a Ponto — página inicial">
+        <span class="marca-simbolo" aria-hidden="true">
+          <svg class="marca-anel" viewBox="0 0 44 44" width="44" height="44">
+            <circle class="anel-fundo" cx="22" cy="22" r="20" />
+            <circle class="anel-progresso" cx="22" cy="22" r="20" />
+          </svg>
+          <span class="marca-celula">
+            <span class="ponto-mini cheio"></span><span class="ponto-mini cheio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+            <span class="ponto-mini cheio"></span><span class="ponto-mini vazio"></span>
+          </span>
+        </span>
+        <span class="marca-nome">Ponto a Ponto</span>
+      </a>
+
+      <nav class="pilula pilula-nav" aria-label="Navegação principal">
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html" aria-label="Tecnologia Assistiva">Tecnologia</a></li>
+          <li><a href="doencas.html" aria-label="Saúde e prevenção">Saúde</a></li>
+          <li><a href="cidade.html" aria-current="page">Cidade</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="acesso-menu">
+        <button
+          type="button"
+          id="btn-acesso"
+          class="pilula botao-acesso"
+          aria-expanded="false"
+          aria-controls="painel-acesso"
+          aria-haspopup="true"
+        >
+          <span class="icone" aria-hidden="true">◐</span>
+          <span class="botao-acesso-texto">Acessibilidade</span>
+        </button>
+
+        <div id="painel-acesso" class="painel-acesso" hidden role="group" aria-label="Ferramentas de acessibilidade">
+          <p class="painel-titulo" aria-hidden="true">Acessibilidade</p>
+
+          <div class="acesso-item">
+            <span class="acesso-rotulo" id="rot-tamanho">Tamanho do texto</span>
+            <span class="acesso-controle" role="group" aria-labelledby="rot-tamanho">
+              <button type="button" id="btn-diminuir-fonte" class="botao-barra" aria-label="Diminuir tamanho do texto">A−</button>
+              <button type="button" id="btn-aumentar-fonte" class="botao-barra" aria-label="Aumentar tamanho do texto">A+</button>
+            </span>
+          </div>
+
+          <button type="button" id="btn-contraste" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">◐</span> Alto contraste
+          </button>
+
+          <button type="button" id="btn-ouvir" class="botao-barra botao-largo" aria-pressed="false">
+            <span class="icone" aria-hidden="true">🔊</span> <span id="rotulo-ouvir">Ouvir esta página</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" tabindex="-1">
+
+    <!-- Abertura -->
+    <section class="secao pagina-topo" aria-labelledby="titulo-pagina">
+      <div class="container">
+        <p class="rotulo-secao">Cidade</p>
+        <h1 id="titulo-pagina" data-anima>Atravessar a rua sem enxergar</h1>
+        <p class="secao-intro" data-anima>
+          Ir e vir é um direito, mas depende de coisas muito concretas: um semáforo que
+          <strong>não dependa só da cor</strong> e a capacidade de entender o espaço por outros
+          sentidos. Esta página junta dois trabalhos da turma — um sobre como a cidade pode
+          informar melhor, outro sobre como a própria pessoa lê o espaço pelo som.
+        </p>
+        <div class="pagina-acoes" data-anima>
+          <button type="button" id="btn-ouvir-pagina" class="botao botao-secundario">
+            <span class="icone" aria-hidden="true">🔊</span> Ouvir esta página
+          </button>
+        </div>
+      </div>
+
+      <a class="hero-rolar" href="#titulo-semaforos">
+        <span class="seta" aria-hidden="true">↓</span> Começar pelos semáforos
+      </a>
+    </section>
+
+    <!-- ===================== SEMÁFOROS ===================== -->
+    <section class="secao" aria-labelledby="titulo-semaforos">
+      <div class="container">
+        <p class="rotulo-secao">Parte 01</p>
+        <h2 id="titulo-semaforos" data-anima>Semáforos acessíveis</h2>
+        <p class="secao-intro" data-anima>
+          O semáforo organiza o trânsito, mas ele foi desenhado para ser <strong>visto</strong>.
+          Quem não distingue as cores, quem enxerga pouco e quem não enxerga precisam da mesma
+          informação por outros caminhos.
+        </p>
+
+        <!-- A ideia central do trabalho deles -->
+        <div class="compromisso" data-anima>
+          <span class="compromisso-marca" aria-hidden="true">◎</span>
+          <p>
+            <strong>Redundância da informação:</strong> a mesma mensagem dita de várias maneiras ao
+            mesmo tempo. "Pode atravessar" pode ser uma luz, uma posição, um símbolo, um som e uma
+            vibração. Se um canal não chega até a pessoa, outro chega — e é por isso que a
+            redundância aumenta a segurança de todo mundo, não só de quem tem deficiência.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demonstração -->
+    <section class="secao" aria-labelledby="titulo-demo">
+      <div class="container">
+        <h2 id="titulo-demo" data-anima>O que sobra quando a cor some</h2>
+        <p class="secao-intro" data-anima>
+          Troque o estado do semáforo abaixo e depois desligue a cor. Repare que a
+          <strong>posição</strong> da luz acesa e o <strong>símbolo</strong> continuam dizendo a
+          mesma coisa — é essa a redundância.
+        </p>
+
+        <div class="semaforo-demo" id="semaforo-demo" data-anima>
+          <div class="semaforo-palco">
+            <div class="semaforo-poste" id="semaforo-poste">
+              <span class="semaforo-luz" data-luz="pare">
+                <span class="semaforo-simbolo" aria-hidden="true">✕</span>
+              </span>
+              <span class="semaforo-luz" data-luz="atencao">
+                <span class="semaforo-simbolo" aria-hidden="true">!</span>
+              </span>
+              <span class="semaforo-luz" data-luz="siga">
+                <span class="semaforo-simbolo" aria-hidden="true">↑</span>
+              </span>
+            </div>
+
+            <dl class="semaforo-leitura">
+              <div>
+                <dt>Posição</dt>
+                <dd id="semaforo-posicao">luz de cima</dd>
+              </div>
+              <div>
+                <dt>Símbolo</dt>
+                <dd id="semaforo-simbolo-texto">✕</dd>
+              </div>
+              <div>
+                <dt>Mensagem</dt>
+                <dd id="semaforo-mensagem">Pare</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="semaforo-acoes">
+            <button type="button" class="botao-barra" data-estado="pare" aria-pressed="true">Pare</button>
+            <button type="button" class="botao-barra" data-estado="atencao" aria-pressed="false">Atenção</button>
+            <button type="button" class="botao-barra" data-estado="siga" aria-pressed="false">Siga</button>
+            <button type="button" class="botao-barra" id="semaforo-sem-cor" aria-pressed="false">Desligar a cor</button>
+          </div>
+
+          <p class="semaforo-nota">
+            Isto <strong>não</strong> é uma simulação de daltonismo — quem tem daltonismo não vê o
+            mundo em cinza, e há vários tipos diferentes. Desligar a cor aqui serve só para mostrar
+            o que acontece quando a cor é o <em>único</em> jeito de dar a informação.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Por público -->
+    <section class="secao" aria-labelledby="titulo-publicos">
+      <div class="container">
+        <h2 id="titulo-publicos" data-anima>O mesmo cruzamento, três necessidades</h2>
+
+        <ul class="grade-cartoes lista-limpa">
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Daltonismo</p>
+            <h3>A posição vale mais que a cor</h3>
+            <p>
+              O daltonismo dificulta diferenciar certas cores — a combinação vermelho e verde é
+              justamente uma das mais comuns. Trocar de tom nem sempre resolve, porque não existe
+              um só tipo de daltonismo. O que funciona é a <strong>ordem padronizada</strong>:
+              vermelho em cima, amarelo no meio, verde embaixo. Mesmo sem distinguir a cor, dá
+              para reconhecer qual luz está acesa. Símbolos e bom contraste reforçam.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Cegueira</p>
+            <h3>Som e tato no lugar da luz</h3>
+            <p>
+              Para quem não enxerga, a luz não existe: a informação precisa vir pelo
+              <strong>som</strong> e pelo <strong>tato</strong>. O semáforo sonoro emite padrões
+              diferentes para "aguarde" e "pode atravessar"; alguns equipamentos vibram ou têm
+              superfície em relevo. O botão de acionamento precisa ser fácil de achar, e o som
+              precisa ser audível sem ser incômodo para quem mora ou trabalha ali.
+            </p>
+          </li>
+
+          <li class="doenca" data-anima>
+            <p class="doenca-tag">Baixa visão</p>
+            <h3>Maior, mais claro, mais contrastado</h3>
+            <p>
+              Quem tem baixa visão enxerga, mas pode não distinguir sinais a distância ou com
+              pouca luz. Luzes <strong>maiores</strong>, bem contrastadas e sem reflexo do sol
+              fazem diferença, assim como símbolos grandes e reconhecíveis. O recurso sonoro
+              também ajuda aqui: mesmo enxergando em parte, o som confirma a hora de atravessar.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Características -->
+    <section class="secao" aria-labelledby="titulo-caracteristicas">
+      <div class="container">
+        <h2 id="titulo-caracteristicas" data-anima>O que faz um semáforo ser acessível</h2>
+        <p class="secao-intro" data-anima>
+          Nenhum item sozinho resolve. É a soma que faz o cruzamento funcionar para mais gente.
+        </p>
+
+        <ul class="lista-curta">
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Ordem <strong>padronizada</strong> das cores e posições.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Luzes grandes, com <strong>bom contraste</strong> e sem reflexo.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Símbolos fáceis de reconhecer.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Sinalização <strong>sonora</strong> para pedestres.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Vibração ou sinalização <strong>tátil</strong>.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Botão de acionamento fácil de achar.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Tempo de travessia <strong>suficiente</strong>.</p>
+          </li>
+          <li class="item-curto" data-anima>
+            <span class="item-curto-marca" aria-hidden="true">✔</span>
+            <p>Manutenção frequente do equipamento.</p>
+          </li>
+        </ul>
+
+        <div class="nota-saude" data-anima>
+          <p>
+            <strong>Instalar não basta.</strong> Uma lâmpada queimada, um alto-falante com defeito
+            ou um botão quebrado apagam a informação inteira para quem depende dela. Manutenção é
+            parte da acessibilidade, não um detalhe depois dela — e a população precisa ter como
+            avisar quando um equipamento para de funcionar.
+          </p>
+        </div>
+
+        <div class="compromisso" data-anima>
+          <span class="compromisso-marca" aria-hidden="true">◎</span>
+          <p>
+            E o semáforo é só uma peça. A faixa, a calçada, o piso tátil, os obstáculos e o
+            desenho do cruzamento decidem tanto quanto ele se a travessia é segura de verdade.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ECOLOCALIZAÇÃO ===================== -->
+    <section class="secao" aria-labelledby="titulo-eco">
+      <div class="container">
+        <p class="rotulo-secao">Parte 02</p>
+        <h2 id="titulo-eco" data-anima>Ecolocalização humana</h2>
+        <p class="secao-intro" data-anima>
+          Se a cidade informa por som, a pessoa também pode <em>ler</em> o espaço por som. A
+          ecolocalização humana é a habilidade de emitir um som e interpretar o eco que volta para
+          perceber o que está em volta — o mesmo princípio de morcegos e golfinhos, aprendido e
+          treinado por pessoas cegas.
+        </p>
+
+        <ol class="lista-limpa" data-anima>
+          <li class="linha linha-estatica">
+            <span class="linha-numero" aria-hidden="true">01</span>
+            <div class="linha-corpo">
+              <h3 class="linha-titulo">Emitir</h3>
+              <p class="linha-texto">
+                Estalos com a língua, batidas de bengala ou palmas — um som curto e nítido.
+              </p>
+            </div>
+          </li>
+          <li class="linha linha-estatica">
+            <span class="linha-numero" aria-hidden="true">02</span>
+            <div class="linha-corpo">
+              <h3 class="linha-titulo">Refletir</h3>
+              <p class="linha-texto">
+                O som bate nas superfícies em volta — paredes, carros, postes, portas abertas — e volta.
+              </p>
+            </div>
+          </li>
+          <li class="linha linha-estatica">
+            <span class="linha-numero" aria-hidden="true">03</span>
+            <div class="linha-corpo">
+              <h3 class="linha-titulo">Interpretar</h3>
+              <p class="linha-texto">
+                O cérebro lê o eco: quanto demorou, de que lado veio, como mudou. Daí saem
+                distância, tamanho e direção.
+              </p>
+            </div>
+          </li>
+          <li class="linha linha-estatica">
+            <span class="linha-numero" aria-hidden="true">04</span>
+            <div class="linha-corpo">
+              <h3 class="linha-titulo">Treinar</h3>
+              <p class="linha-texto">
+                Não é um dom: é prática contínua. A precisão vem com o tempo, como qualquer
+                habilidade.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="secao" aria-labelledby="titulo-kish">
+      <div class="container">
+        <h2 id="titulo-kish" data-anima>Daniel Kish</h2>
+        <div class="compromisso" data-anima>
+          <span class="compromisso-marca" aria-hidden="true">◎</span>
+          <p>
+            Cego desde os 13 meses, <strong>Daniel Kish</strong> desenvolveu a técnica dos estalos
+            com a língua para se orientar e se tornou o principal nome da ecolocalização humana.
+            Fundou a <strong>World Access for the Blind</strong>, organização que já treinou
+            centenas de pessoas cegas pelo mundo. A técnica permite identificar obstáculos,
+            paredes, veículos e espaços abertos em tempo real, dando autonomia em lugares
+            desconhecidos.
+          </p>
+        </div>
+
+        <p class="secao-intro" data-anima>
+          A ecolocalização <strong>não substitui</strong> a bengala nem o cão-guia: ela soma. Quem
+          pratica relata mais segurança para se locomover sozinho e uma percepção melhor do espaço
+          em volta. O caminho para frente passa por incluí-la em programas de reabilitação visual,
+          pesquisar tecnologias que a potencializem e — talvez o mais difícil — fazer com que
+          estalar a língua na rua deixe de ser visto como estranho.
+        </p>
+
+        <div class="encerramento-acoes" data-anima>
+          <a class="botao botao-primario" href="jogo-labirinto.html">
+            Experimentar navegar por som <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <p class="secao-intro" data-anima>
+          O <strong>Labirinto Sonoro</strong>, aqui do site, é um jogo em que a saída só se acha
+          pelo ouvido: o som vem do lado dela e fica mais forte conforme você chega perto. É a
+          versão de brinquedo do que esta página descreve.
+        </p>
+      </div>
+    </section>
+
+    <!-- Fecho -->
+    <section class="secao secao-encerramento" aria-labelledby="titulo-fecho">
+      <div class="container encerramento-caixa">
+        <h2 id="titulo-fecho">A cidade informa; a pessoa interpreta.</h2>
+        <p>
+          Os dois trabalhos desta página são os dois lados da mesma travessia. Um pede que o
+          espaço público diga as coisas de mais de um jeito. O outro mostra o quanto uma pessoa
+          consegue extrair do pouco que o ambiente devolve. Quanto melhor o primeiro, menos
+          esforço o segundo precisa fazer.
+        </p>
+        <div class="encerramento-acoes">
+          <a class="botao botao-primario" href="index.html">Voltar para o início <span aria-hidden="true">←</span></a>
+          <a class="botao botao-secundario" href="leis.html">Ver os direitos garantidos em lei</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+      <p class="marca-nome">Ponto a Ponto</p>
+      <p class="rodape-frase">Um site que se lê com os olhos, com os ouvidos e com as pontas dos dedos.</p>
+      <nav aria-label="Navegação do rodapé">
+        <ul class="menu menu-rodape">
+          <li><a href="em-breve.html?de=Braille">Braille</a></li>
+          <li><a href="tecnologia.html">Tecnologia Assistiva</a></li>
+          <li><a href="doencas.html">Saúde e prevenção</a></li>
+          <li><a href="leis.html">Direitos e leis</a></li>
+          <li><a href="cidade.html" aria-current="page">Cidade acessível</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="em-breve.html?de=Historias">Histórias</a></li>
+        </ul>
+      </nav>
+
+      <div class="rodape-creditos">
+        <p>
+          Semáforos acessíveis: projeto de <strong>Marcos Henrique</strong> e
+          <strong>Lucas Macedo</strong>.
+          Ecolocalização humana: projeto de <strong>Guilherme Nicola</strong>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById("btn-ouvir-pagina");
+      if (!btn) return;
+      if (!("speechSynthesis" in window)) {
+        btn.hidden = true;
+        return;
+      }
+      btn.addEventListener("click", function () {
+        var real = document.getElementById("btn-ouvir");
+        if (real) real.click();
+      });
+    })();
+  </script>
+</body>
+</html>

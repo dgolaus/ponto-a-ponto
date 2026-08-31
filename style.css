@@ -331,7 +331,12 @@ button {
   width: min(100% - 2rem, var(--largura-maxima));
   margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  /* marca | navegação | (sobra) | acessibilidade.
+     A marca já ia pra esquerda abaixo de 78rem; agora fica lá sempre.
+     Centralizada, ela espremia a nav contra a borda e o menu não
+     aceitava um 7º item (medido: -9px de folga, mesmo a 1600px),
+     enquanto sobravam ~372px à direita sem uso. */
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
 }
@@ -363,7 +368,7 @@ button {
 
 .pilula-nav {
   grid-row: 1;
-  grid-column: 1;
+  grid-column: 2;
   justify-self: start;
   padding: 0.3rem 0.55rem;
 }
@@ -378,8 +383,8 @@ button {
 /* --- Marca no centro (logo + anel de progresso do scroll) --- */
 .marca {
   grid-row: 1;
-  grid-column: 2;
-  justify-self: center;
+  grid-column: 1;
+  justify-self: start;
   gap: 0.6rem;
   /* Assimétrico de propósito: o logo encosta à esquerda e o nome respira
      à direita. Ao rolar (nome recolhido) isso vira sobra — ver .rolado. */
@@ -6480,5 +6485,195 @@ body.alto-contraste .compromisso::before {
 
   [data-pagina="jogo-labirinto"] .lab-estado {
     text-align: left;
+  }
+}
+
+/* ----------------------------------------------------------
+   44. Cidade acessível (cidade.html)
+
+   EXCEÇÃO DE PALETA, de propósito: o site usa um acento âmbar só,
+   mas aqui o vermelho/amarelo/verde É o conteúdo — a demonstração
+   existe justamente para mostrar o que a cor carrega e o que
+   sobra quando ela some. Sem as três cores reais não há
+   demonstração. A exceção fica presa a .semaforo-* e não vaza
+   para nenhum outro componente.
+---------------------------------------------------------- */
+.semaforo-demo {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.semaforo-palco {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 5vw, 3rem);
+  align-items: center;
+  justify-content: center;
+}
+
+/* O poste */
+.semaforo-poste {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 1.25rem;
+  background-color: var(--cor-superficie);
+}
+
+.semaforo-luz {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 50%;
+  /* apagada: quase igual ao fundo, sem sumir de todo */
+  background-color: var(--cor-superficie-2);
+  transition: background-color var(--mov-medio) var(--curva-suave),
+              box-shadow var(--mov-medio) var(--curva-suave);
+}
+
+.semaforo-simbolo {
+  font-family: var(--fonte-mono);
+  font-size: 1.35rem;
+  line-height: 1;
+  /* o símbolo da luz apagada fica discreto, mas legível */
+  color: var(--cor-texto-suave);
+  opacity: 0.35;
+  transition: opacity var(--mov-curto) var(--curva-suave),
+              color var(--mov-curto) var(--curva-suave);
+}
+
+.semaforo-luz.acesa .semaforo-simbolo {
+  opacity: 1;
+  color: #12131a;
+}
+
+/* As três cores reais — só aqui dentro */
+.semaforo-luz.acesa[data-luz="pare"] {
+  background-color: #e5484d;
+  box-shadow: 0 0 0 0.35rem rgba(229, 72, 77, 0.16);
+}
+
+.semaforo-luz.acesa[data-luz="atencao"] {
+  background-color: #f5b942;
+  box-shadow: 0 0 0 0.35rem rgba(245, 185, 66, 0.16);
+}
+
+.semaforo-luz.acesa[data-luz="siga"] {
+  background-color: #46a758;
+  box-shadow: 0 0 0 0.35rem rgba(70, 167, 88, 0.16);
+}
+
+/* "Desligar a cor": as três acendem no MESMO tom neutro, então
+   só a posição e o símbolo continuam informando. */
+.semaforo-demo.sem-cor .semaforo-luz.acesa[data-luz] {
+  background-color: var(--cor-texto);
+  box-shadow: 0 0 0 0.35rem rgba(240, 242, 247, 0.14);
+}
+
+/* A leitura em texto, ao lado do poste */
+.semaforo-leitura {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  min-width: 12rem;
+}
+
+.semaforo-leitura div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.semaforo-leitura dt {
+  font-family: var(--fonte-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.semaforo-leitura dd {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: 1.15rem;
+  color: var(--cor-acento);
+}
+
+.semaforo-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.semaforo-nota {
+  max-width: 46ch;
+  margin: 1.75rem auto 0;
+  font-family: var(--fonte-mono);
+  font-size: 0.74rem;
+  line-height: 1.75;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+/* A lista numerada da ecolocalização não é de links: tira o
+   ponteiro e o hover que a .linha ganha por ser <a> na home. */
+.linha-estatica {
+  cursor: default;
+}
+
+.linha-estatica:hover {
+  background-color: transparent;
+}
+
+@media (max-width: 34rem) {
+  .semaforo-palco {
+    flex-direction: column;
+  }
+
+  .semaforo-leitura {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ----------------------------------------------------------
+   44.z Guardas — alto contraste e redução de movimento
+   No alto contraste a paleta inteira vira preto/branco/amarelo,
+   e é isso mesmo: a demonstração continua funcionando porque a
+   informação estava na POSIÇÃO e no SÍMBOLO, não na cor. Fica
+   sendo, sem querer, a melhor prova do argumento da página.
+---------------------------------------------------------- */
+body.alto-contraste .semaforo-luz {
+  background-color: #000000;
+  border-width: 2px;
+}
+
+body.alto-contraste .semaforo-luz .semaforo-simbolo {
+  color: var(--cor-texto);
+  opacity: 0.55;
+}
+
+body.alto-contraste .semaforo-luz.acesa[data-luz],
+body.alto-contraste .semaforo-demo.sem-cor .semaforo-luz.acesa[data-luz] {
+  background-color: var(--cor-acento);
+  box-shadow: none;
+}
+
+body.alto-contraste .semaforo-luz.acesa .semaforo-simbolo {
+  color: var(--cor-acento-texto);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .semaforo-luz,
+  .semaforo-simbolo {
+    transition: none;
   }
 }

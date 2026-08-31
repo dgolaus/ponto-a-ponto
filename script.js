@@ -2012,8 +2012,80 @@
     pintarBotaoMapa();
     montarListaDeFases();
   })();
+
   /* ---------------------------------------------------------
-     7g. A rota do AcessiCar (tecnologia.html): o trilho se
+     7g. Semáforo de demonstração (cidade.html).
+     Mostra a "redundância da informação" do trabalho do Marcos
+     e do Lucas: a mesma mensagem em três canais ao mesmo tempo
+     — posição, símbolo e texto. O botão "Desligar a cor" apaga
+     só o canal da cor, e os outros dois seguem funcionando.
+
+     Nada aqui depende de ver: os três canais viram texto no
+     <dl> ao lado e vão para o aria-live a cada troca.
+  --------------------------------------------------------- */
+  (function semaforoDemo() {
+    const palco = document.getElementById("semaforo-demo");
+    if (!palco) return;
+
+    const ESTADOS = {
+      pare: { luz: "pare", posicao: "luz de cima", simbolo: "✕", mensagem: "Pare" },
+      atencao: { luz: "atencao", posicao: "luz do meio", simbolo: "!", mensagem: "Atenção" },
+      siga: { luz: "siga", posicao: "luz de baixo", simbolo: "↑", mensagem: "Siga" }
+    };
+
+    const luzes = Array.prototype.slice.call(palco.querySelectorAll(".semaforo-luz"));
+    const botoes = Array.prototype.slice.call(palco.querySelectorAll("[data-estado]"));
+    const btnCor = document.getElementById("semaforo-sem-cor");
+    const elPosicao = document.getElementById("semaforo-posicao");
+    const elSimbolo = document.getElementById("semaforo-simbolo-texto");
+    const elMensagem = document.getElementById("semaforo-mensagem");
+
+    let atual = "pare";
+    let semCor = false;
+
+    function pintar(anunciarTroca) {
+      const e = ESTADOS[atual];
+      if (!e) return;
+
+      for (let i = 0; i < luzes.length; i++) {
+        luzes[i].classList.toggle("acesa", luzes[i].getAttribute("data-luz") === e.luz);
+      }
+      for (let i = 0; i < botoes.length; i++) {
+        botoes[i].setAttribute("aria-pressed", String(botoes[i].getAttribute("data-estado") === atual));
+      }
+      if (elPosicao) elPosicao.textContent = e.posicao;
+      if (elSimbolo) elSimbolo.textContent = e.simbolo;
+      if (elMensagem) elMensagem.textContent = e.mensagem;
+
+      if (anunciarTroca) {
+        anunciar(e.mensagem + ". " + e.posicao + ", símbolo " + e.simbolo +
+          (semCor ? ", sem cor." : "."));
+      }
+    }
+
+    for (let i = 0; i < botoes.length; i++) {
+      botoes[i].addEventListener("click", function () {
+        atual = this.getAttribute("data-estado");
+        pintar(true);
+      });
+    }
+
+    if (btnCor) {
+      btnCor.addEventListener("click", function () {
+        semCor = !semCor;
+        palco.classList.toggle("sem-cor", semCor);
+        btnCor.setAttribute("aria-pressed", String(semCor));
+        btnCor.textContent = semCor ? "Devolver a cor" : "Desligar a cor";
+        anunciar(semCor
+          ? "Cor desligada. A posição e o símbolo continuam dizendo: " + ESTADOS[atual].mensagem + "."
+          : "Cor devolvida.");
+      });
+    }
+
+    pintar(false);
+  })();
+  /* ---------------------------------------------------------
+     7h. A rota do AcessiCar (tecnologia.html): o trilho se
      preenche conforme a pessoa rola e cada parada acende ao
      ser alcançada. É enfeite — o texto e a ordem já estão no
      HTML (<ol>), então quem não vê a animação não perde nada.
